@@ -367,7 +367,7 @@ class POP3
 		}
 	}
 
-	public function recvLn()
+	private function recvLn()
 	{
 		if ( $this->isConnected() === true )
 		{
@@ -396,7 +396,7 @@ class POP3
 		return is_resource( $this->conn );
 	}
 	
-	public function isPositiveResponse( $resp )
+	private function isPositiveResponse( $resp )
 	{
 		if ( strpos( $resp, self::RESP_OK ) === 0 )
 		{
@@ -406,7 +406,7 @@ class POP3
 		return false;
 	}
 	
-	public function isTerminationOctet( $resp )
+	private function isTerminationOctet( $resp )
 	{
 		if ( strpos( rtrim( $resp, self::CRLF ), self::TERMINATION_OCTET ) === 0  )
 		{
