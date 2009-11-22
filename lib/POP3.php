@@ -27,13 +27,13 @@ class POP3
 
 	public function connect( $host, $port, $ssl = false, $timeout = 30 )
 	{
-		//TODO: Implement other transports, such as TLS.
+		// TODO: Implement other transports, such as TLS.
 		// Validate arguments.
-		if ( $host == null ) 
+		if ( $host === null ) 
 		{
 			throw new POPException( "The hostname is not defined." );
 		}
-		if ( $port == null )
+		if ( $port === null )
 		{
 			throw new POP3Exception( "The port is not defined." );
 		}
@@ -42,7 +42,7 @@ class POP3
 		$errstr = null;
 
 		// Check if SSL is enabled.
-		if ( $ssl ) {
+		if ( $ssl === true ) {
 			$this->conn = @fsockopen( "ssl://{$host}:{$port}", $errno, $errstr, $timeout );
 		}
 		else
@@ -68,7 +68,7 @@ class POP3
 
 	public function authenticate( $username, $password )
 	{
-		if ( $this->state != self::STATE_AUTHORIZATION )
+		if ( $this->state !== self::STATE_AUTHORIZATION )
 		{
 			throw new POP3Exception( "Cannot authenticate in the current session state: {$this->getCurrentStateName()}." );
 		}
@@ -95,7 +95,7 @@ class POP3
 	public function status()
 	{
 		// TODO: Parse drop listing.
-		if ( $this->state != self::STATE_TRANSACTION )
+		if ( $this->state !== self::STATE_TRANSACTION )
 		{
 			throw new POP3Exception( "Invalid command for current session state: {$this->getCurrentStateName()}." ); 
 		}
@@ -115,12 +115,12 @@ class POP3
 	{
 		// TODO: Return an array of the scan listing.
 		// TODO: LIST with argument does not work. There is no termination octet.
-		if ( $this->state != self::STATE_TRANSACTION )
+		if ( $this->state !== self::STATE_TRANSACTION )
 		{
 			throw new POP3Exception( "Invalid command for current session state: {$this->getCurrentStateName()}." ); 
 		}
 	
-		if ( $msg != null )
+		if ( $msg !== null )
 		{
 			$this->send( "LIST {$msg}" );
 		}
@@ -152,7 +152,7 @@ class POP3
 
 	public function retrieve( $msg )
 	{
-		if ( $this->state != self::STATE_TRANSACTION )
+		if ( $this->state !== self::STATE_TRANSACTION )
 		{
 			throw new POP3Exception( "Invalid command for current session state: {$this->getCurrentStateName()}." ); 
 		}
@@ -187,7 +187,7 @@ class POP3
 	public function delete( $msg )
 	{
 
-		if ( $this->state != self::STATE_TRANSACTION )
+		if ( $this->state !== self::STATE_TRANSACTION )
 		{
 			throw new POP3Exception( "Invalid command for current session state: {$this->getCurrentStateName()}." ); 
 		}
@@ -212,7 +212,7 @@ class POP3
 	public function noop()
 	{
 
-		if ( $this->state != self::STATE_TRANSACTION )
+		if ( $this->state !== self::STATE_TRANSACTION )
 		{
 			throw new POP3Exception( "Invalid command for current session state: {$this->getCurrentStateName()}." ); 
 		}
@@ -231,7 +231,7 @@ class POP3
 
 	public function reset()
 	{
-		if ( $this->state != self::STATE_TRANSACTION )
+		if ( $this->state !== self::STATE_TRANSACTION )
 		{
 			throw new POP3Exception( "Invalid command for current session state: {$this->getCurrentStateName()}." ); 
 		}
@@ -249,7 +249,7 @@ class POP3
 
 	public function top( $msg, $lines = 0 )
 	{
-		if ( $this->state != self::STATE_TRANSACTION )
+		if ( $this->state !== self::STATE_TRANSACTION )
 		{
 			throw new POP3Exception( "Invalid command for current session state: {$this->getCurrentStateName()}." ); 
 		}
@@ -290,7 +290,7 @@ class POP3
 	{
 		// TODO: Return an array of the scan listing.
 		// TODO: UIDL with argument does not work. There is no termination octet.
-		if ( $this->state != self::STATE_TRANSACTION )
+		if ( $this->state !== self::STATE_TRANSACTION )
 		{
 			throw new POP3Exception( "Invalid command for current session state: {$this->getCurrentStateName()}." ); 
 		}
@@ -358,7 +358,7 @@ class POP3
 
 	public function send( $data )
 	{
-		if ( $this->isConnected() )
+		if ( $this->isConnected() === true )
 		{
 			if ( fwrite( $this->conn, $data . self::CRLF, strlen( $data . self::CRLF ) ) === false )
 			{
@@ -369,7 +369,7 @@ class POP3
 
 	public function recvLn()
 	{
-		if ( $this->isConnected() )
+		if ( $this->isConnected() === true )
 		{
 			$line = '';
 			$data = '';
