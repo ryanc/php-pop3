@@ -75,7 +75,7 @@ class POP3
 
 			if ( $this->isResponseOK( $resp ) !== true )
 			{
-				throw new POP3Exception( "The server received a negative response to the CAPA command: {$resp}." );
+				throw new POP3Exception( "The server returned a negative response to the CAPA command: {$resp}." );
 			}
 
 			$data = null;
