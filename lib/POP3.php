@@ -66,6 +66,33 @@ class POP3
 		$this->state = self::STATE_AUTHORIZATION;
 	}
 
+	public function getCapabilities()
+	{
+		if ( $this->state !== self::STATE_NOT_CONNECTED )
+		{
+			$this->send( "CAPA" );
+			$resp = $this->recvLn();
+
+			if ( $this->isResponseOK( $resp ) !== true )
+			{
+				throw new POP3Exception( "The server received a negative response to the CAPA command: {$resp}." );
+			}
+
+			$data = null;
+			while ( $resp = $this->recvLn() )
+			{
+				if ( $this->isTerminationOctet( $resp ) === true )
+				{
+					break;
+				}
+	
+				$data .= $resp;
+			}
+	
+			return $data;
+		}
+	}
+
 	public function authenticate( $username, $password )
 	{
 		$this->validateState( self::STATE_AUTHORIZATION, 'USER' );
