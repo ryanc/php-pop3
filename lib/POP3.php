@@ -58,7 +58,7 @@ class POP3
 
 		$this->greeting = $this->recvLn();
 
-		if ( $this->isPositiveResponse( $this->greeting ) === false )
+		if ( $this->isResponseOK( $this->greeting ) === false )
 		{
 			throw new POP3Exception( "Negative response from the server was received: '{$this->greeting}'." );
 		}
@@ -73,7 +73,7 @@ class POP3
 		$this->send( "USER {$username}" );
 		$resp = $this->recvLn();
 
-		if ( $this->isPositiveResponse( $resp ) === false )
+		if ( $this->isResponseOK( $resp ) === false )
 		{
 			throw new POP3Exception( "The username is not valid: {$resp}." );
 		}
@@ -81,7 +81,7 @@ class POP3
 		$this->send( "PASS {$password}" );
 		$resp = $this->recvLn();
 
-		if ( $this->isPositiveResponse( $resp ) === false )
+		if ( $this->isResponseOK( $resp ) === false )
 		{
 			throw new POP3Exception(" The password is not valid: {$resp}." );
 		}
@@ -98,7 +98,7 @@ class POP3
 		$this->send( "STAT" );
 		$resp = $this->recvLn();
 
-		if ( $this->isPositiveResponse( $resp ) === false )
+		if ( $this->isResponseOK( $resp ) === false )
 		{
 			throw new POP3Exception( "The server did not respond with a status message: {$resp}." );
 		}
@@ -124,7 +124,7 @@ class POP3
 	
 		$resp = $this->recvLn();
 
-		if ( $this->isPositiveResponse( $resp ) === false )
+		if ( $this->isResponseOK( $resp ) === false )
 		{
 			throw new POP3Exception( "The server did not respond with a scan listing: {$resp}." );
 		}
@@ -155,7 +155,7 @@ class POP3
 		$this->send( "RETR {$msg}" );
 		$resp = $this->recvLn();
 
-		if ( $this->isPositiveResponse( $resp ) === false )
+		if ( $this->isResponseOK( $resp ) === false )
 		{
 			throw new POP3Exception( "The server sent a negative response to the RETR command: {$resp}." );
 		}
@@ -186,7 +186,7 @@ class POP3
 		$this->send( "DELE {$msg}" );
 		$resp = $this->recvLn();
 
-		if ( $this->isPositiveResponse( $resp ) === false )
+		if ( $this->isResponseOK( $resp ) === false )
 		{
 			throw new POP3Exception( "The server sent a negative response to the DELE command: {$resp}." );
 			return false;
@@ -202,7 +202,7 @@ class POP3
 		$this->send( "NOOP" );
 		$resp = $this->recvLn();
 
-		if ( $this->isPositiveResponse( $resp ) === false )
+		if ( $this->isResponseOK( $resp ) === false )
 		{
 			throw new POP3Exception( "The server sent a negative response to the NOOP command: {$resp}." );
 			return false;
@@ -218,7 +218,7 @@ class POP3
 		$this->send( "RSET" );
 		$resp = $this->recvLn();
 
-		if ( $this->isPositiveResponse( $resp ) === false )
+		if ( $this->isResponseOK( $resp ) === false )
 		{
 			throw new POP3Exception( "The server sent a negative response to the RSET command: {$resp}." );
 		}
@@ -243,7 +243,7 @@ class POP3
 		$this->send( "TOP {$msg} {$lines}" );
 		$resp = $this->recvLn();
 
-		if ( $this->isPositiveResponse( $resp ) === false )
+		if ( $this->isResponseOK( $resp ) === false )
 		{
 			throw new POP3Exception( "The server sent a negative response to the RETR command: {$resp}." );
 		}
@@ -279,7 +279,7 @@ class POP3
 	
 		$resp = $this->recvLn();
 
-		if ( $this->isPositiveResponse( $resp ) === false )
+		if ( $this->isResponseOK( $resp ) === false )
 		{
 			throw new POP3Exception( "The server did not respond with a scan listing: {$resp}." );
 		}
@@ -308,7 +308,7 @@ class POP3
 			$this->send( "QUIT" );
 			$resp = $this->recvLn();
 			
-			if ( $this->isPositiveResponse( $resp ) === false )
+			if ( $this->isResponseOK( $resp ) === false )
 			{
 				throw new POP3Exception( "The server sent a negative response to the QUIT command: {$resp}." );
 			}
@@ -369,7 +369,7 @@ class POP3
 		return is_resource( $this->conn );
 	}
 	
-	private function isPositiveResponse( $resp )
+	private function isResponseOK( $resp )
 	{
 		if ( strpos( $resp, self::RESP_OK ) === 0 )
 		{
