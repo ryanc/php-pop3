@@ -66,7 +66,7 @@ class POP3
 		$this->state = self::STATE_AUTHORIZATION;
 	}
 
-	public function getCapabilities()
+	public function getCapabilities( $format = 'raw' )
 	{
 		if ( $this->state !== self::STATE_NOT_CONNECTED )
 		{
@@ -88,8 +88,15 @@ class POP3
 	
 				$data .= $resp;
 			}
-	
-			return $data;
+			
+			if ( $format === 'raw' )
+			{
+				return $data;
+			}
+			else
+			{
+				return explode( self::CRLF, $data );
+			}
 		}
 	}
 
