@@ -13,7 +13,7 @@ class POP3
 	const STATE_NOT_CONNECTED = 0;
 	const STATE_AUTHORIZATION = 1;
 	const STATE_TRANSACTION = 2;
-	const STATE_UPDATE = 3;
+	const STATE_UPDATE = 4;
 
 	private $conn = null;
 	private $greeting = null;
@@ -68,7 +68,7 @@ class POP3
 
 	public function getCapabilities( $format = 'raw' )
 	{
-		$this->validateState( array( self::STATE_AUTHORIZATION, self:: STATE_TRANSACTION ), 'CAPA' );
+		$this->validateState( self::STATE_AUTHORIZATION | self:: STATE_TRANSACTION, 'CAPA' );
 
 		$this->send( "CAPA" );
 		$resp = $this->getResponse();
@@ -344,7 +344,7 @@ class POP3
 	
 	public function quit()
 	{
-		$this->validateState( array( self::STATE_AUTHORIZATION, self::STATE_TRANSACTION ), 'QUIT' );
+		$this->validateState( self::STATE_AUTHORIZATION | self::STATE_TRANSACTION, 'QUIT' );
 
 		$this->state = self::STATE_UPDATE;
 
@@ -454,8 +454,7 @@ class POP3
 
 	public function validateState( $valid_state, $cmd )
 	{
-		if ( ( is_array( $valid_state ) && in_array( $this->state, $valid_state ) === false ) ||
-		     ( is_int( $valid_state ) && $this->state !== $valid_state ) )
+		if ( ( $valid_state & $this->state ) == 0 )
 		{
 			throw new POP3Exception( "This {$cmd} command is invalid for the current state: {$this->getCurrentStateName()}." );
 		}
