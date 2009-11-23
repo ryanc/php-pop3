@@ -31,7 +31,7 @@ class POP3
 		// Validate arguments.
 		if ( $host === null ) 
 		{
-			throw new POPException( "The hostname is not defined." );
+			throw new POP3Exception( "The hostname is not defined." );
 		}
 		if ( $port === null )
 		{
