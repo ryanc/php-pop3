@@ -56,7 +56,7 @@ class POP3
 			throw new POP3Exception( "Failed to connect to server: {$host}:{$port}.");
 		}
 
-		$this->greeting = $this->recvLn();
+		$this->greeting = $this->getResponse();
 
 		if ( $this->isResponseOK( $this->greeting ) === false )
 		{
@@ -71,7 +71,7 @@ class POP3
 		if ( $this->state !== self::STATE_NOT_CONNECTED )
 		{
 			$this->send( "CAPA" );
-			$resp = $this->recvLn();
+			$resp = $this->getResponse();
 
 			if ( $this->isResponseOK( $resp ) !== true )
 			{
@@ -79,7 +79,7 @@ class POP3
 			}
 
 			$data = null;
-			while ( $resp = $this->recvLn() )
+			while ( $resp = $this->getResponse() )
 			{
 				if ( $this->isTerminationOctet( $resp ) === true )
 				{
@@ -105,7 +105,7 @@ class POP3
 		$this->validateState( self::STATE_AUTHORIZATION, 'USER' );
 
 		$this->send( "USER {$username}" );
-		$resp = $this->recvLn();
+		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
 		{
@@ -113,7 +113,7 @@ class POP3
 		}
 
 		$this->send( "PASS {$password}" );
-		$resp = $this->recvLn();
+		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
 		{
@@ -130,7 +130,7 @@ class POP3
 		$this->validateState( self::STATE_TRANSACTION, 'STAT' );
 
 		$this->send( "STAT" );
-		$resp = $this->recvLn();
+		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
 		{
@@ -156,7 +156,7 @@ class POP3
 			$this->send( "LIST" );
 		}
 	
-		$resp = $this->recvLn();
+		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
 		{
@@ -164,7 +164,7 @@ class POP3
 		}
 
 		$data = null;
-		while ( $resp = $this->recvLn() )
+		while ( $resp = $this->getResponse() )
 		{
 			if ( $this->isTerminationOctet( $resp ) === true )
 			{
@@ -187,7 +187,7 @@ class POP3
 		}
 
 		$this->send( "RETR {$msgno}" );
-		$resp = $this->recvLn();
+		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
 		{
@@ -195,7 +195,7 @@ class POP3
 		}
 
 		$data = null;
-		while ( $resp = $this->recvLn() )
+		while ( $resp = $this->getResponse() )
 		{
 			if ( $this->isTerminationOctet( $resp ) === true )
 			{
@@ -218,7 +218,7 @@ class POP3
 		}
 
 		$this->send( "DELE {$msgno}" );
-		$resp = $this->recvLn();
+		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
 		{
@@ -234,7 +234,7 @@ class POP3
 		$this->validateState( self::STATE_TRANSACTION, 'NOOP' );
 
 		$this->send( "NOOP" );
-		$resp = $this->recvLn();
+		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
 		{
@@ -250,7 +250,7 @@ class POP3
 		$this->validateState( self::STATE_TRANSACTION, 'RSET' );
 
 		$this->send( "RSET" );
-		$resp = $this->recvLn();
+		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
 		{
@@ -280,7 +280,7 @@ class POP3
 		}
 
 		$this->send( "TOP {$msgno} {$lines}" );
-		$resp = $this->recvLn();
+		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
 		{
@@ -288,7 +288,7 @@ class POP3
 		}
 
 		$data = null;
-		while ( $resp = $this->recvLn() )
+		while ( $resp = $this->getResponse() )
 		{
 			if ( $this->isTerminationOctet( $resp ) === true )
 			{
@@ -321,7 +321,7 @@ class POP3
 			$this->send( "UIDL" );
 		}
 	
-		$resp = $this->recvLn();
+		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
 		{
@@ -329,7 +329,7 @@ class POP3
 		}
 
 		$data = null;
-		while ( $resp = $this->recvLn() )
+		while ( $resp = $this->getResponse() )
 		{
 			if ( $this->isTerminationOctet( $resp ) === true )
 			{
@@ -350,7 +350,7 @@ class POP3
 			$this->state = self::STATE_UPDATE;
 	
 			$this->send( "QUIT" );
-			$resp = $this->recvLn();
+			$resp = $this->getResponse();
 			
 			if ( $this->isResponseOK( $resp ) === false )
 			{
@@ -384,7 +384,7 @@ class POP3
 		}
 	}
 
-	private function recvLn()
+	private function getResponse()
 	{
 		if ( $this->isConnected() === true )
 		{
