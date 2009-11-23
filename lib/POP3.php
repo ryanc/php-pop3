@@ -68,35 +68,34 @@ class POP3
 
 	public function getCapabilities( $format = 'raw' )
 	{
-		if ( $this->state !== self::STATE_NOT_CONNECTED )
+		$this->validateState( array( self::STATE_AUTHORIZATION, self:: STATE_TRANSACTION ), 'CAPA' );
+
+		$this->send( "CAPA" );
+		$resp = $this->getResponse();
+
+		if ( $this->isResponseOK( $resp ) !== true )
 		{
-			$this->send( "CAPA" );
-			$resp = $this->getResponse();
+			throw new POP3Exception( "The server returned a negative response to the CAPA command: {$resp}." );
+		}
 
-			if ( $this->isResponseOK( $resp ) !== true )
+		$data = null;
+		while ( $resp = $this->getResponse() )
+		{
+			if ( $this->isTerminationOctet( $resp ) === true )
 			{
-				throw new POP3Exception( "The server returned a negative response to the CAPA command: {$resp}." );
+				break;
 			}
 
-			$data = null;
-			while ( $resp = $this->getResponse() )
-			{
-				if ( $this->isTerminationOctet( $resp ) === true )
-				{
-					break;
-				}
-	
-				$data .= $resp;
-			}
-			
-			if ( $format === 'raw' )
-			{
-				return $data;
-			}
-			else
-			{
-				return explode( self::CRLF, $data );
-			}
+			$data .= $resp;
+		}
+		
+		if ( $format === 'raw' )
+		{
+			return $data;
+		}
+		else
+		{
+			return explode( self::CRLF, $data );
 		}
 	}
 
@@ -345,23 +344,22 @@ class POP3
 	
 	public function quit()
 	{
-		if ( $this->state !== self::STATE_NOT_CONNECTED )
+		$this->validateState( array( self::STATE_AUTHORIZATION, self::STATE_TRANSACTION ), 'QUIT' );
+
+		$this->state = self::STATE_UPDATE;
+
+		$this->send( "QUIT" );
+		$resp = $this->getResponse();
+
+		if ( $this->isResponseOK( $resp ) === false )
 		{
-			$this->state = self::STATE_UPDATE;
-	
-			$this->send( "QUIT" );
-			$resp = $this->getResponse();
-			
-			if ( $this->isResponseOK( $resp ) === false )
-			{
-				throw new POP3Exception( "The server sent a negative response to the QUIT command: {$resp}." );
-			}
-	
-			$this->close();
-			$this->state = self::STATE_NOT_CONNECTED;
-	
-			return true;
+			throw new POP3Exception( "The server sent a negative response to the QUIT command: {$resp}." );
 		}
+
+		$this->close();
+		$this->state = self::STATE_NOT_CONNECTED;
+
+		return true;
 	}
 
 	public function close()
@@ -456,7 +454,8 @@ class POP3
 
 	public function validateState( $valid_state, $cmd )
 	{
-		if ( $this->state !== $valid_state )
+		if ( ( is_array( $valid_state ) && in_array( $this->state, $valid_state ) === false ) ||
+		     ( is_int( $valid_state ) && $this->state !== $valid_state ) )
 		{
 			throw new POP3Exception( "This {$cmd} command is invalid for the current state: {$this->getCurrentStateName()}." );
 		}
