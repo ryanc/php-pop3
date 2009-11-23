@@ -133,16 +133,16 @@ class POP3
 		return $resp;
 	}
 
-	public function listMessages( $msg = null )
+	public function listMessages( $msgno = null )
 	{
 		// TODO: Return an array of the scan listing.
 		// TODO: LIST with argument does not work. There is no termination octet.
 	
 		$this->validateState( self::STATE_TRANSACTION, 'LIST' );
 
-		if ( $msg !== null )
+		if ( $msgno !== null )
 		{
-			$this->send( "LIST {$msg}" );
+			$this->send( "LIST {$msgno}" );
 		}
 		else
 		{
@@ -170,16 +170,16 @@ class POP3
 		return $data;
 	}
 
-	public function retrieve( $msg )
+	public function retrieve( $msgno )
 	{
 		$this->validateState( self::STATE_TRANSACTION, 'RETR' );
 
-		if ( $msg === null )
+		if ( $msgno === null )
 		{
 			throw new POP3Exception( "A message number is required by the RETR command." );
 		}
 
-		$this->send( "RETR {$msg}" );
+		$this->send( "RETR {$msgno}" );
 		$resp = $this->recvLn();
 
 		if ( $this->isResponseOK( $resp ) === false )
@@ -201,16 +201,16 @@ class POP3
 		return $data;
 	}
 
-	public function delete( $msg )
+	public function delete( $msgno )
 	{
 		$this->validateState( self::STATE_TRANSACTION, 'DELE' );
 
-		if ( $msg === null )
+		if ( $msgno === null )
 		{
 			throw new POP3Exception( "A message number is required by the DELE command." );
 		}
 
-		$this->send( "DELE {$msg}" );
+		$this->send( "DELE {$msgno}" );
 		$resp = $this->recvLn();
 
 		if ( $this->isResponseOK( $resp ) === false )
@@ -253,11 +253,11 @@ class POP3
 		return true;
 	}
 
-	public function top( $msg, $lines = 0 )
+	public function top( $msgno, $lines = 0 )
 	{
 		$this->validateState( self::STATE_TRANSACTION, 'TOP' );
 	
-		if ( $msg === null )
+		if ( $msgno === null )
 		{
 			throw new POP3Exception( "A message number is required by the TOP command." );
 		}
@@ -267,7 +267,7 @@ class POP3
 			throw new POP3Exception( "A number of lines is required by the TOP command." );
 		}
 
-		$this->send( "TOP {$msg} {$lines}" );
+		$this->send( "TOP {$msgno} {$lines}" );
 		$resp = $this->recvLn();
 
 		if ( $this->isResponseOK( $resp ) === false )
@@ -289,15 +289,15 @@ class POP3
 		return $data;
 	}
 
-	public function uidl( $msg = null )
+	public function uidl( $msgno = null )
 	{
 		// TODO: Return an array of the scan listing.
 		// TODO: UIDL with argument does not work. There is no termination octet.
 		$this->validateState( self::STATE_TRANSACTION, 'UIDL' );
 	
-		if ( $msg != null )
+		if ( $msgno != null )
 		{
-			$this->send( "UIDL {$msg}" );
+			$this->send( "UIDL {$msgno}" );
 		}
 		else
 		{
