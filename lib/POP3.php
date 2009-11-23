@@ -262,6 +262,11 @@ class POP3
 
 	public function top( $msgno, $lines = 0 )
 	{
+		if ( in_array( 'TOP', $this->getCapabilities( 'array' ) ) === false )
+		{
+			throw new POP3Exception( "The server does not support the TOP command." );
+		}
+
 		$this->validateState( self::STATE_TRANSACTION, 'TOP' );
 	
 		if ( $msgno === null )
@@ -300,6 +305,11 @@ class POP3
 	{
 		// TODO: Return an array of the scan listing.
 		// TODO: UIDL with argument does not work. There is no termination octet.
+		if ( in_array( 'UIDL', $this->getCapabilities( 'array' ) ) === false )
+		{
+			throw new POP3Exception( "The server does not support the TOP command." );
+		}
+
 		$this->validateState( self::STATE_TRANSACTION, 'UIDL' );
 	
 		if ( $msgno != null )
