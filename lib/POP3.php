@@ -66,7 +66,7 @@ class POP3
 		$this->state = self::STATE_AUTHORIZATION;
 	}
 
-	public function getCapabilities( $format = 'raw' )
+	public function getCapabilities( $format )
 	{
 		$this->validateState( self::STATE_AUTHORIZATION | self:: STATE_TRANSACTION, 'CAPA' );
 
@@ -78,7 +78,7 @@ class POP3
 			throw new POP3Exception( "The server returned a negative response to the CAPA command: {$resp}." );
 		}
 
-		$data = null;
+		$data = array();
 		while ( $resp = $this->getResponse() )
 		{
 			if ( $this->isTerminationOctet( $resp ) === true )
@@ -86,17 +86,15 @@ class POP3
 				break;
 			}
 
-			$data .= $resp;
+			$data[] = rtrim( $resp );
 		}
-		
-		if ( $format === 'raw' )
+
+		if ( $format === 'raw' ) 
 		{
-			return $data;
+			return implode( $data, self::CRLF );
 		}
-		else
-		{
-			return explode( self::CRLF, $data );
-		}
+
+		return $data;
 	}
 
 	public function starttls()
