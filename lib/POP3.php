@@ -99,6 +99,31 @@ class POP3
 		}
 	}
 
+	public function starttls()
+	{
+		if ( in_array( 'TOP', $this->getCapabilities( 'array' ) ) === false )
+		{
+			throw new Exception( "The server does not support the STLS command." );
+		}
+
+		$this->validateState( self::STATE_AUTHORIZATION, 'STLS' );
+
+		$this->send( "STLS" );
+		$resp = $this->getResponse();
+		
+		if ( $this->isResponseOK( $resp ) !== true )
+		{
+			throw new POP3Exception( "The server returned a negative response to the STLS command: {$resp}." );
+		}
+
+		if ( stream_socket_enable_crypto( $this->conn, true, STREAM_CRYPTO_METHOD_TLS_CLIENT ) == false )
+		{
+			throw new POP3Exception( "The TLS negotiation has failed." );
+		}
+
+		return true;
+	}
+
 	public function authenticate( $username, $password )
 	{
 		$this->validateState( self::STATE_AUTHORIZATION, 'USER' );
