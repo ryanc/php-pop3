@@ -1,4 +1,10 @@
 <?php
+/**
+ * @author Ryan Cavicchioni <ryan@confabulator.net>
+ * @copyright Copyright (c) 2009, Ryan Cavicchioni
+ * @license http://www.opensource.org/licenses/bsd-license.php BSD Licnese
+ */
+
 namespace Mail;
 
 class POP3
