@@ -297,7 +297,7 @@ class POP3
 
 		$this->validateState( self::STATE_TRANSACTION, 'UIDL' );
 	
-		if ( $msgno != null ) {
+		if ( $msgno !== null ) {
 			$this->send( "UIDL {$msgno}" );
 		} else {
 			$this->send( "UIDL" );
