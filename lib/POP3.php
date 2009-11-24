@@ -81,8 +81,7 @@ class POP3
 
 	public function starttls()
 	{
-		if ( in_array( 'TOP', $this->getCapabilities( 'array' ) ) === false )
-			throw new Exception( "The server does not support the STLS command." );
+		$this->isServerCapable( "STLS" );
 
 		$this->validateState( self::STATE_AUTHORIZATION, 'STLS' );
 
@@ -228,8 +227,7 @@ class POP3
 
 	public function top( $msgno, $lines = 0 )
 	{
-		if ( in_array( 'TOP', $this->getCapabilities( 'array' ) ) === false )
-			throw new POP3Exception( "The server does not support the TOP command." );
+		$this->isServerCapable( "TOP" );
 
 		$this->validateState( self::STATE_TRANSACTION, 'TOP' );
 	
@@ -260,8 +258,7 @@ class POP3
 	{
 		// TODO: Return an array of the scan listing.
 		// TODO: UIDL with argument does not work. There is no termination octet.
-		if ( in_array( 'UIDL', $this->getCapabilities( 'array' ) ) === false )
-			throw new POP3Exception( "The server does not support the TOP command." );
+		$this->isServerCapable( "UIDL" );
 
 		$this->validateState( self::STATE_TRANSACTION, 'UIDL' );
 	
@@ -373,6 +370,14 @@ class POP3
 			return "STATE_TRANSACTION";
 		if ( $this->state === self::STATE_UPDATE )
 			return "STATE_UPDATE";
+	}
+
+	public function isServerCapable( $cmd )
+	{
+		if ( in_array( $cmd, $this->getCapabilities( 'array' ) ) === true )
+			return true;
+		else
+			throw new POP3Exception( "The server does not support the {$cmd} command." );
 	}
 
 	public function validateState( $valid_state, $cmd )
