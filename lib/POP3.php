@@ -217,7 +217,6 @@ class POP3
 
 		if ( $this->isResponseOK( $resp ) === false ) {
 			throw new POP3Exception( "The server sent a negative response to the DELE command: {$resp}." );
-			return false;
 		}
 
 		return true;
@@ -232,7 +231,6 @@ class POP3
 
 		if ( $this->isResponseOK( $resp ) === false ) {
 			throw new POP3Exception( "The server sent a negative response to the NOOP command: {$resp}." );
-			return false;
 		}
 
 		return true;
