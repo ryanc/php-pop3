@@ -55,7 +55,7 @@ class POP3
 		$this->state = self::STATE_AUTHORIZATION;
 	}
 
-	public function getCapabilities( $format )
+	public function getServerCapabilities( $format )
 	{
 		$this->validateState( self::STATE_AUTHORIZATION | self:: STATE_TRANSACTION, 'CAPA' );
 
@@ -374,7 +374,7 @@ class POP3
 
 	public function isServerCapable( $cmd )
 	{
-		if ( in_array( $cmd, $this->getCapabilities( 'array' ) ) === true )
+		if ( in_array( $cmd, $this->getServerCapabilities( 'array' ) ) === true )
 			return true;
 		else
 			throw new POP3Exception( "The server does not support the {$cmd} command." );
