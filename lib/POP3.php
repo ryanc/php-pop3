@@ -89,7 +89,7 @@ class POP3
 		return $data;
 	}
 
-	public function starttls()
+	private function starttls()
 	{
 		$this->isServerCapable( "STLS" );
 
