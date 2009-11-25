@@ -31,7 +31,7 @@ class POP3
 		
 	}
 
-	public function connect( $host, $port, $ssl = false, $timeout = 30 )
+	public function connect( $host, $port, $transport = 'tcp', $timeout = 30 )
 	{
 		// TODO: Implement other transports, such as TLS.
 		// Validate arguments.
@@ -44,7 +44,7 @@ class POP3
 		$errstr = null;
 
 		// Check if SSL is enabled.
-		if ( $ssl === true )
+		if ( $transport === 'ssl' )
 			$this->conn = @fsockopen( "ssl://{$host}:{$port}", $errno, $errstr, $timeout );
 		else
 			$this->conn = @fsockopen( "tcp://{$host}:{$port}", $errno, $errstr, $timeout );
@@ -59,6 +59,9 @@ class POP3
 			throw new POP3Exception( "Negative response from the server was received: '{$this->greeting}'." );
 
 		$this->state = self::STATE_AUTHORIZATION;
+
+		if ( $transport === 'tls' )
+			$this->starttls();
 	}
 
 	public function getServerCapabilities( $format )
