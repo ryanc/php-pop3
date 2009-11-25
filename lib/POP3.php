@@ -26,9 +26,9 @@ class POP3
 
 	protected $state = self::STATE_NOT_CONNECTED;
 
-	public function __construct()
+	public function __construct( $host, $port, $transport = 'tcp', $timeout = 30 )
 	{
-		
+		$this->connect( $host, $port, $transport, $timeout );
 	}
 
 	public function connect( $host, $port, $transport = 'tcp', $timeout = 30 )
