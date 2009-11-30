@@ -25,34 +25,52 @@ class POP3
 	private $conn = null;
 	private $greeting = null;
 
+	private $host = null;
+	private $port = null;
+	private $transport = 'tcp';
+	private $timeout = 30;
+
+	private $user = null;
+	private $password = null;
+
 	protected $state = self::STATE_NOT_CONNECTED;
 
 	public function __construct( $host, $port, $transport = 'tcp', $timeout = 30 )
 	{
-		$this->connect( $host, $port, $transport, $timeout );
-	}
-
-	public function connect( $host, $port, $transport = 'tcp', $timeout = 30 )
-	{
-		// TODO: Implement other transports, such as TLS.
-		// Validate arguments.
 		if ( $host === null )
 			throw new POP3Exception( "The hostname is not defined." );
 		if ( $port === null )
 			throw new POP3Exception( "The port is not defined." );
-	
+		if ( $transport === null )
+			throw new POP3Exception( "The transport is not defined." );
+		if ( $timeout === null )
+			throw new POP3Exception( "The timeout is not defined." );
+
+		$this->host = $host;
+		$this->port = $port;
+		$this->transport = $transport;
+		$this->timeout = $timeout;
+
+		$this->state = self::STATE_NOT_CONNECTED;
+	}
+
+	public function connect()
+	{
+		if ( $this->isConnected() === true )
+			throw new POP3Exception( "The connection is already established." );
+
 		$errno = null;
 		$errstr = null;
 
 		// Check if SSL is enabled.
-		if ( $transport === 'ssl' )
-			$this->conn = @fsockopen( "ssl://{$host}:{$port}", $errno, $errstr, $timeout );
+		if ( $this->transport === 'ssl' )
+			$this->conn = @fsockopen( "ssl://{$this->host}:{$this->port}", $errno, $errstr, $timeout );
 		else
-			$this->conn = @fsockopen( "tcp://{$host}:{$port}", $errno, $errstr, $timeout );
+			$this->conn = @fsockopen( "tcp://{$this->host}:{$this->port}", $errno, $errstr, $timeout );
 	
 		// Check if connection was established.
 		if ( $this->isConnected() === false )
-			throw new POP3Exception( "Failed to connect to server: {$host}:{$port}.");
+			throw new POP3Exception( "Failed to connect to server: {$this->host}:{$this->port}.");
 
 		$this->greeting = $this->getResponse();
 
@@ -61,7 +79,7 @@ class POP3
 
 		$this->state = self::STATE_AUTHORIZATION;
 
-		if ( $transport === 'tls' )
+		if ( $this->transport === 'tls' )
 			$this->starttls();
 	}
 
