@@ -58,6 +58,8 @@ class POP3
 	{
 		if ( $this->isConnected() === true )
 			throw new POP3Exception( "The connection is already established." );
+		if ( ( $this->transport === 'ssl' || $this->transport === 'tls' ) && extension_loaded( 'openssl' ) === false )
+			throw new POP3Exception( "PHP does not have the openssl extension loaded." );
 
 		$errno = null;
 		$errstr = null;
