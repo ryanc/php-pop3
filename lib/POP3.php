@@ -148,8 +148,6 @@ class POP3
 
 	public function status()
 	{
-		// TODO: Parse drop listing.
-		
 		$this->validateState( self::STATE_TRANSACTION, 'STAT' );
 
 		$this->send( "STAT" );
@@ -157,8 +155,11 @@ class POP3
 
 		if ( $this->isResponseOK( $resp ) === false )
 			throw new POP3Exception( "The server did not respond with a status message: {$resp}." );
-			
-		return $resp;
+		
+		sscanf( $resp, "+OK %d %d", $msgno, $size );
+		$maildrop = array( 'messages' => (int) $msgno, 'size' => (int) $size );
+
+		return $maildrop;
 	}
 
 	public function listMessages( $msgno = null )
