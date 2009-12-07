@@ -163,7 +163,6 @@ class POP3
 
 	public function listMessages( $msgno = null )
 	{
-		// TODO: Return an array of the scan listing.
 		// TODO: LIST with argument does not work. There is no termination octet.
 	
 		$this->validateState( self::STATE_TRANSACTION, 'LIST' );
@@ -287,7 +286,6 @@ class POP3
 
 	public function uidl( $msgno = null )
 	{
-		// TODO: Return an array of the scan listing.
 		// TODO: UIDL with argument does not work. There is no termination octet.
 		$this->isServerCapable( "UIDL" );
 
