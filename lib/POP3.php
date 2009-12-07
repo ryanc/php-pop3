@@ -183,7 +183,7 @@ class POP3
 				break;
 			
 			list( $msgno, $size ) = explode( ' ', rtrim( $resp ) );
-			$data[$msgno] = $size;
+			$data[(int)$msgno] = (int)$size;
 		}
 
 		return $data;
@@ -306,7 +306,7 @@ class POP3
 			if ( $this->isTerminationOctet( $resp ) === true )
 				break;
 			list( $msgno, $uid ) = explode( ' ', rtrim( $resp ) );
-			$data[$msgno] = $uid;
+			$data[(int)$msgno] = $uid;
 		}
 
 		return $data;
