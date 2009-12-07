@@ -127,6 +127,9 @@ class POP3
 		return true;
 	}
 
+	/**
+	 * @todo Disable insecure authentication.
+	 */
 	public function authenticate( $username, $password )
 	{
 		$this->validateState( self::STATE_AUTHORIZATION, 'USER' );
