@@ -177,6 +177,11 @@ class POP3
 
 		if ( $this->isResponseOK( $resp ) === false )
 			throw new POP3Exception( "The server did not respond with a scan listing: {$resp}." );
+		
+		if ( $msgno !== null ) {
+			sscanf( $resp, "+OK %d %s", $id, $size );
+			return array( 'id' => $id, 'size' => $size );
+		}
 
 		$data = null;
 		while ( $resp = $this->getResponse() ) {
@@ -301,6 +306,11 @@ class POP3
 
 		if ( $this->isResponseOK( $resp ) === false )
 			throw new POP3Exception( "The server did not respond with a scan listing: {$resp}." );
+
+		if ( $msgno !== null ) {
+			sscanf( $resp, "+OK %d %s", $id, $uid );
+			return array( 'id' => (int) $id, 'uid' => $uid );
+		}
 
 		$data = null;
 		while ( $resp = $this->getResponse() ) {
