@@ -182,8 +182,9 @@ class POP3
 		while ( $resp = $this->getResponse() ) {
 			if ( $this->isTerminationOctet( $resp ) === true )
 				break;
-
-			$data .= $resp;
+			
+			list( $msgno, $size ) = explode( ' ', $resp );
+			$data[$msgno] = $size;
 		}
 
 		return $data;
