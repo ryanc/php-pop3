@@ -421,6 +421,3 @@ class POP3
 		$this->close();
 	}
 }
-
-
-class POP3Exception extends \Exception {}
