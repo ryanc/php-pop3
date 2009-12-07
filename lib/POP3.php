@@ -182,7 +182,7 @@ class POP3
 			if ( $this->isTerminationOctet( $resp ) === true )
 				break;
 			
-			list( $msgno, $size ) = explode( ' ', $resp );
+			list( $msgno, $size ) = explode( ' ', rtrim( $resp ) );
 			$data[$msgno] = $size;
 		}
 
@@ -305,7 +305,7 @@ class POP3
 		while ( $resp = $this->getResponse() ) {
 			if ( $this->isTerminationOctet( $resp ) === true )
 				break;
-			list( $msgno, $uid ) = explode( ' ', $resp );
+			list( $msgno, $uid ) = explode( ' ', rtrim( $resp ) );
 			$data[$msgno] = $uid;
 		}
 
