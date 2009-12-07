@@ -22,7 +22,7 @@ class POP3
 	const STATE_TRANSACTION = 2;
 	const STATE_UPDATE = 4;
 
-	private $conn = null;
+	private $socket = null;
 	private $greeting = null;
 
 	private $host = null;
@@ -66,9 +66,9 @@ class POP3
 
 		// Check if SSL is enabled.
 		if ( $this->transport === 'ssl' )
-			$this->conn = @fsockopen( "ssl://{$this->host}:{$this->port}", $errno, $errstr, $timeout );
+			$this->socket = @fsockopen( "ssl://{$this->host}:{$this->port}", $errno, $errstr, $timeout );
 		else
-			$this->conn = @fsockopen( "tcp://{$this->host}:{$this->port}", $errno, $errstr, $timeout );
+			$this->socket = @fsockopen( "tcp://{$this->host}:{$this->port}", $errno, $errstr, $timeout );
 	
 		// Check if connection was established.
 		if ( $this->isConnected() === false )
@@ -121,7 +121,7 @@ class POP3
 		if ( $this->isResponseOK( $resp ) !== true )
 			throw new POP3Exception( "The server returned a negative response to the STLS command: {$resp}." );
 
-		if ( stream_socket_enable_crypto( $this->conn, true, STREAM_CRYPTO_METHOD_TLS_CLIENT ) == false )
+		if ( stream_socket_enable_crypto( $this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT ) == false )
 			throw new POP3Exception( "The TLS negotiation has failed." );
 
 		return true;
@@ -336,15 +336,15 @@ class POP3
 	public function close()
 	{
 		if ( $this->isConnected() ) {
-			fclose( $this->conn );
-			$this->conn = null;
+			fclose( $this->socket );
+			$this->socket = null;
 		}
 	}
 
 	public function send( $data )
 	{
 		if ( $this->isConnected() === true )
-			if ( fwrite( $this->conn, $data . self::CRLF, strlen( $data . self::CRLF ) ) === false )
+			if ( fwrite( $this->socket, $data . self::CRLF, strlen( $data . self::CRLF ) ) === false )
 				throw new POP3Exception( "Failed to write to the socket." );
 	}
 
@@ -355,7 +355,7 @@ class POP3
 			$data = '';
 
 			while( strpos( $data, self::CRLF ) === false ) {
-				$line = fgets( $this->conn, 512 );
+				$line = fgets( $this->socket, 512 );
 
 				if ( $line === false ) {
 					$this->close();
@@ -371,7 +371,7 @@ class POP3
 
 	public function isConnected()
 	{
-		return is_resource( $this->conn );
+		return is_resource( $this->socket );
 	}
 	
 	private function isResponseOK( $resp )
