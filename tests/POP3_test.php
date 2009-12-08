@@ -75,7 +75,7 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->delete(1);
 		$this->assertTrue( $pop3->reset() );
 	}
-		
+
 	function testOfPOP3NOOPCommand()
 	{
 		$pop3 = new POP3( 'localhost', 110, 'tls' );
