@@ -331,8 +331,6 @@ class POP3
 	 */
 	public function listMessages( $msgno = null )
 	{
-		// TODO: LIST with argument does not work. There is no termination octet.
-	
 		$this->validateState( self::STATE_TRANSACTION, 'LIST' );
 
 		if ( $msgno !== null )
@@ -521,7 +519,6 @@ class POP3
 	 */
 	public function uidl( $msgno = null )
 	{
-		// TODO: UIDL with argument does not work. There is no termination octet.
 		$this->isServerCapable( "UIDL" );
 
 		$this->validateState( self::STATE_TRANSACTION, 'UIDL' );
