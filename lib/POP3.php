@@ -224,18 +224,18 @@ class POP3
 		if ( $this->isResponseOK( $resp ) !== true )
 			throw new POP3Exception( "The server returned a negative response to the CAPA command: {$resp}." );
 
-		$data = array();
+		$capabilities = array();
 		while ( $resp = $this->getResponse() ) {
 			if ( $this->isTerminationOctet( $resp ) === true )
 				break;
 
-			$data[] = rtrim( $resp );
+			$capabilities[] = rtrim( $resp );
 		}
 
 		if ( $format === 'raw' )
-			return implode( $data, self::CRLF );
+			return implode( $capabilities, self::CRLF );
 
-		return $data;
+		return $capabilities;
 	}
 
 	/**
@@ -324,17 +324,17 @@ class POP3
 	 * Issues the LIST command to the server and returns a scan
 	 * listing.
 	 *
-	 * @param int $msgno
+	 * @param int $msgid
 	 * @throws POP3Exception
 	 *         if the server did not respond with a scan listing.
 	 * @returns array
 	 */
-	public function listMessages( $msgno = null )
+	public function listMessages( $msgid = null )
 	{
 		$this->validateState( self::STATE_TRANSACTION, 'LIST' );
 
-		if ( $msgno !== null )
-			$this->send( "LIST {$msgno}" );
+		if ( $msgid !== null )
+			$this->send( "LIST {$msgid}" );
 		 else
 			$this->send( "LIST" );
 	
@@ -343,76 +343,76 @@ class POP3
 		if ( $this->isResponseOK( $resp ) === false )
 			throw new POP3Exception( "The server did not respond with a scan listing: {$resp}." );
 		
-		if ( $msgno !== null ) {
+		if ( $msgid !== null ) {
 			sscanf( $resp, "+OK %d %s", $id, $size );
 			return array( 'id' => $id, 'size' => $size );
 		}
 
-		$data = null;
+		$messages = null;
 		while ( $resp = $this->getResponse() ) {
 			if ( $this->isTerminationOctet( $resp ) === true )
 				break;
 			
-			list( $msgno, $size ) = explode( ' ', rtrim( $resp ) );
-			$data[(int)$msgno] = (int)$size;
+			list( $msgid, $size ) = explode( ' ', rtrim( $resp ) );
+			$messages[(int)$msgid] = (int)$size;
 		}
 
-		return $data;
+		return $messages;
 	}
 
 	/**
 	 * Issues the RETR command to the server and returns the contents
 	 * of a message.
 	 *
-	 * @param int $msgno
+	 * @param int $msgid
 	 * @throws POP3Exception
 	 *         if the message id is not defined
 	 *         or if the server returns a negative response to the
 	 *         RETR command.
 	 * @returns string
 	 */
-	public function retrieve( $msgno )
+	public function retrieve( $msgid )
 	{
 		$this->validateState( self::STATE_TRANSACTION, 'RETR' );
 
-		if ( $msgno === null )
+		if ( $msgid === null )
 			throw new POP3Exception( "A message number is required by the RETR command." );
 
-		$this->send( "RETR {$msgno}" );
+		$this->send( "RETR {$msgid}" );
 		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
 			throw new POP3Exception( "The server sent a negative response to the RETR command: {$resp}." );
 
-		$data = null;
+		$message = null;
 		while ( $resp = $this->getResponse() ) {
 			if ( $this->isTerminationOctet( $resp ) === true )
 				break;
 
-			$data .= $resp;
+			$message .= $resp;
 		}
 
-		return $data;
+		return $message;
 	}
 	
 	/**
 	 * Deletes a message from the POP3 server.
 	 *
-	 * @param int $msgno
+	 * @param int $msgid
 	 * @throws POP3Exception
 	 *         if the message id is not defined
 	 *         or if the returns a negative response to the DELE
 	 *         command.
 	 * @returns bool
 	 */
-	public function delete( $msgno )
+	public function delete( $msgid )
 	{
 		$this->validateState( self::STATE_TRANSACTION, 'DELE' );
 
-		if ( $msgno === null )
+		if ( $msgid === null )
 			throw new POP3Exception( "A message number is required by the DELE command." );
 
-		$this->send( "DELE {$msgno}" );
+		$this->send( "DELE {$msgid}" );
 		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
@@ -465,11 +465,11 @@ class POP3
 	}
 	
 	/**
-	 * Returns the headers of $msgno if $lines is not given. If $lines
+	 * Returns the headers of $msgid if $lines is not given. If $lines
 	 * if given, the POP3 server will respond with the headers and
 	 * then the specified number of lines from the message's body.
 	 *
-	 * @param int $msgno
+	 * @param int $msgid
 	 * @param int $lines
 	 * @throws POP3Exception
 	 *         if the message id is not defined
@@ -478,53 +478,53 @@ class POP3
 	 *         command.
 	 * @returns string
 	 */
-	public function top( $msgno, $lines = 0 )
+	public function top( $msgid, $lines = 0 )
 	{
 		$this->isServerCapable( "TOP" );
 
 		$this->validateState( self::STATE_TRANSACTION, 'TOP' );
 	
-		if ( $msgno === null )
+		if ( $msgid === null )
 			throw new POP3Exception( "A message number is required by the TOP command." );
 
 		if ( $lines === null )
 			throw new POP3Exception( "A number of lines is required by the TOP command." );
 
-		$this->send( "TOP {$msgno} {$lines}" );
+		$this->send( "TOP {$msgid} {$lines}" );
 		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
 			throw new POP3Exception( "The server sent a negative response to the TOP command: {$resp}." );
 
-		$data = null;
+		$message = null;
 		while ( $resp = $this->getResponse() ) {
 			if ( $this->isTerminationOctet( $resp ) === true )
 				break;
 
-			$data .= $resp;
+			$message .= $resp;
 		}
 
-		return $data;
+		return $message;
 	}
 	
 	/**
 	 * Issues the UIDL command to the server and returns a unique-id
 	 * listing.
 	 *
-	 * @param int $msgno
+	 * @param int $msgid
 	 * @throws POP3Exception
 	 *         if the server returns a negative response to the UIDL
 	 *         command.
 	 * @returns array
 	 */
-	public function uidl( $msgno = null )
+	public function uidl( $msgid = null )
 	{
 		$this->isServerCapable( "UIDL" );
 
 		$this->validateState( self::STATE_TRANSACTION, 'UIDL' );
 	
-		if ( $msgno !== null )
-			$this->send( "UIDL {$msgno}" );
+		if ( $msgid !== null )
+			$this->send( "UIDL {$msgid}" );
 		else
 			$this->send( "UIDL" );
 	
@@ -533,20 +533,20 @@ class POP3
 		if ( $this->isResponseOK( $resp ) === false )
 			throw new POP3Exception( "The server did not respond with a scan listing: {$resp}." );
 
-		if ( $msgno !== null ) {
+		if ( $msgid !== null ) {
 			sscanf( $resp, "+OK %d %s", $id, $uid );
 			return array( 'id' => (int) $id, 'uid' => $uid );
 		}
 
-		$data = null;
+		$unique_id = null;
 		while ( $resp = $this->getResponse() ) {
 			if ( $this->isTerminationOctet( $resp ) === true )
 				break;
-			list( $msgno, $uid ) = explode( ' ', rtrim( $resp ) );
-			$data[(int)$msgno] = $uid;
+			list( $msgid, $uid ) = explode( ' ', rtrim( $resp ) );
+			$unique_id[(int)$msgid] = $uid;
 		}
 
-		return $data;
+		return $unique_id;
 	}
 
 	/**
@@ -605,27 +605,27 @@ class POP3
 	 * Get the response from the POP3 server.
 	 *
 	 * @throws POP3Exception
-	 *         if PHP failed to read data from the socket.
+	 *         if PHP failed to read resp from the socket.
 	 * @returns string
 	 */
 	private function getResponse()
 	{
 		if ( $this->isConnected() === true ) {
 			$line = '';
-			$data = '';
+			$resp = '';
 
-			while( strpos( $data, self::CRLF ) === false ) {
+			while( strpos( $resp, self::CRLF ) === false ) {
 				$line = fgets( $this->socket, 512 );
 
 				if ( $line === false ) {
 					$this->close();
-					throw new POP3Exception( "Failed to read data from the socket." );
+					throw new POP3Exception( "Failed to read resp from the socket." );
 				}
 
-				$data .= $line;
+				$resp .= $line;
 			}
 
-			return $data;
+			return $resp;
 		}
 	}
 	
