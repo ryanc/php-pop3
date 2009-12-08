@@ -496,7 +496,7 @@ class POP3
 		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
-			throw new POP3Exception( "The server sent a negative response to the RETR command: {$resp}." );
+			throw new POP3Exception( "The server sent a negative response to the TOP command: {$resp}." );
 
 		$data = null;
 		while ( $resp = $this->getResponse() ) {
