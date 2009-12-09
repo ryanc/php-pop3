@@ -158,7 +158,7 @@ class POP3 extends Connection
 		$resp = $this->getResponse();
 		
 		if ( $this->isResponseOK( $resp ) !== true )
-			throw new POP3Exception( "The server returned a negative response to the STLS command: {$resp}." );
+			throw new POP3Exception( "The server returned a negative response to the STLS command: {$resp}" );
 
 		parent::starttls();
 
@@ -209,7 +209,7 @@ class POP3 extends Connection
 		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
-			throw new POP3Exception( "The server did not respond with a status message: {$resp}." );
+			throw new POP3Exception( "The server did not respond with a status message: {$resp}" );
 		
 		sscanf( $resp, "+OK %d %d", $msgno, $size );
 		$maildrop = array( 'messages' => (int) $msgno, 'size' => (int) $size );
@@ -238,7 +238,7 @@ class POP3 extends Connection
 		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
-			throw new POP3Exception( "The server did not respond with a scan listing: {$resp}." );
+			throw new POP3Exception( "The server did not respond with a scan listing: {$resp}" );
 		
 		if ( $msgid !== null ) {
 			sscanf( $resp, "+OK %d %s", $id, $size );
@@ -279,7 +279,7 @@ class POP3 extends Connection
 		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
-			throw new POP3Exception( "The server sent a negative response to the RETR command: {$resp}." );
+			throw new POP3Exception( "The server sent a negative response to the RETR command: {$resp}" );
 
 		$message = null;
 		while ( $resp = $this->getResponse() ) {
@@ -313,7 +313,7 @@ class POP3 extends Connection
 		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
-			throw new POP3Exception( "The server sent a negative response to the DELE command: {$resp}." );
+			throw new POP3Exception( "The server sent a negative response to the DELE command: {$resp}" );
 
 		return true;
 	}
@@ -335,7 +335,7 @@ class POP3 extends Connection
 		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
-			throw new POP3Exception( "The server sent a negative response to the NOOP command: {$resp}." );
+			throw new POP3Exception( "The server sent a negative response to the NOOP command: {$resp}" );
 
 		return true;
 	}
@@ -356,7 +356,7 @@ class POP3 extends Connection
 		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
-			throw new POP3Exception( "The server sent a negative response to the RSET command: {$resp}." );
+			throw new POP3Exception( "The server sent a negative response to the RSET command: {$resp}" );
 
 		return true;
 	}
@@ -391,7 +391,7 @@ class POP3 extends Connection
 		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
-			throw new POP3Exception( "The server sent a negative response to the TOP command: {$resp}." );
+			throw new POP3Exception( "The server sent a negative response to the TOP command: {$resp}" );
 
 		$message = null;
 		while ( $resp = $this->getResponse() ) {
@@ -428,7 +428,7 @@ class POP3 extends Connection
 		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
-			throw new POP3Exception( "The server did not respond with a scan listing: {$resp}." );
+			throw new POP3Exception( "The server did not respond with a scan listing: {$resp}" );
 
 		if ( $msgid !== null ) {
 			sscanf( $resp, "+OK %d %s", $id, $uid );
@@ -465,7 +465,7 @@ class POP3 extends Connection
 		$resp = $this->getResponse();
 
 		if ( $this->isResponseOK( $resp ) === false )
-			throw new POP3Exception( "The server sent a negative response to the QUIT command: {$resp}." );
+			throw new POP3Exception( "The server sent a negative response to the QUIT command: {$resp}" );
 
 		$this->close();
 		$this->state = self::STATE_NOT_CONNECTED;
