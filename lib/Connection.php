@@ -136,7 +136,7 @@ abstract class Connection
 	 *         if PHP failed to read resp from the socket.
 	 * @returns string
 	 */
-	protected function getResponse()
+	protected function getResponse( $trim = false )
 	{
 		if ( $this->isConnected() === true ) {
 			$buf = '';
@@ -153,7 +153,10 @@ abstract class Connection
 				$resp .= $buf;
 			}
 
-			return $resp;
+			if ( $trim === false )
+				return $resp;
+			else
+				return rtrim( $resp, self::CRLF );
 		}
 	}
 

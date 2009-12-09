@@ -179,16 +179,16 @@ class POP3 extends Connection
 		$this->validateState( self::STATE_AUTHORIZATION, 'USER' );
 
 		$this->send( "USER {$username}" );
-		$resp = $this->getResponse();
+		$resp = $this->getResponse( true );
 
 		if ( $this->isResponseOK( $resp ) === false )
-			throw new POP3Exception( "The username is not valid: {$resp}." );
+			throw new POP3Exception( "The username is not valid: {$resp}" );
 
 		$this->send( "PASS {$password}" );
-		$resp = $this->getResponse();
+		$resp = $this->getResponse( true );
 
 		if ( $this->isResponseOK( $resp ) === false )
-			throw new POP3Exception(" The password is not valid: {$resp}." );
+			throw new POP3Exception(" The password is not valid: {$resp}" );
 
 		$this->state = self::STATE_TRANSACTION;
 	}
