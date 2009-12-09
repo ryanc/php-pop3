@@ -139,18 +139,18 @@ abstract class Connection
 	protected function getResponse()
 	{
 		if ( $this->isConnected() === true ) {
-			$line = '';
+			$buf = '';
 			$resp = '';
 
 			while( strpos( $resp, self::CRLF ) === false ) {
-				$line = fgets( $this->socket, 512 );
+				$buf = fgets( $this->socket, 512 );
 
-				if ( $line === false ) {
+				if ( $buf === false ) {
 					$this->close();
 					throw new ConnectionException( "Failed to read resp from the socket." );
 				}
 
-				$resp .= $line;
+				$resp .= $buf;
 			}
 
 			return $resp;
