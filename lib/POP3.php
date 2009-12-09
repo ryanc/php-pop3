@@ -6,19 +6,16 @@
  * @todo Document the class.
  */
 
-namespace Mail;
+namespace Mail\Protocol;
+use Mail\Connection;
 
 /**
  * The class POP3 can be used to access POP3 servers.
  *
  * @package POP3
  */
-class POP3
+class POP3 extends Connection
 {
-	/**
-	 * The CRLF sequence to send to the server after a command.
-	 */
-	const CRLF = "\r\n";
 
 	/**
 	 * The termination octet marks the end of a multiline response.
@@ -63,54 +60,6 @@ class POP3
 	const STATE_UPDATE = 4;
 
 	/**
-	 * The socket connection to the server.
-	 *
-	 * @var resource
-	 * @access private
-	 */
-	private $socket = null;
-
-	/**
-	 * The greeting message from the server.
-	 *
-	 * @var string
-	 * @access private
-	 */
-	private $greeting = null;
-
-	/**
-	 * The host name or IP address of the POP3 server.
-	 *
-	 * @var string
-	 * @access private
-	 */
-	private $host = null;
-
-	/**
-	 * The port of the POP3 server.
-	 *
-	 * @var int
-	 * @access private
-	 */
-	private $port = null;
-
-	/**
-	 * The transport method for the socket connection.
-	 *
-	 * @var string
-	 * @access private
-	 */
-	private $transport = 'tcp';
-
-	/**
-	 * The timeout in seconds for the socket.
-	 *
-	 * @var int
-	 * @access private
-	 */
-	private $timeout = 30;
-
-	/**
 	 * The username used to authenticate with the POP3 server.
 	 *
 	 * @var string
@@ -138,36 +87,6 @@ class POP3
 	protected $state = self::STATE_NOT_CONNECTED;
 
 	/**
-	 * Public constructor.
-	 *
-	 * @param string $host
-	 * @param string $port
-	 * @param string transport
-	 * @param int $timeout
-	 * @throws POP3Exception
-	 *         if the hostname, port, transport or timeout is not
-	 *         defined.
-	 */
-	public function __construct( $host, $port, $transport = 'tcp', $timeout = 30 )
-	{
-		if ( $host === null )
-			throw new POP3Exception( "The hostname is not defined." );
-		if ( $port === null )
-			throw new POP3Exception( "The port is not defined." );
-		if ( $transport === null )
-			throw new POP3Exception( "The transport is not defined." );
-		if ( $timeout === null )
-			throw new POP3Exception( "The timeout is not defined." );
-
-		$this->host = $host;
-		$this->port = $port;
-		$this->transport = $transport;
-		$this->timeout = $timeout;
-
-		$this->state = self::STATE_NOT_CONNECTED;
-	}
-
-	/**
 	 * Connect to the POP3 server.
 	 *
 	 * @throws POP3Exception
@@ -179,28 +98,7 @@ class POP3
 	 */
 	public function connect()
 	{
-		if ( $this->isConnected() === true )
-			throw new POP3Exception( "The connection is already established." );
-		if ( ( $this->transport === 'ssl' || $this->transport === 'tls' ) && extension_loaded( 'openssl' ) === false )
-			throw new POP3Exception( "PHP does not have the openssl extension loaded." );
-
-		$errno = null;
-		$errstr = null;
-
-		// Check if SSL is enabled.
-		if ( $this->transport === 'ssl' )
-			$this->socket = @fsockopen( "ssl://{$this->host}:{$this->port}", $errno, $errstr, $timeout );
-		else
-			$this->socket = @fsockopen( "tcp://{$this->host}:{$this->port}", $errno, $errstr, $timeout );
-	
-		// Check if connection was established.
-		if ( $this->isConnected() === false )
-			throw new POP3Exception( "Failed to connect to server: {$this->host}:{$this->port}.");
-
-		$this->greeting = $this->getResponse();
-
-		if ( $this->isResponseOK( $this->greeting ) === false )
-			throw new POP3Exception( "Negative response from the server was received: '{$this->greeting}'." );
+		parent::connect();
 
 		$this->state = self::STATE_AUTHORIZATION;
 
@@ -250,7 +148,7 @@ class POP3
 	 *         or if the TLS negotiation has failed.
 	 * @returns bool
 	 */
-	private function starttls()
+	protected function starttls()
 	{
 		$this->isServerCapable( "STLS" );
 
@@ -262,8 +160,7 @@ class POP3
 		if ( $this->isResponseOK( $resp ) !== true )
 			throw new POP3Exception( "The server returned a negative response to the STLS command: {$resp}." );
 
-		if ( stream_socket_enable_crypto( $this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT ) == false )
-			throw new POP3Exception( "The TLS negotiation has failed." );
+		parent::starttls();
 
 		return true;
 	}
@@ -577,75 +474,13 @@ class POP3
 	}
 	
 	/**
-	 * Closes the connection to the POP3 server.
-	 */
-	public function close()
-	{
-		if ( $this->isConnected() ) {
-			fclose( $this->socket );
-			$this->socket = null;
-		}
-	}
-	
-	/**
-	 * Sends a request the POP3 server.
-	 *
-	 * @param string $data
-	 * @throws POPException
-	 *         if PHP failed to write to the socket.
-	 */
-	public function send( $data )
-	{
-		if ( $this->isConnected() === true )
-			if ( fwrite( $this->socket, $data . self::CRLF, strlen( $data . self::CRLF ) ) === false )
-				throw new POP3Exception( "Failed to write to the socket." );
-	}
-	
-	/**
-	 * Get the response from the POP3 server.
-	 *
-	 * @throws POP3Exception
-	 *         if PHP failed to read resp from the socket.
-	 * @returns string
-	 */
-	private function getResponse()
-	{
-		if ( $this->isConnected() === true ) {
-			$line = '';
-			$resp = '';
-
-			while( strpos( $resp, self::CRLF ) === false ) {
-				$line = fgets( $this->socket, 512 );
-
-				if ( $line === false ) {
-					$this->close();
-					throw new POP3Exception( "Failed to read resp from the socket." );
-				}
-
-				$resp .= $line;
-			}
-
-			return $resp;
-		}
-	}
-	
-	/**
-	 * Returns true if connected to the POP3 server.
-	 * @returns bool
-	 */
-	public function isConnected()
-	{
-		return is_resource( $this->socket );
-	}
-	
-	/**
 	 * Determines if the server issued a positive or negative
 	 * response.
 	 *
 	 * @param string $resp
 	 * @returns bool
 	 */
-	private function isResponseOK( $resp )
+	protected function isResponseOK( $resp )
 	{
 		if ( strpos( $resp, self::RESP_OK ) === 0 )
 			return true;
@@ -712,15 +547,5 @@ class POP3
 	{
 		if ( ( $valid_state & $this->state ) == 0 )
 			throw new POP3Exception( "This {$cmd} command is invalid for the current state: {$this->getCurrentStateName()}." );
-	}
-
-	/**
-	 * Public destructor.
-	 * 
-	 * Closes the connection to the POP3 server.
-	 */
-	public function __destruct()
-	{
-		$this->close();
 	}
 }
