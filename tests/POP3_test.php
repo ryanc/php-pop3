@@ -40,6 +40,7 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertIsA( $pop3->getServerCapabilities( 'raw' ), 'string' );
 		$this->assertIsA( $pop3->getServerCapabilities( 'array' ), 'array' );
+		$pop3->close();
 	}
 
 	function testOfPOP3STATCommand()
@@ -48,6 +49,7 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertIsA( $pop3->status(), 'array' );
+		$pop3->close();
 	}
 
 	function testOfPOP3LISTCommand()
@@ -57,6 +59,7 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertIsA( $pop3->listMessages(), 'array' );
 		$this->assertIsA( $pop3->listMessages(1), 'array' );
+		$pop3->close();
 	}
 
 	function testOfPOP3RETRCommand()
@@ -65,6 +68,7 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertIsA( $pop3->retrieve(1), 'string' );
+		$pop3->close();
 	}
 
 	function testOfDELECommand()
@@ -74,6 +78,7 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertTrue( $pop3->delete(1) );
 		$pop3->reset();
+		$pop3->close();
 	}
 
 	function testOfRSETCommand()
@@ -83,6 +88,7 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$pop3->delete(1);
 		$this->assertTrue( $pop3->reset() );
+		$pop3->close();
 	}
 
 	function testOfPOP3NOOPCommand()
@@ -91,6 +97,7 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertTrue( $pop3->noop() );
+		$pop3->close();
 	}
 
 	function testOfPOP3TOPCommand()
@@ -99,6 +106,7 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertIsA( $pop3->top(1), 'string' );
+		$pop3->close();
 	}
 
 	function testOfPOP3UIDLCommand()
@@ -108,6 +116,7 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertIsA( $pop3->uidl(), 'array' );
 		$this->assertIsA( $pop3->uidl(1), 'array' );
+		$pop3->close();
 	}
 
 	function testOfPOP3QUITCommand()
@@ -116,6 +125,7 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertTrue( $pop3->quit() );
+		$pop3->close();
 	}
 }
 ?>
