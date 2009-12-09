@@ -164,7 +164,7 @@ abstract class Connection
 	 * Sends a request the POP3 server.
 	 *
 	 * @param string $data
-	 * @throws POPException
+	 * @throws ConnectionException
 	 *         if PHP failed to write to the socket.
 	 */
 	public function send( $data )
