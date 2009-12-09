@@ -188,7 +188,7 @@ class POP3 extends Connection
 		$resp = $this->getResponse( true );
 
 		if ( $this->isResponseOK( $resp ) === false )
-			throw new POP3Exception(" The password is not valid: {$resp}" );
+			throw new POP3Exception( "The password is not valid: {$resp}" );
 
 		$this->state = self::STATE_TRANSACTION;
 	}
