@@ -1,9 +1,10 @@
 <?php
 require_once('simpletest/autorun.php');
+require_once('../lib/Connection.php');
 require_once('../lib/POP3.php');
 require_once('../lib/Exception.php');
 
-use Mail\POP3;
+use Mail\Protocol\POP3;
 
 class TestOfPOP3 extends UnitTestCase
 {
@@ -13,6 +14,13 @@ class TestOfPOP3 extends UnitTestCase
 		$this->assertFalse( $pop3->isConnected() );
 		$pop3->connect();
 		$this->assertTrue( $pop3->isConnected() );
+		$pop3->close();
+
+		$pop3 = new POP3( 'localhost', 110, 'tcp' );
+		$this->assertFalse( $pop3->isConnected() );
+		$pop3->connect();
+		$this->assertTrue( $pop3->isConnected() );
+		$pop3->close();
 	}
 
 	function testOfPOP3Authentication()
@@ -20,6 +28,7 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3 = new POP3( 'localhost', 110, 'tls' );
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
+		$pop3->close();
 	}
 
 	function testOfPOP3CAPACommand()
