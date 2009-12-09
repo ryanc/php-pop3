@@ -109,7 +109,7 @@ abstract class Connection
 			$this->socket = @fsockopen( "ssl://{$this->host}:{$this->port}", $errno, $errstr, $timeout );
 		else
 			$this->socket = @fsockopen( "tcp://{$this->host}:{$this->port}", $errno, $errstr, $timeout );
-	
+
 		// Check if connection was established.
 		if ( $this->isConnected() === false )
 			throw new ConnectionException( "Failed to connect to server: {$this->host}:{$this->port}.");
