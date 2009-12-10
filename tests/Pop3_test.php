@@ -1,41 +1,41 @@
 <?php
 require_once('../lib/Connection.php');
-require_once('../lib/POP3.php');
+require_once('../lib/Pop3.php');
 require_once('../lib/Exception.php');
 
-use Mail\Protocol\POP3;
+use Mail\Protocol\Pop3;
 
-class TestOfPOP3 extends UnitTestCase
+class TestOfPop3 extends UnitTestCase
 {
-	function testOfPOP3TCPConnection()
+	function testOfPop3TCPConnection()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tcp' );
+		$pop3 = new Pop3( 'localhost', 110, 'tcp' );
 		$this->assertFalse( $pop3->isConnected() );
 		$pop3->connect();
 		$this->assertTrue( $pop3->isConnected() );
 		$pop3->close();
 	}
 
-	function testOfPOP3TLSConnection()
+	function testOfPop3TLSConnection()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tls' );
+		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$this->assertFalse( $pop3->isConnected() );
 		$pop3->connect();
 		$this->assertTrue( $pop3->isConnected() );
 		$pop3->close();
 	}
 
-	function testOfPOP3Authentication()
+	function testOfPop3Authentication()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tls' );
+		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$pop3->close();
 	}
 
-	function testOfPOP3CAPACommand()
+	function testOfPop3CAPACommand()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tls' );
+		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
 		$this->assertIsA( $pop3->getServerCapabilities( 'raw' ), 'string' );
 		$this->assertIsA( $pop3->getServerCapabilities( 'array' ), 'array' );
@@ -45,18 +45,18 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->close();
 	}
 
-	function testOfPOP3STATCommand()
+	function testOfPop3STATCommand()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tls' );
+		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertIsA( $pop3->status(), 'array' );
 		$pop3->close();
 	}
 
-	function testOfPOP3LISTCommand()
+	function testOfPop3LISTCommand()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tls' );
+		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertIsA( $pop3->listMessages(), 'array' );
@@ -64,9 +64,9 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->close();
 	}
 
-	function testOfPOP3RETRCommand()
+	function testOfPop3RETRCommand()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tls' );
+		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertIsA( $pop3->retrieve(1), 'string' );
@@ -75,7 +75,7 @@ class TestOfPOP3 extends UnitTestCase
 
 	function testOfDELECommand()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tls' );
+		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertTrue( $pop3->delete(1) );
@@ -85,7 +85,7 @@ class TestOfPOP3 extends UnitTestCase
 
 	function testOfRSETCommand()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tls' );
+		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$pop3->delete(1);
@@ -93,27 +93,27 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->close();
 	}
 
-	function testOfPOP3NOOPCommand()
+	function testOfPop3NOOPCommand()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tls' );
+		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertTrue( $pop3->noop() );
 		$pop3->close();
 	}
 
-	function testOfPOP3TOPCommand()
+	function testOfPop3TOPCommand()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tls' );
+		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertIsA( $pop3->top(1), 'string' );
 		$pop3->close();
 	}
 
-	function testOfPOP3UIDLCommand()
+	function testOfPop3UIDLCommand()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tls' );
+		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertIsA( $pop3->uidl(), 'array' );
@@ -121,9 +121,9 @@ class TestOfPOP3 extends UnitTestCase
 		$pop3->close();
 	}
 
-	function testOfPOP3QUITCommand()
+	function testOfPop3QUITCommand()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tls' );
+		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
 		$this->assertTrue( $pop3->quit() );
