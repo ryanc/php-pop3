@@ -1,5 +1,4 @@
 <?php
-require_once('simpletest/autorun.php');
 require_once('../lib/Connection.php');
 require_once('../lib/POP3.php');
 require_once('../lib/Exception.php');
