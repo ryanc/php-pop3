@@ -8,15 +8,18 @@ use Mail\Protocol\POP3;
 
 class TestOfPOP3 extends UnitTestCase
 {
-	function testOfPOP3Connection()
+	function testOfPOP3TCPConnection()
 	{
-		$pop3 = new POP3( 'localhost', 110, 'tls' );
+		$pop3 = new POP3( 'localhost', 110, 'tcp' );
 		$this->assertFalse( $pop3->isConnected() );
 		$pop3->connect();
 		$this->assertTrue( $pop3->isConnected() );
 		$pop3->close();
+	}
 
-		$pop3 = new POP3( 'localhost', 110, 'tcp' );
+	function testOfPOP3TLSConnection()
+	{
+		$pop3 = new POP3( 'localhost', 110, 'tls' );
 		$this->assertFalse( $pop3->isConnected() );
 		$pop3->connect();
 		$this->assertTrue( $pop3->isConnected() );
