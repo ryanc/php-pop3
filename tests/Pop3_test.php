@@ -1,7 +1,5 @@
 <?php
-require_once('../lib/Connection.php');
 require_once('../lib/Pop3.php');
-require_once('../lib/Exception.php');
 
 use Mail\Protocol\Pop3;
 
