@@ -489,6 +489,17 @@ class Pop3 extends Connection
 	}
 	
 	/**
+	 * Determine if the server greeting is positive or negative.
+	 *
+	 * @param string $resp
+	 * @returns bool
+	 */
+	protected function isGreetingOK( $resp )
+	{
+		return $this->isResponseOK( $resp );
+	}
+
+	/**
 	 * Determine if a multiline response contains the termination
 	 * octet.
 	 *

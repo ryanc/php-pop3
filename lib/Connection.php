@@ -116,7 +116,7 @@ abstract class Connection
 
 		$this->greeting = $this->getResponse();
 
-		if ( $this->isResponseOK( $this->greeting ) === false )
+		if ( $this->isGreetingOK( $this->greeting ) === false )
 			throw new ConnectionException( "Negative response from the server was received: '{$this->greeting}'" );
 	}
 
