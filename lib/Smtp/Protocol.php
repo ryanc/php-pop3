@@ -52,6 +52,12 @@ class Smtp extends Connection
 
 	protected function isResponseOK( $resp, $expect )
 	{
+		if ( is_array( $expect ) === true ) {
+			$code = substr( $resp, 0, 3);
+			if ( in_array( (int) $code, $expect ) === true )
+				return true;
+		}
+
 		if ( strpos( $resp, (string) $expect ) === 0 )
 			return true;
 
@@ -102,7 +108,7 @@ class Smtp extends Connection
 		$this->send( "RCPT TO: <{$to}>" );
 		$resp = $this->getResponse( true );
 
-		if ( $this->isResponseOK( $resp, 250 ) === false )
+		if ( $this->isResponseOK( $resp, array( 250, 251 ) ) === false )
 			throw new SmtpException( "The server returned a negative response to the RCPT command: {$resp}" );
 
 		return true;
