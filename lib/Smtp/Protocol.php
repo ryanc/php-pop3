@@ -9,6 +9,9 @@ class Smtp extends Connection
 	const STATE_CONNECTED = 1;
 	const STATE_AUTHENTICATED = 2;
 
+	private $username = null;
+	private $password = null;
+
 	public function connect()
 	{
 		parent::connect();
@@ -30,16 +33,54 @@ class Smtp extends Connection
 		return true;
 	}
 
-	public function authenticate( $username, $password )
+	public function authenticate( $username, $password, $method = 'PLAIN' )
+	{
+		$this->username = $username;
+		$this->password = $password;
+
+		if ( $method === 'PLAIN' )
+			$status = $this->authPlain();
+		elseif ( $method === 'LOGIN' )
+			$status = $this->authLogin();
+
+		return $status;
+	}
+
+	private function authPlain()
 	{
 		// Validate session state.
-		$auth_string = base64_encode( "\0{$username}\0{$password}" );
+		$auth_string = base64_encode( "\0{$this->username}\0{$this->password}" );
 
 		$this->send( "AUTH PLAIN {$auth_string}" );
 		$resp = $this->getResponse( true );
 
 		if ( $this->isResponseOK( $resp, 235 ) === false )
 			throw new SmtpException( "Authentication failed: ${resp}" );
+
+		return true;
+	}
+
+	private function authLogin()
+	{
+		$this->send( "AUTH LOGIN" );
+		$resp = $this->getResponse( true );
+
+		if ( $this->isResponseOK( $resp, 334 ) === false )
+			throw new SmtpException( "The server returned a negative response to the AUTH LOGIN command: {$resp}" );
+
+		$this->send( base64_encode( $this->username ) );
+		$resp = $this->getResponse( true );
+
+		if ( $this->isResponseOK( $resp, 334 ) === false )
+			throw new SmtpException( "The server did not accept the username: {$resp}" );
+
+		$this->send( base64_encode( $this->password ) );
+		$resp = $this->getResponse( true );
+
+		if ( $this->isResponseOK( $resp, 235 ) === false )
+			throw new SmtpException( "The server did not accept the password: {$resp}" );
+
+		return true;
 	}
 
 	protected function isGreetingOK( $resp )

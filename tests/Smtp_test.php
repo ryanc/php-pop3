@@ -32,12 +32,30 @@ class TestOfSmtp extends UnitTestCase
 		$smtp->close();
 	}
 
-	function testOfSmtpAuthentication()
+	function testOfSmtpAuthPlain()
 	{
 		$smtp = new Smtp( 'localhost', 587, 'tls' );
 		$smtp->connect();
 		$smtp->helo( 'localhost' );
-		$smtp->authenticate( 'poptest', 'foobar12' );
+		$this->assertTrue( $smtp->authenticate( 'poptest', 'foobar12', 'PLAIN' ) );
+		$smtp->close();
+
+		$smtp->connect();
+		$smtp->helo( 'localhost' );
+		try {
+			$smtp->authenticate( 'wrong', 'wrong' );
+		} catch ( SmtpException $e ) {
+			$this->pass();
+		}
+		$smtp->close();
+	}
+
+	function testOfSmtpAuthLogin()
+	{
+		$smtp = new Smtp( 'localhost', 587, 'tls' );
+		$smtp->connect();
+		$smtp->helo( 'localhost' );
+		$this->assertTrue( $smtp->authenticate( 'poptest', 'foobar12', 'LOGIN' ) );
 		$smtp->close();
 
 		$smtp->connect();
