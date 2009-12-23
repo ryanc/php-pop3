@@ -36,7 +36,7 @@ class TestOfSmtp extends UnitTestCase
 		$smtp = new Smtp( 'localhost', 587, 'tls' );
 		$smtp->connect();
 		$smtp->helo( 'localhost' );
-		$this->assertTrue( $smtp->authenticate( 'poptest', 'foobar12', 'PLAIN' ) );
+		$this->assertTrue( $smtp->authenticate( 'poptest', 'foobar12', 'plain' ) );
 		$smtp->close();
 
 		$smtp->connect();
@@ -54,7 +54,7 @@ class TestOfSmtp extends UnitTestCase
 		$smtp = new Smtp( 'localhost', 587, 'tls' );
 		$smtp->connect();
 		$smtp->helo( 'localhost' );
-		$this->assertTrue( $smtp->authenticate( 'poptest', 'foobar12', 'LOGIN' ) );
+		$this->assertTrue( $smtp->authenticate( 'poptest', 'foobar12', 'login' ) );
 		$smtp->close();
 
 		$smtp->connect();

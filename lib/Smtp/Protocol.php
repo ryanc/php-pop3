@@ -33,14 +33,14 @@ class Smtp extends Connection
 		return true;
 	}
 
-	public function authenticate( $username, $password, $method = 'PLAIN' )
+	public function authenticate( $username, $password, $method = 'plain' )
 	{
 		$this->username = $username;
 		$this->password = $password;
 
-		if ( $method === 'PLAIN' )
+		if ( strtolower( $method ) === 'plain' )
 			$status = $this->authPlain();
-		elseif ( $method === 'LOGIN' )
+		elseif ( strtolower( $method ) === 'login' )
 			$status = $this->authLogin();
 
 		return $status;
