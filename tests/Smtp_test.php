@@ -15,6 +15,24 @@ class TestOfSmtp extends UnitTestCase
 		$smtp->close();
 	}
 
+	function testOfSmtpTLSConnection()
+	{
+		$smtp = new Smtp( 'localhost', 587, 'tls' );
+		$this->assertFalse( $smtp->isConnected() );
+		$smtp->connect();
+		$this->assertTrue( $smtp->isConnected() );
+		$smtp->close();
+	}
+
+	function testOfSmtpSSLConnection()
+	{
+		$smtp = new Smtp( 'localhost', 465, 'ssl' );
+		$this->assertFalse( $smtp->isConnected() );
+		$smtp->connect();
+		$this->assertTrue( $smtp->isConnected() );
+		$smtp->close();
+	}
+
 	function testOfHeloCommand()
 	{
 		$smtp = new Smtp( 'localhost', 25, 'tcp' );
