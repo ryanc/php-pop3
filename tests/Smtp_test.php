@@ -12,6 +12,7 @@ class TestOfSmtp extends UnitTestCase
 		$this->assertFalse( $smtp->isConnected() );
 		$smtp->connect();
 		$this->assertTrue( $smtp->isConnected() );
+		$this->assertTrue( $smtp->noop() );
 		$smtp->close();
 	}
 
@@ -21,6 +22,7 @@ class TestOfSmtp extends UnitTestCase
 		$this->assertFalse( $smtp->isConnected() );
 		$smtp->connect();
 		$this->assertTrue( $smtp->isConnected() );
+		$this->assertTrue( $smtp->noop() );
 		$smtp->close();
 	}
 
@@ -30,6 +32,7 @@ class TestOfSmtp extends UnitTestCase
 		$this->assertFalse( $smtp->isConnected() );
 		$smtp->connect();
 		$this->assertTrue( $smtp->isConnected() );
+		$this->assertTrue( $smtp->noop() );
 		$smtp->close();
 	}
 
