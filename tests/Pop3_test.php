@@ -14,6 +14,15 @@ class TestOfPop3 extends UnitTestCase
 		$pop3->close();
 	}
 
+	function testOfPop3SSLConnection()
+	{
+		$pop3 = new Pop3( 'localhost', 995, 'ssl' );
+		$this->assertFalse( $pop3->isConnected() );
+		$pop3->connect();
+		$this->assertTrue( $pop3->isConnected() );
+		$pop3->close();
+	}
+
 	function testOfPop3TLSConnection()
 	{
 		$pop3 = new Pop3( 'localhost', 110, 'tls' );
