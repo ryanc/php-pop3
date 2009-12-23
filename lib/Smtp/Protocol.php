@@ -42,6 +42,8 @@ class Smtp extends Connection
 			$status = $this->authPlain();
 		elseif ( strtolower( $method ) === 'login' )
 			$status = $this->authLogin();
+		else
+			throw new SmtpException( "Invalid authentication method." );
 
 		return $status;
 	}
