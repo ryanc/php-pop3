@@ -114,7 +114,7 @@ class Pop3 extends Connection
 	 */
 	public function getServerCapabilities( $format )
 	{
-		$this->_validateState( self::STATE_AUTHORIZATION | self:: STATE_TRANSACTION, 'CAPA' );
+		$this->_validateState( self::STATE_AUTHORIZATION | self::STATE_TRANSACTION, 'CAPA' );
 
 		$this->_send( "CAPA" );
 		$resp = $this->_getResponse();
