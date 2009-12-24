@@ -150,7 +150,7 @@ class Pop3 extends Connection
 	 */
 	protected function _starttls()
 	{
-		$this->isServerCapable( "STLS" );
+		$this->_isServerCapable( "STLS" );
 
 		$this->_validateState( self::STATE_AUTHORIZATION, 'STLS' );
 
@@ -377,7 +377,7 @@ class Pop3 extends Connection
 	 */
 	public function top( $msgid, $lines = 0 )
 	{
-		$this->isServerCapable( "TOP" );
+		$this->_isServerCapable( "TOP" );
 
 		$this->_validateState( self::STATE_TRANSACTION, 'TOP' );
 	
@@ -416,7 +416,7 @@ class Pop3 extends Connection
 	 */
 	public function uidl( $msgid = null )
 	{
-		$this->isServerCapable( "UIDL" );
+		$this->_isServerCapable( "UIDL" );
 
 		$this->_validateState( self::STATE_TRANSACTION, 'UIDL' );
 	
@@ -538,7 +538,7 @@ class Pop3 extends Connection
 	 * @throws Pop3Exception
 	 *         if the server is not capable of the command.
 	 */
-	public function isServerCapable( $cmd )
+	private function _isServerCapable( $cmd )
 	{
 		if ( in_array( $cmd, $this->getServerCapabilities( 'array' ) ) === true )
 			return true;
