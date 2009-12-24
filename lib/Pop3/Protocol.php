@@ -519,7 +519,7 @@ class Pop3 extends Connection
 	 *
 	 * @returns string
 	 */
-	public function getCurrentStateName()
+	private function _getCurrentStateName()
 	{
 		if ( $this->_state === self::STATE_NOT_CONNECTED )
 			return "STATE_NOT_CONNECTED";
@@ -557,6 +557,6 @@ class Pop3 extends Connection
 	protected function _validateState( $valid_state, $cmd )
 	{
 		if ( ( $valid_state & $this->_state ) == 0 )
-			throw new Pop3Exception( "This {$cmd} command is invalid for the current state: {$this->getCurrentStateName()}." );
+			throw new Pop3Exception( "This {$cmd} command is invalid for the current state: {$this->_getCurrentStateName()}." );
 	}
 }
