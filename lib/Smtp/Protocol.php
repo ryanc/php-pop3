@@ -12,6 +12,7 @@ class Smtp extends Connection
 	private $_username = null;
 	private $_password = null;
 	private $_capabilities = array();
+	private $_state = self::STATE_NOT_CONNECTED;
 
 	public function connect()
 	{
@@ -19,6 +20,8 @@ class Smtp extends Connection
 
 		if ( $this->_transport === 'tls' )
 			$this->_starttls();
+
+		$this->_state = self::STATE_CONNECTED;
 	}
 
 	protected function _starttls()
@@ -45,6 +48,8 @@ class Smtp extends Connection
 			$status = $this->_authLogin();
 		else
 			throw new SmtpException( "Invalid authentication method." );
+
+		$this->_state = self::STATE_AUTHENTICATED;
 
 		return $status;
 	}
