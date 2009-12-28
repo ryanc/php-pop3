@@ -198,6 +198,19 @@ class Smtp extends Connection
 		return true;
 	}
 
+	public function vrfy( $username )
+	{
+		$this->_isServerCapable( "VRFY" );
+
+		$this->_send( "VRFY {$username}" );
+		$resp = $this->_getResponse( true );
+
+		if ( $this->_isResponseOK( $resp, array( 250, 251, 252 ) ) === false )
+			return false;
+
+		return true;
+	}
+
 	public function quit()
 	{
 		$this->_send( "QUIT" );

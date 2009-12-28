@@ -138,6 +138,15 @@ class TestOfSmtp extends UnitTestCase
 		$smtp->close();
 	}
 
+	function testOfSmtpVrfyCommand()
+	{
+		$smtp = new Smtp( 'localhost', 25, 'tcp' );
+		$smtp->connect();
+		$this->assertTrue( $smtp->vrfy( 'poptest' ) );
+		$this->assertFalse( $smtp->vrfy( 'wrong' ) );
+		$smtp->close();
+	}
+
 	function testOfSmtpQuitCommand()
 	{
 		$smtp = new Smtp( 'localhost', 587, 'tls' );
