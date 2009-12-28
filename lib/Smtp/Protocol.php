@@ -11,6 +11,7 @@ class Smtp extends Connection
 
 	private $_username = null;
 	private $_password = null;
+	private $_capabilities = array();
 
 	public function connect()
 	{
@@ -120,7 +121,6 @@ class Smtp extends Connection
 
 	public function ehlo( $hostname = 'localhost' )
 	{
-		$buf = array();
 		$this->_send( "EHLO {$hostname}" );
 
 		do {
@@ -129,10 +129,10 @@ class Smtp extends Connection
 			if ( $this->_isResponseOK( $resp, 250 ) === false )
 				throw new SmtpException( "The server returned a negative response to the EHLO command: {$resp}" );
 
-			$buf[] = ltrim( $resp, "250- " );
+			$this->_capabilities[] = ltrim( $resp, "250- " );
 		} while ( strpos( $resp, '-' ) === 3 );
 
-		return $buf;
+		return $this->_capabilities;
 	}
 
 	public function mail ( $from )
@@ -213,7 +213,14 @@ class Smtp extends Connection
 	{
 	}
 
-	public function isServerCapable()
+	private function _isServerCapable( $cmd )
 	{
+		if ( empty( $this->_capabilities ) === true )
+			$this->ehlo();
+
+		if ( in_array( $cmd, $this->_capabilities ) === false )
+			throw new SmtpException( "The server does not support the {$cmd} command." );
+
+		return true;
 	}
 }
