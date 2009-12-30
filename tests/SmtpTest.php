@@ -1,6 +1,6 @@
 <?php
 require_once 'PHPUnit/Framework.php';
-require_once '../lib/Smtp.php';
+require_once 'lib/Smtp.php';
 
 use Mail\Protocol\Smtp;
 use Mail\Protocol\SmtpException;
