@@ -38,7 +38,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 	{
 		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
-		$pop3->authenticate( 'poptest', 'foobar12' );
+		$this->assertTrue( $pop3->authenticate( 'poptest', 'foobar12' ) );
 		$pop3->close();
 		$pop3->connect();
 		try {

@@ -191,6 +191,8 @@ class Pop3 extends Connection
 			throw new Pop3Exception( "The password is not valid: {$resp}" );
 
 		$this->_state = self::STATE_TRANSACTION;
+
+		return true;
 	}
 	
 	/**
