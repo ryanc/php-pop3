@@ -1,19 +1,79 @@
 <?php
+/**
+ * @author Ryan Cavicchioni <ryan@confabulator.net>
+ * @copyright Copyright (c) 2009, Ryan Cavicchioni
+ * @license http://www.opensource.org/licenses/bsd-license.php BSD Licnese
+ * @todo Document the class.
+ */
 
 namespace Mail\Protocol;
 use Mail\Connection;
 
+/**
+ * The class Smtp can be used to access SMTP servers.
+ *
+ * @package Smtp
+ */
 class Smtp extends Connection
 {
+	/**
+	 * SMTP session state when the client is not connected to the
+	 * server
+	 */
 	const STATE_NOT_CONNECTED = 0;
+
+	/**
+	 * SMTP session state when the client is connected to the server.
+	 */
 	const STATE_CONNECTED = 1;
+
+	/**
+	 * SMTP session state when the client has authenticated to the
+	 * server.
+	 */
 	const STATE_AUTHENTICATED = 2;
 
+	/**
+	 * The username used to authenticate to the SMTP server.
+	 *
+	 * @var string
+	 */
 	private $_username = null;
+
+	/**
+	 * The password used to authenticate to the SMTP server.
+	 *
+	 * @var string
+	 */
 	private $_password = null;
+
+	/**
+	 * The capabilities of the SMTP server which are populated by the
+	 * EHLO command.
+	 *
+	 * @var array
+	 */
 	private $_capabilities = array();
+
+	/**
+	 * The current POP3 session state of the server.
+	 *
+	 * @var int Use self::STATE_NOT_CONNECTED,
+	 *              self::STATE_CONNECTED,
+	 *           OR self::STATE_AUTHENTICATED
+	 */
 	private $_state = self::STATE_NOT_CONNECTED;
 
+	/**
+	 * Connect to the SMTP server.
+	 *
+	 * @throws ConnectionException
+	 *         if the connection is already established
+	 *         or if PHP does not have the openssl extension loaded
+	 *         or if PHP failed to connect to the SMTP server
+	 *         or if a negative response from the SMTP server was
+	 *         received.
+	 */
 	public function connect()
 	{
 		parent::connect();
@@ -24,6 +84,18 @@ class Smtp extends Connection
 		$this->_state = self::STATE_CONNECTED;
 	}
 
+	/**
+	 * Start TLS negotiation on the current connection.
+	 *
+	 * Returns true if the TLS connection was successfully
+	 * established.
+	 *
+	 * @throws SmtpException
+	 *         if the server returned a negative response.
+	 * @throws ConnectionException
+	 *         if the TLS negotiation has failed.
+	 * @returns bool
+	 */
 	protected function _starttls()
 	{
 		$this->_send( "STARTTLS" );
@@ -37,6 +109,16 @@ class Smtp extends Connection
 		return true;
 	}
 
+	/**
+	 * Authenticate the user to the SMTP server.
+	 *
+	 * @param string $username
+	 * @param string $password
+	 * @param string $method 'login' or 'plain'
+	 * @throws SmtpException
+	 *         if an invalid authentication method is used.
+	 * @returns bool
+	 */
 	public function authenticate( $username, $password, $method = 'plain' )
 	{
 		$this->username = $username;
@@ -54,6 +136,13 @@ class Smtp extends Connection
 		return $status;
 	}
 
+	/**
+	 * Authenticate using the PLAIN mechanism.
+	 *
+	 * @throws SmtpException
+	 *         if authentication fails.
+	 * @returns bool
+	 */
 	private function _authPlain()
 	{
 		// Validate session state.
@@ -68,6 +157,14 @@ class Smtp extends Connection
 		return true;
 	}
 
+	/**
+	 * Authenticate using the LOGIN mechanism.
+	 *
+	 * @throws SmtpException
+	 *         if the server returns a negative response
+	 *         or if authentication fails.
+	 * @returns bool
+	 */
 	private function _authLogin()
 	{
 		$this->_send( "AUTH LOGIN" );
@@ -91,6 +188,12 @@ class Smtp extends Connection
 		return true;
 	}
 
+	/**
+	 * Determine if the server greeting is positive or negative.
+	 *
+	 * @param string $resp
+	 * @returns bool
+	 */
 	protected function _isGreetingOK( $resp )
 	{
 		if ( strpos( $resp, "220" ) === 0 )
@@ -99,6 +202,14 @@ class Smtp extends Connection
 		return false;
 	}
 
+	/**
+	 * Determine if the server responds with the expected SMTP status
+	 * code.
+	 *
+	 * @param string $resp
+	 * @param string $expect
+	 * @returns bool
+	 */
 	protected function _isResponseOK( $resp, $expect )
 	{
 		if ( is_array( $expect ) === true ) {
@@ -113,6 +224,14 @@ class Smtp extends Connection
 		return false;
 	}
 
+	/**
+	 * Issue the HELO command to the server.
+	 *
+	 * @param string $hostname
+	 * @throws SmtpException
+	 *         if the server returns a negative response.
+	 * @returns bool
+	 */
 	public function helo( $hostname = 'localhost' )
 	{
 		$this->_send( "HELO {$hostname}" );
@@ -124,6 +243,15 @@ class Smtp extends Connection
 		return true;
 	}
 
+	/**
+	 * Issue the EHLO command to the server and return its
+	 * capabilities.
+	 *
+	 * @param string $hostname
+	 * @throws SmtpException
+	 *         if the server returns a negative response.
+	 * @returns array
+	 */
 	public function ehlo( $hostname = 'localhost' )
 	{
 		$this->_send( "EHLO {$hostname}" );
@@ -140,6 +268,14 @@ class Smtp extends Connection
 		return $this->_capabilities;
 	}
 
+	/**
+	 * Issue the MAIL FROM command to the server.
+	 *
+	 * @param string $from
+	 * @throws SmtpException
+	 *         if the server returns a negative response.
+	 * @returns bool
+	 */
 	public function mail ( $from )
 	{
 		$this->_send( "MAIL FROM: <{$from}>" );
@@ -151,6 +287,14 @@ class Smtp extends Connection
 		return true;
 	}
 
+	/**
+	 * Issue the RCPT TO command to the server.
+	 *
+	 * @param string $to
+	 * @throws SmtpException
+	 *         if the server returns a negative response.
+	 * @returns bool
+	 */
 	public function rcpt ( $to )
 	{
 		$this->_send( "RCPT TO: <{$to}>" );
@@ -162,6 +306,13 @@ class Smtp extends Connection
 		return true;
 	}
 
+	/**
+	 * Issue the DATA command to the server.
+	 * @param string $data
+	 * @throws SmtpException
+	 *         if the server returns a negative response.
+	 * @returns bool
+	 */
 	public function data ( $data )
 	{
 		$this->_send( "DATA" );
@@ -181,6 +332,13 @@ class Smtp extends Connection
 		return true;
 	}
 
+	/**
+	 * Abort the current mail transaction.
+	 *
+	 * @throws SmtpException
+	 *         if the server returns a negative response.
+	 * @returns bool
+	 */
 	public function reset()
 	{
 		$this->_send( "RSET" );
@@ -192,6 +350,14 @@ class Smtp extends Connection
 		return true;
 	}
 
+	/**
+	 * The SMTP server does nothing, it mearly replies with a positive
+	 * response.
+	 *
+	 * @throws SmtpException
+	 *         if the server returns a negative response.
+	 * @returns bool
+	 */
 	public function noop()
 	{
 		$this->_send( "NOOP" );
@@ -203,6 +369,12 @@ class Smtp extends Connection
 		return true;
 	}
 
+	/**
+	 * Verify that $username is a valid user or mailbox.
+	 *
+	 * @param string $username
+	 * @returns bool
+	 */
 	public function vrfy( $username )
 	{
 		$this->_isServerCapable( "VRFY" );
@@ -216,6 +388,13 @@ class Smtp extends Connection
 		return true;
 	}
 
+	/**
+	 * Quits the SMTP transaction.
+	 *
+	 * @throws SmtpException
+	 *         if the server returns a negative response.
+	 * @returns bool
+	 */
 	public function quit()
 	{
 		$this->_send( "QUIT" );
@@ -231,6 +410,14 @@ class Smtp extends Connection
 	{
 	}
 
+	/**
+	 * Verify that the server is capable of the given command.
+	 *
+	 * @param string $cmd
+	 * @throws SmtpException
+	 *         if the server does not support the given command.
+	 * @returns bool
+	 */
 	private function _isServerCapable( $cmd )
 	{
 		if ( empty( $this->_capabilities ) === true )
