@@ -108,7 +108,7 @@ class Pop3 extends Connection
 	 * Retrieve the capabilities of the POP3 server.
 	 *
 	 * @param string $format
-	 * @returns array
+	 * @return array
 	 */
 	public function getServerCapabilities( $format )
 	{
@@ -144,7 +144,7 @@ class Pop3 extends Connection
 	 *         if the server returned a negative response to the STLS
 	 *         (STARTTLS) command
 	 *         or if the TLS negotiation has failed.
-	 * @returns bool
+	 * @return bool
 	 */
 	protected function _starttls()
 	{
@@ -199,7 +199,7 @@ class Pop3 extends Connection
 	 *
 	 * @throws Pop3Exception
 	 *         if the server did not respond with a status message.
-	 * @returns array
+	 * @return array
 	 */
 	public function status()
 	{
@@ -224,7 +224,7 @@ class Pop3 extends Connection
 	 * @param int $msgid
 	 * @throws Pop3Exception
 	 *         if the server did not respond with a scan listing.
-	 * @returns array
+	 * @return array
 	 */
 	public function listMessages( $msgid = null )
 	{
@@ -266,7 +266,7 @@ class Pop3 extends Connection
 	 *         if the message id is not defined
 	 *         or if the server returns a negative response to the
 	 *         RETR command.
-	 * @returns string
+	 * @return string
 	 */
 	public function retrieve( $msgid )
 	{
@@ -300,7 +300,7 @@ class Pop3 extends Connection
 	 *         if the message id is not defined
 	 *         or if the returns a negative response to the DELE
 	 *         command.
-	 * @returns bool
+	 * @return bool
 	 */
 	public function delete( $msgid )
 	{
@@ -325,7 +325,7 @@ class Pop3 extends Connection
 	 * @throws Pop3Exception
 	 *         if the server returns a negative response to the NOOP
 	 *         command.
-	 * @returns bool
+	 * @return bool
 	 */
 	public function noop()
 	{
@@ -346,7 +346,7 @@ class Pop3 extends Connection
 	 * @throws Pop3Exception
 	 *         if the server returns a negative response to the
 	 *         RSET command.
-	 * @returns bool
+	 * @return bool
 	 */
 	public function reset()
 	{
@@ -373,7 +373,7 @@ class Pop3 extends Connection
 	 *         or if the number of lines is not defined
 	 *         of if the server returns a negative response to the TOP
 	 *         command.
-	 * @returns string
+	 * @return string
 	 */
 	public function top( $msgid, $lines = 0 )
 	{
@@ -412,7 +412,7 @@ class Pop3 extends Connection
 	 * @throws Pop3Exception
 	 *         if the server returns a negative response to the UIDL
 	 *         command.
-	 * @returns array
+	 * @return array
 	 */
 	public function uidl( $msgid = null )
 	{
@@ -453,7 +453,7 @@ class Pop3 extends Connection
 	 * @throws Pop3Exception
 	 *         if the server returns a negative response to the QUIT
 	 *         command.
-	 * @returns bool
+	 * @return bool
 	 */
 	public function quit()
 	{
@@ -478,7 +478,7 @@ class Pop3 extends Connection
 	 * response.
 	 *
 	 * @param string $resp
-	 * @returns bool
+	 * @return bool
 	 */
 	protected function _isResponseOK( $resp )
 	{
@@ -492,7 +492,7 @@ class Pop3 extends Connection
 	 * Determine if the server greeting is positive or negative.
 	 *
 	 * @param string $resp
-	 * @returns bool
+	 * @return bool
 	 */
 	protected function _isGreetingOK( $resp )
 	{
@@ -504,7 +504,7 @@ class Pop3 extends Connection
 	 * octet.
 	 *
 	 * @param string $resp
-	 * @returns bool
+	 * @return bool
 	 */
 	private function _isTerminationOctet( $resp )
 	{
@@ -517,7 +517,7 @@ class Pop3 extends Connection
 	/**
 	 * Returns the current session state name for exception messages.
 	 *
-	 * @returns string
+	 * @return string
 	 */
 	private function _getCurrentStateName()
 	{

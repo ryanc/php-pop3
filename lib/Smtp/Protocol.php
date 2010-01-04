@@ -92,7 +92,7 @@ class Smtp extends Connection
 	 *         if the server returned a negative response.
 	 * @throws ConnectionException
 	 *         if the TLS negotiation has failed.
-	 * @returns bool
+	 * @return bool
 	 */
 	protected function _starttls()
 	{
@@ -115,7 +115,7 @@ class Smtp extends Connection
 	 * @param string $method 'login' or 'plain'
 	 * @throws SmtpException
 	 *         if an invalid authentication method is used.
-	 * @returns bool
+	 * @return bool
 	 */
 	public function authenticate( $username, $password, $method = 'plain' )
 	{
@@ -139,7 +139,7 @@ class Smtp extends Connection
 	 *
 	 * @throws SmtpException
 	 *         if authentication fails.
-	 * @returns bool
+	 * @return bool
 	 */
 	private function _authPlain()
 	{
@@ -161,7 +161,7 @@ class Smtp extends Connection
 	 * @throws SmtpException
 	 *         if the server returns a negative response
 	 *         or if authentication fails.
-	 * @returns bool
+	 * @return bool
 	 */
 	private function _authLogin()
 	{
@@ -190,7 +190,7 @@ class Smtp extends Connection
 	 * Determine if the server greeting is positive or negative.
 	 *
 	 * @param string $resp
-	 * @returns bool
+	 * @return bool
 	 */
 	protected function _isGreetingOK( $resp )
 	{
@@ -206,7 +206,7 @@ class Smtp extends Connection
 	 *
 	 * @param string $resp
 	 * @param string $expect
-	 * @returns bool
+	 * @return bool
 	 */
 	protected function _isResponseOK( $resp, $expect )
 	{
@@ -228,7 +228,7 @@ class Smtp extends Connection
 	 * @param string $hostname
 	 * @throws SmtpException
 	 *         if the server returns a negative response.
-	 * @returns bool
+	 * @return bool
 	 */
 	public function helo( $hostname = 'localhost' )
 	{
@@ -248,7 +248,7 @@ class Smtp extends Connection
 	 * @param string $hostname
 	 * @throws SmtpException
 	 *         if the server returns a negative response.
-	 * @returns array
+	 * @return array
 	 */
 	public function ehlo( $hostname = 'localhost' )
 	{
@@ -272,7 +272,7 @@ class Smtp extends Connection
 	 * @param string $from
 	 * @throws SmtpException
 	 *         if the server returns a negative response.
-	 * @returns bool
+	 * @return bool
 	 */
 	public function mail ( $from )
 	{
@@ -291,7 +291,7 @@ class Smtp extends Connection
 	 * @param string $to
 	 * @throws SmtpException
 	 *         if the server returns a negative response.
-	 * @returns bool
+	 * @return bool
 	 */
 	public function rcpt ( $to )
 	{
@@ -309,7 +309,7 @@ class Smtp extends Connection
 	 * @param string $data
 	 * @throws SmtpException
 	 *         if the server returns a negative response.
-	 * @returns bool
+	 * @return bool
 	 */
 	public function data ( $data )
 	{
@@ -335,7 +335,7 @@ class Smtp extends Connection
 	 *
 	 * @throws SmtpException
 	 *         if the server returns a negative response.
-	 * @returns bool
+	 * @return bool
 	 */
 	public function reset()
 	{
@@ -354,7 +354,7 @@ class Smtp extends Connection
 	 *
 	 * @throws SmtpException
 	 *         if the server returns a negative response.
-	 * @returns bool
+	 * @return bool
 	 */
 	public function noop()
 	{
@@ -371,7 +371,7 @@ class Smtp extends Connection
 	 * Verify that $username is a valid user or mailbox.
 	 *
 	 * @param string $username
-	 * @returns bool
+	 * @return bool
 	 */
 	public function vrfy( $username )
 	{
@@ -391,7 +391,7 @@ class Smtp extends Connection
 	 *
 	 * @throws SmtpException
 	 *         if the server returns a negative response.
-	 * @returns bool
+	 * @return bool
 	 */
 	public function quit()
 	{
@@ -414,7 +414,7 @@ class Smtp extends Connection
 	 * @param string $cmd
 	 * @throws SmtpException
 	 *         if the server does not support the given command.
-	 * @returns bool
+	 * @return bool
 	 */
 	private function _isServerCapable( $cmd )
 	{
