@@ -11,8 +11,6 @@ use Mail\Connection;
 
 /**
  * The class POP3 can be used to access POP3 servers.
- *
- * @package Pop3
  */
 class Pop3 extends Connection
 {

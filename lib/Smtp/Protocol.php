@@ -11,8 +11,6 @@ use Mail\Connection;
 
 /**
  * The class Smtp can be used to access SMTP servers.
- *
- * @package Smtp
  */
 class Smtp extends Connection
 {
