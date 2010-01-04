@@ -144,7 +144,7 @@ class Pop3 extends Connection
 	 *
 	 * @throws Pop3Exception
 	 *         if the server returned a negative response to the STLS
-	 *         (_starttls) command
+	 *         (STARTTLS) command
 	 *         or if the TLS negotiation has failed.
 	 * @returns bool
 	 */
