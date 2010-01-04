@@ -74,6 +74,14 @@ class Pop3 extends Connection
 	private $_password = null;
 
 	/**
+	 * The capabilities of the POP3 server which are populated by the
+	 * CAPA command.
+	 *
+	 * @var array
+	 */
+	private $_capabilities = array();
+
+	/**
 	 * The current POP3 session state of the server.
 	 *
 	 * @var int Use self::STATE_NOT_CONNECTED,
@@ -110,7 +118,7 @@ class Pop3 extends Connection
 	 * @param string $format
 	 * @return array
 	 */
-	public function getServerCapabilities( $format )
+	public function getServerCapabilities( $format = 'array' )
 	{
 		$this->_validateState( self::STATE_AUTHORIZATION | self::STATE_TRANSACTION, 'CAPA' );
 
@@ -120,18 +128,17 @@ class Pop3 extends Connection
 		if ( $this->_isResponseOK( $resp ) !== true )
 			throw new Pop3Exception( "The server returned a negative response to the CAPA command: {$resp}." );
 
-		$capabilities = array();
 		while ( $resp = $this->_getResponse() ) {
 			if ( $this->_isTerminationOctet( $resp ) === true )
 				break;
 
-			$capabilities[] = rtrim( $resp );
+			$this->_capabilities[] = rtrim( $resp );
 		}
 
 		if ( $format === 'raw' )
-			return implode( $capabilities, self::CRLF );
+			return implode( $this->_capabilities, self::CRLF );
 
-		return $capabilities;
+		return $this->_capabilities;
 	}
 
 	/**
@@ -596,10 +603,13 @@ class Pop3 extends Connection
 	 */
 	private function _isServerCapable( $cmd )
 	{
-		if ( in_array( $cmd, $this->getServerCapabilities( 'array' ) ) === true )
-			return true;
-		else
+		if ( empty( $this->_capabilities ) === true )
+			$this->getServerCapabilities();
+
+		if ( in_array( $cmd, $this->_capabilities ) === false )
 			throw new Pop3Exception( "The server does not support the {$cmd} command." );
+
+		return true;
 	}
 	
 	/**
