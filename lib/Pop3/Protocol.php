@@ -175,7 +175,7 @@ class Pop3 extends Connection
 	 * 
 	 * @param string $username
 	 * @param string $password
-	 * @param string $method
+	 * @param string $method 'login' or 'plain'
 	 * @throws Pop3Exception
 	 *         if an invalid authentication method is used.
 	 * @return bool
