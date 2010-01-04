@@ -63,7 +63,7 @@ class Pop3 extends Connection
 	 * @var string
 	 * @access private
 	 */
-	private $_user = null;
+	private $_username = null;
 
 	/**
 	 * The password used to authenticate with the POP3 server.
@@ -168,30 +168,86 @@ class Pop3 extends Connection
 	 * 
 	 * @param string $username
 	 * @param string $password
+	 * @param string $method
 	 * @throws Pop3Exception
-	 *         if the username or password is not valid.
+	 *         if an invalid authentication method is used.
+	 * @return bool
 	 * @todo Disable insecure authentication.
 	 */
-	public function authenticate( $username, $password )
+	public function authenticate( $username, $password, $method = 'plain' )
 	{
 		$this->_validateState( self::STATE_AUTHORIZATION, 'USER' );
 
-		$this->_send( "USER {$username}" );
+		$this->_username = $username;
+		$this->_password = $password;
+
+		if ( strtolower( $method ) === 'plain' )
+			$status = $this->_authPlain();
+		elseif ( strtolower( $method ) === 'login' )
+			$status = $this->_authLogin();
+		else
+			throw new Pop3Exception( "Invalid authentication method." );
+
+		$this->_state = self::STATE_TRANSACTION;
+
+		return $status;
+	}
+
+	/**
+	 * Authenticate using the PLAIN mechanism.
+	 *
+	 * @throws Pop3Exception
+	 *         if authentication fails.
+	 * @return bool
+	 */
+	private function _authPlain()
+	{
+		$this->_send( "USER {$this->_username}" );
 		$resp = $this->_getResponse( true );
 
 		if ( $this->_isResponseOK( $resp ) === false )
 			throw new Pop3Exception( "The username is not valid: {$resp}" );
 
-		$this->_send( "PASS {$password}" );
+		$this->_send( "PASS {$this->_password}" );
 		$resp = $this->_getResponse( true );
 
 		if ( $this->_isResponseOK( $resp ) === false )
 			throw new Pop3Exception( "The password is not valid: {$resp}" );
 
-		$this->_state = self::STATE_TRANSACTION;
+		return true;
+	}
+
+	/**
+	 * Authenticate using the LOGIN mechanism.
+	 *
+	 * @throws Pop3Exception
+	 *         if the server returns a negative response
+	 *         or if authentication fails.
+	 * @return bool
+	 */
+	private function _authLogin()
+	{
+		$this->_send( "AUTH LOGIN" );
+		$resp = $this->_getResponse( true );
+
+		if ( strpos( $resp, "+" ) === false )
+			throw new Pop3Exception( "The server returned a negative response to the AUTH LOGIN command: {$resp}" );
+
+		$this->_send( base64_encode( $this->_username ) );
+		$resp = $this->_getResponse( true );
+
+		if ( strpos( $resp, "+" ) === false )
+			throw new Pop3Exception( "The username is not valid: {$resp}" );
+
+		$this->_send( base64_encode( $this->_password ) );
+		$resp = $this->_getResponse( true );
+
+		if ( $this->_isResponseOK( $resp ) === false )
+			throw new Pop3Exception( "The password is not valid: {$resp}" );
 
 		return true;
 	}
+
 	
 	/**
 	 * Issues the STAT command to the server and returns a drop

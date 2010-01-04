@@ -34,11 +34,29 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 		$pop3->close();
 	}
 
-	public function testPop3Authentication()
+	public function testPop3AuthPlain()
 	{
 		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
-		$this->assertTrue( $pop3->authenticate( 'poptest', 'foobar12' ) );
+		$this->assertTrue( $pop3->authenticate( 'poptest', 'foobar12', 'plain' ) );
+		$pop3->close();
+		$pop3->connect();
+		try {
+			$pop3->authenticate( 'wrong', 'wrong' );
+		}
+		catch ( Pop3Exception $e ) {
+			return;
+		}
+		$pop3->close();
+		$this->fail();
+
+	}
+
+	public function testPop3AuthLogin()
+	{
+		$pop3 = new Pop3( 'localhost', 110, 'tls' );
+		$pop3->connect();
+		$this->assertTrue( $pop3->authenticate( 'poptest', 'foobar12', 'login' ) );
 		$pop3->close();
 		$pop3->connect();
 		try {
