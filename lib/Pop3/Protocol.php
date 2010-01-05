@@ -1,9 +1,11 @@
 <?php
 /**
+ * MailKit
+ *
+ * @package MailKit
  * @author Ryan Cavicchioni <ryan@confabulator.net>
- * @copyright Copyright (c) 2009, Ryan Cavicchioni
+ * @copyright Copyright (c) 2009-2010, Ryan Cavicchioni
  * @license http://www.opensource.org/licenses/bsd-license.php BSD Licnese
- * @todo Document the class.
  */
 
 namespace Mail\Protocol;
@@ -11,6 +13,11 @@ use Mail\Connection;
 
 /**
  * The class POP3 can be used to access POP3 servers.
+ *
+ * @package MailKit
+ * @author Ryan Cavicchioni <ryan@confabulator.net>
+ * @copyright Copyright (c) 2009-2010, Ryan Cavicchioni
+ * @license http://www.opensource.org/licenses/bsd-license.php BSD Licnese
  */
 class Pop3 extends Connection
 {
