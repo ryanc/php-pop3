@@ -83,8 +83,9 @@ class Smtp extends Connection
 	{
 		parent::connect();
 
-		if ( $this->_transport === 'tls' )
+		if ( $this->_transport === 'tls' ) {
 			$this->_starttls();
+		}
 
 		$this->_state = self::STATE_CONNECTED;
 	}
@@ -106,8 +107,9 @@ class Smtp extends Connection
 		$this->_send( "STARTTLS" );
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, 220 ) === false )
+		if ( $this->_isResponseOK( $resp, 220 ) === false ) {
 			throw new SmtpException( "The server returned a negative response to the STARTTLS command: {$resp}" );
+		}
 
 		parent::_starttls();
 
@@ -129,12 +131,15 @@ class Smtp extends Connection
 		$this->username = $username;
 		$this->password = $password;
 
-		if ( strtolower( $method ) === 'plain' )
+		if ( strtolower( $method ) === 'plain' ) {
 			$status = $this->_authPlain();
-		elseif ( strtolower( $method ) === 'login' )
+		}
+		elseif ( strtolower( $method ) === 'login' ) {
 			$status = $this->_authLogin();
-		else
+		}
+		else {
 			throw new SmtpException( "Invalid authentication method." );
+		}
 
 		$this->_state = self::STATE_AUTHENTICATED;
 
@@ -156,8 +161,9 @@ class Smtp extends Connection
 		$this->_send( "AUTH PLAIN {$auth_string}" );
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, 235 ) === false )
+		if ( $this->_isResponseOK( $resp, 235 ) === false ) {
 			throw new SmtpException( "Authentication failed: ${resp}" );
+		}
 
 		return true;
 	}
@@ -175,20 +181,23 @@ class Smtp extends Connection
 		$this->_send( "AUTH LOGIN" );
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, 334 ) === false )
+		if ( $this->_isResponseOK( $resp, 334 ) === false ) {
 			throw new SmtpException( "The server returned a negative response to the AUTH LOGIN command: {$resp}" );
+		}
 
 		$this->_send( base64_encode( $this->username ) );
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, 334 ) === false )
+		if ( $this->_isResponseOK( $resp, 334 ) === false ) {
 			throw new SmtpException( "The server did not accept the username: {$resp}" );
+		}
 
 		$this->_send( base64_encode( $this->password ) );
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, 235 ) === false )
+		if ( $this->_isResponseOK( $resp, 235 ) === false ) {
 			throw new SmtpException( "The server did not accept the password: {$resp}" );
+		}
 
 		return true;
 	}
@@ -201,8 +210,9 @@ class Smtp extends Connection
 	 */
 	protected function _isGreetingOK( $resp )
 	{
-		if ( strpos( $resp, "220" ) === 0 )
+		if ( strpos( $resp, "220" ) === 0 ) {
 			return true;
+		}
 
 		return false;
 	}
@@ -219,12 +229,14 @@ class Smtp extends Connection
 	{
 		if ( is_array( $expect ) === true ) {
 			$code = substr( $resp, 0, 3);
-			if ( in_array( (int) $code, $expect ) === true )
+			if ( in_array( (int) $code, $expect ) === true ) {
 				return true;
+			}
 		}
 
-		if ( strpos( $resp, (string) $expect ) === 0 )
+		if ( strpos( $resp, (string) $expect ) === 0 ) {
 			return true;
+		}
 
 		return false;
 	}
@@ -242,8 +254,9 @@ class Smtp extends Connection
 		$this->_send( "HELO {$hostname}" );
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, 250 ) === false )
+		if ( $this->_isResponseOK( $resp, 250 ) === false ) {
 			throw new SmtpException( "The server returned a negative response to the HELO command: {$resp}" );
+		}
 
 		return true;
 	}
@@ -264,11 +277,13 @@ class Smtp extends Connection
 		do {
 			$resp = $this->_getResponse( true );
 
-			if ( $this->_isResponseOK( $resp, 250 ) === false )
+			if ( $this->_isResponseOK( $resp, 250 ) === false ) {
 				throw new SmtpException( "The server returned a negative response to the EHLO command: {$resp}" );
+			}
 
 			$this->_capabilities[] = ltrim( $resp, "250- " );
-		} while ( strpos( $resp, '-' ) === 3 );
+		}
+		while ( strpos( $resp, '-' ) === 3 );
 
 		return $this->_capabilities;
 	}
@@ -286,8 +301,9 @@ class Smtp extends Connection
 		$this->_send( "MAIL FROM: <{$from}>" );
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, 250 ) === false )
+		if ( $this->_isResponseOK( $resp, 250 ) === false ) {
 			throw new SmtpException( "The server returned a negative response to the MAIL command: {$resp}" );
+		}
 
 		return true;
 	}
@@ -305,8 +321,9 @@ class Smtp extends Connection
 		$this->_send( "RCPT TO: <{$to}>" );
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, array( 250, 251 ) ) === false )
+		if ( $this->_isResponseOK( $resp, array( 250, 251 ) ) === false ) {
 			throw new SmtpException( "The server returned a negative response to the RCPT command: {$resp}" );
+		}
 
 		return true;
 	}
@@ -323,16 +340,18 @@ class Smtp extends Connection
 		$this->_send( "DATA" );
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, 354 ) === false )
+		if ( $this->_isResponseOK( $resp, 354 ) === false ) {
 			throw new SmtpException( "The server returned a negative response to the DATA command: {$resp}" );
+		}
 
 		$this->_send( $data );
 		$this->_send( "." );
 
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, 250 ) === false )
+		if ( $this->_isResponseOK( $resp, 250 ) === false ) {
 			throw new SmtpException( "The server returned a negative respose to the DATA command: {$resp}" );
+		}
 
 		return true;
 	}
@@ -349,8 +368,9 @@ class Smtp extends Connection
 		$this->_send( "RSET" );
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, 250 ) === false )
+		if ( $this->_isResponseOK( $resp, 250 ) === false ) {
 			throw new SmtpException( "The server returned a negative response to the RSET command: {$resp}" );
+		}
 
 		return true;
 	}
@@ -368,8 +388,9 @@ class Smtp extends Connection
 		$this->_send( "NOOP" );
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, 250 ) === false )
+		if ( $this->_isResponseOK( $resp, 250 ) === false ) {
 			throw new SmtpException( "The server returned a negative response to the NOOP command: {$resp}" );
+		}
 
 		return true;
 	}
@@ -387,8 +408,9 @@ class Smtp extends Connection
 		$this->_send( "VRFY {$username}" );
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, array( 250, 251, 252 ) ) === false )
+		if ( $this->_isResponseOK( $resp, array( 250, 251, 252 ) ) === false ) {
 			return false;
+		}
 
 		return true;
 	}
@@ -405,8 +427,9 @@ class Smtp extends Connection
 		$this->_send( "QUIT" );
 		$resp = $this->_getResponse( true );
 
-		if ( $this->_isResponseOK( $resp, 221 ) === false )
+		if ( $this->_isResponseOK( $resp, 221 ) === false ) {
 			throw new SmtpException( "The server returned a negative response to the QUIT command: {$resp}" );
+		}
 
 		return true;
 	}
@@ -425,11 +448,13 @@ class Smtp extends Connection
 	 */
 	private function _isServerCapable( $cmd )
 	{
-		if ( empty( $this->_capabilities ) === true )
+		if ( empty( $this->_capabilities ) === true ) {
 			$this->ehlo();
+		}
 
-		if ( in_array( $cmd, $this->_capabilities ) === false )
+		if ( in_array( $cmd, $this->_capabilities ) === false ) {
 			throw new SmtpException( "The server does not support the {$cmd} command." );
+		}
 
 		return true;
 	}

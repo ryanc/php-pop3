@@ -85,14 +85,18 @@ abstract class Connection
 	 */
 	public function __construct( $host, $port, $transport = 'tcp', $timeout = 30 )
 	{
-		if ( $host === null )
+		if ( $host === null ) {
 			throw new ConnectionException( "The hostname is not defined." );
-		if ( $port === null )
+		}
+		if ( $port === null ) {
 			throw new ConnectionException( "The port is not defined." );
-		if ( $transport === null )
+		}
+		if ( $transport === null ) {
 			throw new ConnectionException( "The transport is not defined." );
-		if ( $timeout === null )
+		}
+		if ( $timeout === null ) {
 			throw new ConnectionException( "The timeout is not defined." );
+		}
 
 		$this->_host = $host;
 		$this->_port = $port;
@@ -112,28 +116,34 @@ abstract class Connection
 	 */
 	public function connect()
 	{
-		if ( $this->isConnected() === true )
+		if ( $this->isConnected() === true ) {
 			throw new ConnectionException( "The connection is already established." );
-		if ( ( $this->_transport === 'ssl' || $this->_transport === 'tls' ) && extension_loaded( 'openssl' ) === false )
+		}
+		if ( ( $this->_transport === 'ssl' || $this->_transport === 'tls' ) && extension_loaded( 'openssl' ) === false ) {
 			throw new ConnectionException( "PHP does not have the openssl extension loaded." );
+		}
 
 		$errno = null;
 		$errstr = null;
 
 		// Check if SSL is enabled.
-		if ( $this->_transport === 'ssl' )
+		if ( $this->_transport === 'ssl' ) {
 			$this->_socket = @fsockopen( "ssl://{$this->_host}:{$this->_port}", $errno, $errstr, $timeout );
-		else
+		}
+		else {
 			$this->_socket = @fsockopen( "tcp://{$this->_host}:{$this->_port}", $errno, $errstr, $timeout );
+		}
 
 		// Check if connection was established.
-		if ( $this->isConnected() === false )
+		if ( $this->isConnected() === false ) {
 			throw new ConnectionException( "Failed to connect to server: {$this->_host}:{$this->_port}.");
+		}
 
 		$this->_greeting = $this->_getResponse();
 
-		if ( $this->_isGreetingOK( $this->_greeting ) === false )
+		if ( $this->_isGreetingOK( $this->_greeting ) === false ) {
 			throw new ConnectionException( "Negative response from the server was received: '{$this->_greeting}'" );
+		}
 	}
 
 	/**
@@ -169,10 +179,12 @@ abstract class Connection
 				$resp .= $buf;
 			}
 
-			if ( $trim === false )
+			if ( $trim === false ) {
 				return $resp;
-			else
+			}
+			else {
 				return rtrim( $resp, self::CRLF );
+			}
 		}
 	}
 
@@ -185,9 +197,11 @@ abstract class Connection
 	 */
 	protected function _send( $data )
 	{
-		if ( $this->isConnected() === true )
-			if ( fwrite( $this->_socket, $data . self::CRLF, strlen( $data . self::CRLF ) ) === false )
+		if ( $this->isConnected() === true ) {
+			if ( fwrite( $this->_socket, $data . self::CRLF, strlen( $data . self::CRLF ) ) === false ) {
 				throw new ConnectionException( "Failed to write to the socket." );
+			}
+		}
 	}
 
 	/**
@@ -225,8 +239,9 @@ abstract class Connection
 	 */
 	protected function _starttls()
 	{
-		if ( stream_socket_enable_crypto( $this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT ) == false )
+		if ( stream_socket_enable_crypto( $this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT ) == false ) {
 			throw new ConnectionException( "The TLS negotiation has failed." );
+		}
 
 		return true;
 	}
