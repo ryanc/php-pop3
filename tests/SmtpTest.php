@@ -1,7 +1,9 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 require_once 'lib/Smtp.php';
+require_once 'lib/Message.php';
 
+use Mail\Message;
 use Mail\Protocol\Smtp;
 use Mail\Protocol\SmtpException;
 
@@ -116,10 +118,11 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 
 	public function testSmtpDataCommand()
 	{
-		$data =  "From: Pop Test <poptest>\r\n";
-		$data .= "To: Ryan Cavicchioni <ryan>\r\n";
-		$data .= "Subject: Test\r\n";
-		$data .= "\r\n";
+		$mail = new Message();
+		$mail->setFrom("poptest");
+		$mail->addTo("ryan");
+		$mail->setSubject( "Test message from PHPUnit." );
+		$mail->setBody( "Sent by SmtpTest::testSmtpDataCommand." );
 
 		$smtp = new Smtp( 'localhost', 587, 'tls' );
 		$smtp->connect();
@@ -127,7 +130,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$smtp->authenticate( 'poptest', 'foobar12' );
 		$smtp->mail( 'poptest' );
 		$smtp->rcpt( 'ryan' );
-		$this->assertTrue( $smtp->data( $data ) );
+		$this->assertTrue( $smtp->data( $mail->generate() ) );
 		$smtp->close();
 	}
 
