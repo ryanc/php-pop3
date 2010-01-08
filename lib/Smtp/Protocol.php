@@ -10,6 +10,7 @@
 
 namespace Mail\Protocol;
 use Mail\Connection;
+use Mail\Message;
 
 /**
  * The class Smtp can be used to access SMTP servers.
@@ -458,4 +459,45 @@ class Smtp extends Connection
 
 		return true;
 	}
+
+	/**
+	 * Send an email.
+	 *
+	 * @param Message $msg
+	 * @throws SmtpException
+	 *         if the the sender address or recpients are undefined.
+	 * @return bool
+	 */
+	 public function send( Message $mail )
+	 {
+		if ( $mail->from === null ) {
+			throw new SmtpException( "The message does not have a from address." );
+		}
+
+		if ( count( $mail->to ) + count( $mail->cc ) + count( $mail->bcc ) < 1 ) {
+			throw new SmtpException( "The message must have a recipient." );
+		}
+
+		$this->mail( $mail->from );
+
+		foreach( $mail->to as $addr ) {
+			$this->rcpt( $addr );
+		}
+
+		foreach( $mail->cc as $addr ) {
+			$this->rcpt( $addr );
+		}
+
+		foreach( $mail->bcc as $addr ) {
+			$this->rcpt( $addr );
+		}
+
+		$data = $mail->generate();
+
+		$this->data( $data );
+
+		$this->close();
+
+		return true;
+	 }
 }

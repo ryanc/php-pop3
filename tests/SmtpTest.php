@@ -170,5 +170,21 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$this->assertTrue( $smtp->noop() );
 		$smtp->close();
 	}
+
+	public function testSmtpSend()
+	{
+		$smtp = new Smtp( 'localhost', 587, 'tls' );
+		$smtp->connect();
+		$smtp->ehlo();
+		$smtp->authenticate( 'poptest', 'foobar12' );
+		$mail = new Message();
+		$mail->setFrom( 'poptest' );
+		$mail->addTo( 'ryan' );
+		$mail->addCc( 'poptest' );
+		$mail->setSubject( "Test message from PHPUnit." );
+		$mail->setBody( "Sent by SmtpTest::testSmtpSend." );
+
+		$smtp->send( $mail );
+	}
 }
 ?>
