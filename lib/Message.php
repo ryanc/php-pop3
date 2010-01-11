@@ -26,52 +26,52 @@ class Message
 
 	const CRLF = "\r\n";
 
-	public function addTo( $addr )
+	public function add_to( $addr )
 	{
 		$this->to[] = trim( $addr );
 	}
 
-	public function addCc( $addr )
+	public function add_cc( $addr )
 	{
 		$this->cc[] = trim( $addr);
 	}
 
-	public function addBcc( $addr )
+	public function add_bcc( $addr )
 	{
 		$this->bcc[] = trim( $addr );
 	}
 
-	public function setFrom( $addr )
+	public function set_from( $addr )
 	{
 		$this->from = trim( $addr );
 	}
 
-	public function setSender( $addr )
+	public function set_sender( $addr )
 	{
 		$this->sender = trim( $addr );
 	}
 
-	public function setReplyTo( $addr )
+	public function set_reply_to( $addr )
 	{
 		$this->reply_to = trim( $addr );
 	}
 
-	public function setSubject( $subject )
+	public function set_subject( $subject )
 	{
 		$this->subject = trim( $subject );
 	}
 
-	public function setBody( $body )
+	public function set_body( $body )
 	{
 		$this->body = trim( $body );
 	}
 
-	public function addHeader( $name, $value )
+	public function add_header( $name, $value )
 	{
 		$this->headers[$name] = $value;
 	}
 
-	private function _generateMessageId()
+	private function _generate_message_id()
 	{
 		$rand = openssl_random_pseudo_bytes(8);
 		$hostname = gethostname();
@@ -81,33 +81,33 @@ class Message
 	private function _buildHeaders()
 	{
 		if ( $this->from !== null ) {
-			$this->addHeader( "From", $this->from );
+			$this->add_header( "From", $this->from );
 		}
 		if ( $this->sender !== null ) {
-			$this->addHeader( "Sender", $this->sender );
+			$this->add_header( "Sender", $this->sender );
 		}
 		if ( $this->reply_to !== null ) {
-			$this->addHeader( "Reply-To", $this->reply_to );
+			$this->add_header( "Reply-To", $this->reply_to );
 		}
 		if ( count( $this->to ) ) {
-			$this->addHeader( "To", implode( ", ", $this->to ) );
+			$this->add_header( "To", implode( ", ", $this->to ) );
 		}
 		if ( count( $this->cc ) ) {
-			$this->addHeader( "Cc", implode( ", ", $this->cc ) );
+			$this->add_header( "Cc", implode( ", ", $this->cc ) );
 		}
 		if ( count( $this->bcc ) ) {
-			$this->addHeader( "Bcc" , implode( ", ", $this->cc ) );
+			$this->add_header( "Bcc" , implode( ", ", $this->cc ) );
 		}
 
-		$this->addHeader( "Subject", $this->subject );
-		$this->addHeader( "Date", date("r") );
+		$this->add_header( "Subject", $this->subject );
+		$this->add_header( "Date", date("r") );
 		
-		$this->_generateMessageId();
+		$this->_generate_message_id();
 
-		$this->addHeader( "Message-Id", $this->message_id );
+		$this->add_header( "Message-Id", $this->message_id );
 	}
 
-	private function _generateHeader()
+	private function _generate_header()
 	{
 		$text = "";
 		$this->_buildHeaders();
@@ -119,14 +119,14 @@ class Message
 		return $text;
 	}
 
-	private function _generateBody()
+	private function _generate_body()
 	{
 		return $this->body;
 	}
 
 	public function generate()
 	{
-		return $this->_generateHeader() . self::CRLF . $this->_generateBody();
+		return $this->_generate_header() . self::CRLF . $this->_generate_body();
 	}
 }
 ?>

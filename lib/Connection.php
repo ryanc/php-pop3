@@ -79,23 +79,23 @@ abstract class Connection
 	 * @param string $port
 	 * @param string transport
 	 * @param int $timeout
-	 * @throws ConnectionException
+	 * @throws Connection_Exception
 	 *         if the hostname, port, transport or timeout is not
 	 *         defined.
 	 */
 	public function __construct( $host, $port, $transport = 'tcp', $timeout = 30 )
 	{
 		if ( $host === null ) {
-			throw new ConnectionException( "The hostname is not defined." );
+			throw new Connection_Exception( "The hostname is not defined." );
 		}
 		if ( $port === null ) {
-			throw new ConnectionException( "The port is not defined." );
+			throw new Connection_Exception( "The port is not defined." );
 		}
 		if ( $transport === null ) {
-			throw new ConnectionException( "The transport is not defined." );
+			throw new Connection_Exception( "The transport is not defined." );
 		}
 		if ( $timeout === null ) {
-			throw new ConnectionException( "The timeout is not defined." );
+			throw new Connection_Exception( "The timeout is not defined." );
 		}
 
 		$this->_host = $host;
@@ -107,7 +107,7 @@ abstract class Connection
 	/**
 	 * Connect to the POP3 server.
 	 *
-	 * @throws ConnectionException
+	 * @throws Connection_Exception
 	 *         if the connection is already established
 	 *         or if PHP does not have the openssl extension loaded
 	 *         or if PHP failed to connect to the POP3 server
@@ -116,11 +116,11 @@ abstract class Connection
 	 */
 	public function connect()
 	{
-		if ( $this->isConnected() === true ) {
-			throw new ConnectionException( "The connection is already established." );
+		if ( $this->is_connected() === true ) {
+			throw new Connection_Exception( "The connection is already established." );
 		}
 		if ( ( $this->_transport === 'ssl' || $this->_transport === 'tls' ) && extension_loaded( 'openssl' ) === false ) {
-			throw new ConnectionException( "PHP does not have the openssl extension loaded." );
+			throw new Connection_Exception( "PHP does not have the openssl extension loaded." );
 		}
 
 		$errno = null;
@@ -135,14 +135,14 @@ abstract class Connection
 		}
 
 		// Check if connection was established.
-		if ( $this->isConnected() === false ) {
-			throw new ConnectionException( "Failed to connect to server: {$this->_host}:{$this->_port}.");
+		if ( $this->is_connected() === false ) {
+			throw new Connection_Exception( "Failed to connect to server: {$this->_host}:{$this->_port}.");
 		}
 
-		$this->_greeting = $this->_getResponse();
+		$this->_greeting = $this->_get_response();
 
-		if ( $this->_isGreetingOK( $this->_greeting ) === false ) {
-			throw new ConnectionException( "Negative response from the server was received: '{$this->_greeting}'" );
+		if ( $this->_is_greeting_ok( $this->_greeting ) === false ) {
+			throw new Connection_Exception( "Negative response from the server was received: '{$this->_greeting}'" );
 		}
 	}
 
@@ -150,7 +150,7 @@ abstract class Connection
 	 * Returns true if connected to the POP3 server.
 	 * @returns bool
 	 */
-	public function isConnected()
+	public function is_connected()
 	{
 		return is_resource( $this->_socket );
 	}
@@ -158,13 +158,13 @@ abstract class Connection
 	/**
 	 * Get the response from the POP3 server.
 	 *
-	 * @throws ConnectionException
+	 * @throws Connection_Exception
 	 *         if PHP failed to read resp from the socket.
 	 * @returns string
 	 */
-	protected function _getResponse( $trim = false )
+	protected function _get_response( $trim = false )
 	{
-		if ( $this->isConnected() === true ) {
+		if ( $this->is_connected() === true ) {
 			$buf = '';
 			$resp = '';
 
@@ -173,7 +173,7 @@ abstract class Connection
 
 				if ( $buf === false ) {
 					$this->close();
-					throw new ConnectionException( "Failed to read resp from the socket." );
+					throw new Connection_Exception( "Failed to read resp from the socket." );
 				}
 
 				$resp .= $buf;
@@ -192,14 +192,14 @@ abstract class Connection
 	 * Sends a request the POP3 server.
 	 *
 	 * @param string $data
-	 * @throws ConnectionException
+	 * @throws Connection_Exception
 	 *         if PHP failed to write to the socket.
 	 */
 	protected function _send( $data )
 	{
-		if ( $this->isConnected() === true ) {
+		if ( $this->is_connected() === true ) {
 			if ( fwrite( $this->_socket, $data . self::CRLF, strlen( $data . self::CRLF ) ) === false ) {
-				throw new ConnectionException( "Failed to write to the socket." );
+				throw new Connection_Exception( "Failed to write to the socket." );
 			}
 		}
 	}
@@ -209,7 +209,7 @@ abstract class Connection
 	 */
 	public function close()
 	{
-		if ( $this->isConnected() ) {
+		if ( $this->is_connected() ) {
 			fclose( $this->_socket );
 			$this->_socket = null;
 		}
@@ -231,7 +231,7 @@ abstract class Connection
 	 * Returns true if the TLS connection was successfully
 	 * established.
 	 *
-	 * @throws ConnectionException
+	 * @throws Connection_Exception
 	 *         if the server returned a negative response to the STLS
 	 *         (STARTTLS) command
 	 *         or if the TLS negotiation has failed.
@@ -240,7 +240,7 @@ abstract class Connection
 	protected function _starttls()
 	{
 		if ( stream_socket_enable_crypto( $this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT ) == false ) {
-			throw new ConnectionException( "The TLS negotiation has failed." );
+			throw new Connection_Exception( "The TLS negotiation has failed." );
 		}
 
 		return true;
@@ -255,4 +255,4 @@ abstract class Connection
  * @copyright Copyright (c) 2009-2010, Ryan Cavicchioni
  * @license http://www.opensource.org/licenses/bsd-license.php BSD Licnese
  */
-class ConnectionException extends \Exception {}
+class Connection_Exception extends \Exception {}

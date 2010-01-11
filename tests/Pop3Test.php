@@ -3,34 +3,34 @@ require_once 'PHPUnit/Framework.php';
 require_once 'lib/Pop3.php';
 
 use Mail\Protocol\Pop3;
-use Mail\Protocol\Pop3Exception;
+use Mail\Protocol\Pop3_Exception;
 
 class Pop3Test extends PHPUnit_Framework_TestCase
 {
 	public function testPop3TCPConnection()
 	{
 		$pop3 = new Pop3( 'localhost', 110, 'tcp' );
-		$this->assertFalse( $pop3->isConnected() );
+		$this->assertFalse( $pop3->is_connected() );
 		$pop3->connect();
-		$this->assertTrue( $pop3->isConnected() );
+		$this->assertTrue( $pop3->is_connected() );
 		$pop3->close();
 	}
 
 	public function testPop3SSLConnection()
 	{
 		$pop3 = new Pop3( 'localhost', 995, 'ssl' );
-		$this->assertFalse( $pop3->isConnected() );
+		$this->assertFalse( $pop3->is_connected() );
 		$pop3->connect();
-		$this->assertTrue( $pop3->isConnected() );
+		$this->assertTrue( $pop3->is_connected() );
 		$pop3->close();
 	}
 
 	public function testPop3TLSConnection()
 	{
 		$pop3 = new Pop3( 'localhost', 110, 'tls' );
-		$this->assertFalse( $pop3->isConnected() );
+		$this->assertFalse( $pop3->is_connected() );
 		$pop3->connect();
-		$this->assertTrue( $pop3->isConnected() );
+		$this->assertTrue( $pop3->is_connected() );
 		$pop3->close();
 	}
 
@@ -44,7 +44,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 		try {
 			$pop3->authenticate( 'wrong', 'wrong' );
 		}
-		catch ( Pop3Exception $e ) {
+		catch ( Pop3_Exception $e ) {
 			return;
 		}
 		$pop3->close();
@@ -62,7 +62,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 		try {
 			$pop3->authenticate( 'wrong', 'wrong' );
 		}
-		catch ( Pop3Exception $e ) {
+		catch ( Pop3_Exception $e ) {
 			return;
 		}
 		$pop3->close();
@@ -73,11 +73,11 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 	{
 		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
-		$this->assertType( 'string', $pop3->getServerCapabilities( 'raw' ) );
-		$this->assertType( 'array', $pop3->getServerCapabilities( 'array' ) );
+		$this->assertType( 'string', $pop3->get_server_capabilities( 'raw' ) );
+		$this->assertType( 'array', $pop3->get_server_capabilities( 'array' ) );
 		$pop3->authenticate( 'poptest', 'foobar12' );
-		$this->assertType( 'string', $pop3->getServerCapabilities( 'raw' ) );
-		$this->assertType( 'array', $pop3->getServerCapabilities( 'array' ) );
+		$this->assertType( 'string', $pop3->get_server_capabilities( 'raw' ) );
+		$this->assertType( 'array', $pop3->get_server_capabilities( 'array' ) );
 		$pop3->close();
 	}
 
@@ -95,8 +95,8 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 		$pop3 = new Pop3( 'localhost', 110, 'tls' );
 		$pop3->connect();
 		$pop3->authenticate( 'poptest', 'foobar12' );
-		$this->assertType( 'array', $pop3->listMessages() );
-		$this->assertType( 'array', $pop3->listMessages(1) );
+		$this->assertType( 'array', $pop3->list_messages() );
+		$this->assertType( 'array', $pop3->list_messages(1) );
 		$pop3->close();
 	}
 

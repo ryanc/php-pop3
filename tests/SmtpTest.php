@@ -5,16 +5,16 @@ require_once 'lib/Message.php';
 
 use Mail\Message;
 use Mail\Protocol\Smtp;
-use Mail\Protocol\SmtpException;
+use Mail\Protocol\Smtp_Exception;
 
 class SmtpTest extends PHPUnit_Framework_TestCase
 {
 	public function testSmtpTCPConnection()
 	{
 		$smtp = new Smtp( 'localhost', 25, 'tcp' );
-		$this->assertFalse( $smtp->isConnected() );
+		$this->assertFalse( $smtp->is_connected() );
 		$smtp->connect();
-		$this->assertTrue( $smtp->isConnected() );
+		$this->assertTrue( $smtp->is_connected() );
 		$this->assertTrue( $smtp->noop() );
 		$smtp->close();
 	}
@@ -22,9 +22,9 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	public function testSmtpTLSConnection()
 	{
 		$smtp = new Smtp( 'localhost', 587, 'tls' );
-		$this->assertFalse( $smtp->isConnected() );
+		$this->assertFalse( $smtp->is_connected() );
 		$smtp->connect();
-		$this->assertTrue( $smtp->isConnected() );
+		$this->assertTrue( $smtp->is_connected() );
 		$this->assertTrue( $smtp->noop() );
 		$smtp->close();
 	}
@@ -32,9 +32,9 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	public function testSmtpSSLConnection()
 	{
 		$smtp = new Smtp( 'localhost', 465, 'ssl' );
-		$this->assertFalse( $smtp->isConnected() );
+		$this->assertFalse( $smtp->is_connected() );
 		$smtp->connect();
-		$this->assertTrue( $smtp->isConnected() );
+		$this->assertTrue( $smtp->is_connected() );
 		$this->assertTrue( $smtp->noop() );
 		$smtp->close();
 	}
@@ -68,7 +68,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		try {
 			$smtp->authenticate( 'wrong', 'wrong' );
 		}
-		catch ( SmtpException $e ) {
+		catch ( Smtp_Exception $e ) {
 			return;
 		}
 		$smtp->close();
@@ -88,7 +88,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		try {
 			$smtp->authenticate( 'wrong', 'wrong' );
 		}
-		catch ( SmtpException $e ) {
+		catch ( Smtp_Exception $e ) {
 			return;
 		}
 		$smtp->close();
@@ -119,10 +119,10 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	public function testSmtpDataCommand()
 	{
 		$mail = new Message();
-		$mail->setFrom("poptest");
-		$mail->addTo("ryan");
-		$mail->setSubject( "Test message from PHPUnit." );
-		$mail->setBody( "Sent by SmtpTest::testSmtpDataCommand." );
+		$mail->set_from("poptest");
+		$mail->add_to("ryan");
+		$mail->set_subject( "Test message from PHPUnit." );
+		$mail->set_body( "Sent by SmtpTest::testSmtpDataCommand." );
 
 		$smtp = new Smtp( 'localhost', 587, 'tls' );
 		$smtp->connect();
@@ -178,11 +178,11 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$smtp->ehlo();
 		$smtp->authenticate( 'poptest', 'foobar12' );
 		$mail = new Message();
-		$mail->setFrom( 'poptest' );
-		$mail->addTo( 'ryan' );
-		$mail->addCc( 'poptest' );
-		$mail->setSubject( "Test message from PHPUnit." );
-		$mail->setBody( "Sent by SmtpTest::testSmtpSend." );
+		$mail->set_from( 'poptest' );
+		$mail->add_to( 'ryan' );
+		$mail->add_cc( 'poptest' );
+		$mail->set_subject( "Test message from PHPUnit." );
+		$mail->set_body( "Sent by SmtpTest::testSmtpSend." );
 
 		$smtp->send( $mail );
 	}

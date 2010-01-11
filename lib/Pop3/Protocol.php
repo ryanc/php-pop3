@@ -102,7 +102,7 @@ class Pop3 extends Connection
 	/**
 	 * Connect to the POP3 server.
 	 *
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the connection is already established
 	 *         or if PHP does not have the openssl extension loaded
 	 *         or if PHP failed to connect to the POP3 server
@@ -126,19 +126,19 @@ class Pop3 extends Connection
 	 * @param string $format
 	 * @return array
 	 */
-	public function getServerCapabilities( $format = 'array' )
+	public function get_server_capabilities( $format = 'array' )
 	{
-		$this->_validateState( self::STATE_AUTHORIZATION | self::STATE_TRANSACTION, 'CAPA' );
+		$this->_validate_state( self::STATE_AUTHORIZATION | self::STATE_TRANSACTION, 'CAPA' );
 
 		$this->_send( "CAPA" );
-		$resp = $this->_getResponse();
+		$resp = $this->_get_response();
 
-		if ( $this->_isResponseOK( $resp ) !== true ) {
-			throw new Pop3Exception( "The server returned a negative response to the CAPA command: {$resp}." );
+		if ( $this->_is_response_ok( $resp ) !== true ) {
+			throw new Pop3_Exception( "The server returned a negative response to the CAPA command: {$resp}." );
 		}
 
-		while ( $resp = $this->_getResponse() ) {
-			if ( $this->_isTerminationOctet( $resp ) === true ) {
+		while ( $resp = $this->_get_response() ) {
+			if ( $this->_is_termination_octet( $resp ) === true ) {
 				break;
 			}
 
@@ -158,7 +158,7 @@ class Pop3 extends Connection
 	 * Returns true if the TLS connection was successfully
 	 * established.
 	 *
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the server returned a negative response to the STLS
 	 *         (STARTTLS) command
 	 *         or if the TLS negotiation has failed.
@@ -166,15 +166,15 @@ class Pop3 extends Connection
 	 */
 	protected function _starttls()
 	{
-		$this->_isServerCapable( "STLS" );
+		$this->_is_server_capable( "STLS" );
 
-		$this->_validateState( self::STATE_AUTHORIZATION, 'STLS' );
+		$this->_validate_state( self::STATE_AUTHORIZATION, 'STLS' );
 
 		$this->_send( "STLS" );
-		$resp = $this->_getResponse();
+		$resp = $this->_get_response();
 		
-		if ( $this->_isResponseOK( $resp ) !== true ) {
-			throw new Pop3Exception( "The server returned a negative response to the STLS command: {$resp}" );
+		if ( $this->_is_response_ok( $resp ) !== true ) {
+			throw new Pop3_Exception( "The server returned a negative response to the STLS command: {$resp}" );
 		}
 
 		parent::_starttls();
@@ -188,26 +188,26 @@ class Pop3 extends Connection
 	 * @param string $username
 	 * @param string $password
 	 * @param string $method 'login' or 'plain'
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if an invalid authentication method is used.
 	 * @return bool
 	 * @todo Disable insecure authentication.
 	 */
 	public function authenticate( $username, $password, $method = 'plain' )
 	{
-		$this->_validateState( self::STATE_AUTHORIZATION, 'USER' );
+		$this->_validate_state( self::STATE_AUTHORIZATION, 'USER' );
 
 		$this->_username = $username;
 		$this->_password = $password;
 
 		if ( strtolower( $method ) === 'plain' ) {
-			$status = $this->_authPlain();
+			$status = $this->_auth_plain();
 		}
 		elseif ( strtolower( $method ) === 'login' ) {
-			$status = $this->_authLogin();
+			$status = $this->_auth_login();
 		}
 		else {
-			throw new Pop3Exception( "Invalid authentication method." );
+			throw new Pop3_Exception( "Invalid authentication method." );
 		}
 
 		$this->_state = self::STATE_TRANSACTION;
@@ -218,24 +218,24 @@ class Pop3 extends Connection
 	/**
 	 * Authenticate using the PLAIN mechanism.
 	 *
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if authentication fails.
 	 * @return bool
 	 */
-	private function _authPlain()
+	private function _auth_plain()
 	{
 		$this->_send( "USER {$this->_username}" );
-		$resp = $this->_getResponse( true );
+		$resp = $this->_get_response( true );
 
-		if ( $this->_isResponseOK( $resp ) === false ) {
-			throw new Pop3Exception( "The username is not valid: {$resp}" );
+		if ( $this->_is_response_ok( $resp ) === false ) {
+			throw new Pop3_Exception( "The username is not valid: {$resp}" );
 		}
 
 		$this->_send( "PASS {$this->_password}" );
-		$resp = $this->_getResponse( true );
+		$resp = $this->_get_response( true );
 
-		if ( $this->_isResponseOK( $resp ) === false ) {
-			throw new Pop3Exception( "The password is not valid: {$resp}" );
+		if ( $this->_is_response_ok( $resp ) === false ) {
+			throw new Pop3_Exception( "The password is not valid: {$resp}" );
 		}
 
 		return true;
@@ -244,32 +244,32 @@ class Pop3 extends Connection
 	/**
 	 * Authenticate using the LOGIN mechanism.
 	 *
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the server returns a negative response
 	 *         or if authentication fails.
 	 * @return bool
 	 */
-	private function _authLogin()
+	private function _auth_login()
 	{
 		$this->_send( "AUTH LOGIN" );
-		$resp = $this->_getResponse( true );
+		$resp = $this->_get_response( true );
 
 		if ( strpos( $resp, "+" ) === false ) {
-			throw new Pop3Exception( "The server returned a negative response to the AUTH LOGIN command: {$resp}" );
+			throw new Pop3_Exception( "The server returned a negative response to the AUTH LOGIN command: {$resp}" );
 		}
 
 		$this->_send( base64_encode( $this->_username ) );
-		$resp = $this->_getResponse( true );
+		$resp = $this->_get_response( true );
 
 		if ( strpos( $resp, "+" ) === false ) {
-			throw new Pop3Exception( "The username is not valid: {$resp}" );
+			throw new Pop3_Exception( "The username is not valid: {$resp}" );
 		}
 
 		$this->_send( base64_encode( $this->_password ) );
-		$resp = $this->_getResponse( true );
+		$resp = $this->_get_response( true );
 
-		if ( $this->_isResponseOK( $resp ) === false ) {
-			throw new Pop3Exception( "The password is not valid: {$resp}" );
+		if ( $this->_is_response_ok( $resp ) === false ) {
+			throw new Pop3_Exception( "The password is not valid: {$resp}" );
 		}
 
 		return true;
@@ -280,19 +280,19 @@ class Pop3 extends Connection
 	 * Issues the STAT command to the server and returns a drop
 	 * listing.
 	 *
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the server did not respond with a status message.
 	 * @return array
 	 */
 	public function status()
 	{
-		$this->_validateState( self::STATE_TRANSACTION, 'STAT' );
+		$this->_validate_state( self::STATE_TRANSACTION, 'STAT' );
 
 		$this->_send( "STAT" );
-		$resp = $this->_getResponse();
+		$resp = $this->_get_response();
 
-		if ( $this->_isResponseOK( $resp ) === false ) {
-			throw new Pop3Exception( "The server did not respond with a status message: {$resp}" );
+		if ( $this->_is_response_ok( $resp ) === false ) {
+			throw new Pop3_Exception( "The server did not respond with a status message: {$resp}" );
 		}
 		
 		sscanf( $resp, "+OK %d %d", $msgno, $size );
@@ -306,13 +306,13 @@ class Pop3 extends Connection
 	 * listing.
 	 *
 	 * @param int $msgid
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the server did not respond with a scan listing.
 	 * @return array
 	 */
-	public function listMessages( $msgid = null )
+	public function list_messages( $msgid = null )
 	{
-		$this->_validateState( self::STATE_TRANSACTION, 'LIST' );
+		$this->_validate_state( self::STATE_TRANSACTION, 'LIST' );
 
 		if ( $msgid !== null ) {
 			$this->_send( "LIST {$msgid}" );
@@ -321,10 +321,10 @@ class Pop3 extends Connection
 			$this->_send( "LIST" );
 		}
 	
-		$resp = $this->_getResponse();
+		$resp = $this->_get_response();
 
-		if ( $this->_isResponseOK( $resp ) === false ) {
-			throw new Pop3Exception( "The server did not respond with a scan listing: {$resp}" );
+		if ( $this->_is_response_ok( $resp ) === false ) {
+			throw new Pop3_Exception( "The server did not respond with a scan listing: {$resp}" );
 		}
 		
 		if ( $msgid !== null ) {
@@ -333,8 +333,8 @@ class Pop3 extends Connection
 		}
 
 		$messages = null;
-		while ( $resp = $this->_getResponse() ) {
-			if ( $this->_isTerminationOctet( $resp ) === true ) {
+		while ( $resp = $this->_get_response() ) {
+			if ( $this->_is_termination_octet( $resp ) === true ) {
 				break;
 			}
 			
@@ -350,7 +350,7 @@ class Pop3 extends Connection
 	 * of a message.
 	 *
 	 * @param int $msgid
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the message id is not defined
 	 *         or if the server returns a negative response to the
 	 *         RETR command.
@@ -358,22 +358,22 @@ class Pop3 extends Connection
 	 */
 	public function retrieve( $msgid )
 	{
-		$this->_validateState( self::STATE_TRANSACTION, 'RETR' );
+		$this->_validate_state( self::STATE_TRANSACTION, 'RETR' );
 
 		if ( $msgid === null ) {
-			throw new Pop3Exception( "A message number is required by the RETR command." );
+			throw new Pop3_Exception( "A message number is required by the RETR command." );
 		}
 
 		$this->_send( "RETR {$msgid}" );
-		$resp = $this->_getResponse();
+		$resp = $this->_get_response();
 
-		if ( $this->_isResponseOK( $resp ) === false ) {
-			throw new Pop3Exception( "The server sent a negative response to the RETR command: {$resp}" );
+		if ( $this->_is_response_ok( $resp ) === false ) {
+			throw new Pop3_Exception( "The server sent a negative response to the RETR command: {$resp}" );
 		}
 
 		$message = null;
-		while ( $resp = $this->_getResponse() ) {
-			if ( $this->_isTerminationOctet( $resp ) === true ) {
+		while ( $resp = $this->_get_response() ) {
+			if ( $this->_is_termination_octet( $resp ) === true ) {
 				break;
 			}
 
@@ -387,7 +387,7 @@ class Pop3 extends Connection
 	 * Deletes a message from the POP3 server.
 	 *
 	 * @param int $msgid
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the message id is not defined
 	 *         or if the returns a negative response to the DELE
 	 *         command.
@@ -395,17 +395,17 @@ class Pop3 extends Connection
 	 */
 	public function delete( $msgid )
 	{
-		$this->_validateState( self::STATE_TRANSACTION, 'DELE' );
+		$this->_validate_state( self::STATE_TRANSACTION, 'DELE' );
 
 		if ( $msgid === null ) {
-			throw new Pop3Exception( "A message number is required by the DELE command." );
+			throw new Pop3_Exception( "A message number is required by the DELE command." );
 		}
 
 		$this->_send( "DELE {$msgid}" );
-		$resp = $this->_getResponse();
+		$resp = $this->_get_response();
 
-		if ( $this->_isResponseOK( $resp ) === false ) {
-			throw new Pop3Exception( "The server sent a negative response to the DELE command: {$resp}" );
+		if ( $this->_is_response_ok( $resp ) === false ) {
+			throw new Pop3_Exception( "The server sent a negative response to the DELE command: {$resp}" );
 		}
 
 		return true;
@@ -415,20 +415,20 @@ class Pop3 extends Connection
 	 * The POP3 server does nothing, it mearly replies with a positive
 	 * response.
 	 * 
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the server returns a negative response to the NOOP
 	 *         command.
 	 * @return bool
 	 */
 	public function noop()
 	{
-		$this->_validateState( self::STATE_TRANSACTION, 'NOOP' );
+		$this->_validate_state( self::STATE_TRANSACTION, 'NOOP' );
 
 		$this->_send( "NOOP" );
-		$resp = $this->_getResponse();
+		$resp = $this->_get_response();
 
-		if ( $this->_isResponseOK( $resp ) === false ) {
-			throw new Pop3Exception( "The server sent a negative response to the NOOP command: {$resp}" );
+		if ( $this->_is_response_ok( $resp ) === false ) {
+			throw new Pop3_Exception( "The server sent a negative response to the NOOP command: {$resp}" );
 		}
 
 		return true;
@@ -437,20 +437,20 @@ class Pop3 extends Connection
 	/**
 	 * Resets the changes made in the POP3 session.
 	 *
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the server returns a negative response to the
 	 *         RSET command.
 	 * @return bool
 	 */
 	public function reset()
 	{
-		$this->_validateState( self::STATE_TRANSACTION, 'RSET' );
+		$this->_validate_state( self::STATE_TRANSACTION, 'RSET' );
 
 		$this->_send( "RSET" );
-		$resp = $this->_getResponse();
+		$resp = $this->_get_response();
 
-		if ( $this->_isResponseOK( $resp ) === false ) {
-			throw new Pop3Exception( "The server sent a negative response to the RSET command: {$resp}" );
+		if ( $this->_is_response_ok( $resp ) === false ) {
+			throw new Pop3_Exception( "The server sent a negative response to the RSET command: {$resp}" );
 		}
 
 		return true;
@@ -463,7 +463,7 @@ class Pop3 extends Connection
 	 *
 	 * @param int $msgid
 	 * @param int $lines
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the message id is not defined
 	 *         or if the number of lines is not defined
 	 *         of if the server returns a negative response to the TOP
@@ -472,28 +472,28 @@ class Pop3 extends Connection
 	 */
 	public function top( $msgid, $lines = 0 )
 	{
-		$this->_isServerCapable( "TOP" );
+		$this->_is_server_capable( "TOP" );
 
-		$this->_validateState( self::STATE_TRANSACTION, 'TOP' );
+		$this->_validate_state( self::STATE_TRANSACTION, 'TOP' );
 	
 		if ( $msgid === null ) {
-			throw new Pop3Exception( "A message number is required by the TOP command." );
+			throw new Pop3_Exception( "A message number is required by the TOP command." );
 		}
 
 		if ( $lines === null ) {
-			throw new Pop3Exception( "A number of lines is required by the TOP command." );
+			throw new Pop3_Exception( "A number of lines is required by the TOP command." );
 		}
 
 		$this->_send( "TOP {$msgid} {$lines}" );
-		$resp = $this->_getResponse();
+		$resp = $this->_get_response();
 
-		if ( $this->_isResponseOK( $resp ) === false ) {
-			throw new Pop3Exception( "The server sent a negative response to the TOP command: {$resp}" );
+		if ( $this->_is_response_ok( $resp ) === false ) {
+			throw new Pop3_Exception( "The server sent a negative response to the TOP command: {$resp}" );
 		}
 
 		$message = null;
-		while ( $resp = $this->_getResponse() ) {
-			if ( $this->_isTerminationOctet( $resp ) === true ) {
+		while ( $resp = $this->_get_response() ) {
+			if ( $this->_is_termination_octet( $resp ) === true ) {
 				break;
 			}
 
@@ -508,16 +508,16 @@ class Pop3 extends Connection
 	 * listing.
 	 *
 	 * @param int $msgid
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the server returns a negative response to the UIDL
 	 *         command.
 	 * @return array
 	 */
 	public function uidl( $msgid = null )
 	{
-		$this->_isServerCapable( "UIDL" );
+		$this->_is_server_capable( "UIDL" );
 
-		$this->_validateState( self::STATE_TRANSACTION, 'UIDL' );
+		$this->_validate_state( self::STATE_TRANSACTION, 'UIDL' );
 	
 		if ( $msgid !== null ) {
 			$this->_send( "UIDL {$msgid}" );
@@ -526,10 +526,10 @@ class Pop3 extends Connection
 			$this->_send( "UIDL" );
 		}
 	
-		$resp = $this->_getResponse();
+		$resp = $this->_get_response();
 
-		if ( $this->_isResponseOK( $resp ) === false ) {
-			throw new Pop3Exception( "The server did not respond with a scan listing: {$resp}" );
+		if ( $this->_is_response_ok( $resp ) === false ) {
+			throw new Pop3_Exception( "The server did not respond with a scan listing: {$resp}" );
 		}
 
 		if ( $msgid !== null ) {
@@ -538,8 +538,8 @@ class Pop3 extends Connection
 		}
 
 		$unique_id = null;
-		while ( $resp = $this->_getResponse() ) {
-			if ( $this->_isTerminationOctet( $resp ) === true ) {
+		while ( $resp = $this->_get_response() ) {
+			if ( $this->_is_termination_octet( $resp ) === true ) {
 				break;
 			}
 
@@ -554,22 +554,22 @@ class Pop3 extends Connection
 	 * Issues the QUIT command to the server and enters the UPDATE
 	 * state.
 	 *
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the server returns a negative response to the QUIT
 	 *         command.
 	 * @return bool
 	 */
 	public function quit()
 	{
-		$this->_validateState( self::STATE_AUTHORIZATION | self::STATE_TRANSACTION, 'QUIT' );
+		$this->_validate_state( self::STATE_AUTHORIZATION | self::STATE_TRANSACTION, 'QUIT' );
 
 		$this->_state = self::STATE_UPDATE;
 
 		$this->_send( "QUIT" );
-		$resp = $this->_getResponse();
+		$resp = $this->_get_response();
 
-		if ( $this->_isResponseOK( $resp ) === false ) {
-			throw new Pop3Exception( "The server sent a negative response to the QUIT command: {$resp}" );
+		if ( $this->_is_response_ok( $resp ) === false ) {
+			throw new Pop3_Exception( "The server sent a negative response to the QUIT command: {$resp}" );
 		}
 
 		$this->close();
@@ -585,7 +585,7 @@ class Pop3 extends Connection
 	 * @param string $resp
 	 * @return bool
 	 */
-	protected function _isResponseOK( $resp )
+	protected function _is_response_ok( $resp )
 	{
 		if ( strpos( $resp, self::RESP_OK ) === 0 ) {
 			return true;
@@ -600,9 +600,9 @@ class Pop3 extends Connection
 	 * @param string $resp
 	 * @return bool
 	 */
-	protected function _isGreetingOK( $resp )
+	protected function _is_greeting_ok( $resp )
 	{
-		return $this->_isResponseOK( $resp );
+		return $this->_is_response_ok( $resp );
 	}
 
 	/**
@@ -612,7 +612,7 @@ class Pop3 extends Connection
 	 * @param string $resp
 	 * @return bool
 	 */
-	private function _isTerminationOctet( $resp )
+	private function _is_termination_octet( $resp )
 	{
 		if ( strpos( rtrim( $resp, self::CRLF ), self::TERMINATION_OCTET ) === 0  ) {
 			return true;
@@ -626,7 +626,7 @@ class Pop3 extends Connection
 	 *
 	 * @return string
 	 */
-	private function _getCurrentStateName()
+	private function _get_current_state_name()
 	{
 		if ( $this->_state === self::STATE_NOT_CONNECTED ) {
 			return "STATE_NOT_CONNECTED";
@@ -646,17 +646,17 @@ class Pop3 extends Connection
 	 * Determines if the server is capable of the given command.
 	 *
 	 * @param string $cmd
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the server is not capable of the command.
 	 */
-	private function _isServerCapable( $cmd )
+	private function _is_server_capable( $cmd )
 	{
 		if ( empty( $this->_capabilities ) === true ) {
-			$this->getServerCapabilities();
+			$this->get_server_capabilities();
 		}
 
 		if ( in_array( $cmd, $this->_capabilities ) === false ) {
-			throw new Pop3Exception( "The server does not support the {$cmd} command." );
+			throw new Pop3_Exception( "The server does not support the {$cmd} command." );
 		}
 
 		return true;
@@ -667,13 +667,13 @@ class Pop3 extends Connection
 	 *
 	 * @param int $valid_state
 	 * @param string $cmd
-	 * @throws Pop3Exception
+	 * @throws Pop3_Exception
 	 *         if the command if not valid for the current state.
 	 */
-	protected function _validateState( $valid_state, $cmd )
+	protected function _validate_state( $valid_state, $cmd )
 	{
 		if ( ( $valid_state & $this->_state ) == 0 ) {
-			throw new Pop3Exception( "This {$cmd} command is invalid for the current state: {$this->_getCurrentStateName()}." );
+			throw new Pop3_Exception( "This {$cmd} command is invalid for the current state: {$this->_get_current_state_name()}." );
 		}
 	}
 }
