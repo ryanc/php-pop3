@@ -73,6 +73,10 @@ class Message
 
 	private function _generate_message_id()
 	{
+		if ( extension_loaded( 'openssl' ) === false ) {
+			throw new Message_Exception( "PHP does not have the openssl extension loaded." );
+		}
+
 		$rand = openssl_random_pseudo_bytes(8);
 		$hostname = gethostname();
 		$this->message_id = '<' . sha1( $rand ) . '@' . $hostname . '>';
@@ -129,4 +133,14 @@ class Message
 		return $this->_generate_header() . self::CRLF . $this->_generate_body();
 	}
 }
+
+/**
+ * Message Exception class.
+ *
+ * @package MailKit
+ * @author Ryan Cavicchioni <ryan@confabulator.net>
+ * @copyright Copyright (c) 2009-2010, Ryan Cavicchioni
+ * @license http://www.opensource.org/licenses/bsd-license.php BSD Licnese
+ */
+class Message_Exception extends \Exception {}
 ?>
