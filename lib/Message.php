@@ -73,11 +73,16 @@ class Message
 
 	private function _generate_message_id()
 	{
-		if ( extension_loaded( 'openssl' ) === false ) {
-			throw new Message_Exception( "PHP does not have the openssl extension loaded." );
+		if ( extension_loaded( 'openssl' ) === true ) {
+			$rand = openssl_random_pseudo_bytes(8);
 		}
 
-		$rand = openssl_random_pseudo_bytes(8);
+		else {
+			$fp = fopen( '/dev/urandom', 'rb' );
+			$rand = fread( $fp, 8 );
+			fclose( $fp );
+		}
+
 		$hostname = gethostname();
 		$this->message_id = '<' . sha1( $rand ) . '@' . $hostname . '>';
 	}
