@@ -21,7 +21,7 @@ namespace Mail;
 abstract class Connection
 {
 	/**
-	 * The CRLF sequence to _send to the server after a command.
+	 * The CRLF sequence to send to the server after a command.
 	 */
 	const CRLF = "\r\n";
 
