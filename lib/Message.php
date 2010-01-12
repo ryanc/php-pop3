@@ -113,7 +113,7 @@ class Message
 		
 		$this->_generate_message_id();
 
-		$this->add_header( "Message-Id", $this->message_id );
+		$this->add_header( "Message-ID", $this->message_id );
 	}
 
 	private function _generate_header()
