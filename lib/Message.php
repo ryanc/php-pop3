@@ -78,7 +78,7 @@ class Message
 		$this->message_id = '<' . sha1( $rand ) . '@' . $hostname . '>';
 	}
 
-	private function _buildHeaders()
+	private function _build_headers()
 	{
 		if ( $this->from !== null ) {
 			$this->add_header( "From", $this->from );
@@ -110,7 +110,7 @@ class Message
 	private function _generate_header()
 	{
 		$text = "";
-		$this->_buildHeaders();
+		$this->_build_headers();
 
 		foreach( $this->headers as $name => $value ) {
 			$text .= "{$name}: {$value}" . self::CRLF;
