@@ -23,7 +23,13 @@ class Message
 	public $body = null;
 	public $headers = array();
 	public $message_id = null;
+	public $priority = null;
 
+	const PRIORITY_HIGHEST = 1;
+	const PRIORITY_HIGH = 2;
+	const PRIORITY_NORMAL = 3;
+	const PRIORITY_LOW = 4;
+	const PRIORITY_LOWEST = 5;
 	const CRLF = "\r\n";
 
 	public function add_to( $addr )
@@ -66,6 +72,29 @@ class Message
 		$this->body = trim( $body );
 	}
 
+	public function set_priority( $priority = 3 )
+	{
+		$priority_map = array(
+			1 => 'Highest',
+			2 => 'High',
+			3 => 'Normal',
+			4 => 'Low',
+			5 => 'Lowest'
+		);
+
+		$pmap_keys = array_keys( $priority_map );
+
+		if ( $priority > 5 ) {
+			$priority = max( $pmap_keys );
+		}
+
+		elseif ( $priority < 1 ) {
+			$priority = min( $pmap_keys );
+		}
+
+		$this->priority = sprintf( "%d (%s)", $priority, $priority_map[$priority] );
+	}
+
 	public function add_header( $name, $value )
 	{
 		$this->headers[$name] = $value;
@@ -106,6 +135,9 @@ class Message
 		}
 		if ( count( $this->bcc ) ) {
 			$this->add_header( "Bcc" , implode( ", ", $this->cc ) );
+		}
+		if ( $this->priority !== null ) {
+			$this->add_header( "X-Priority", $this->priority );
 		}
 
 		$this->add_header( "Subject", $this->subject );

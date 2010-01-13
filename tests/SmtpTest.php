@@ -181,6 +181,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$mail->set_from( 'poptest' );
 		$mail->add_to( 'ryan' );
 		$mail->add_cc( 'poptest' );
+		$mail->set_priority( Message::PRIORITY_HIGHEST );
 		$mail->set_subject( "Test message from PHPUnit." );
 		$mail->set_body( "Sent by SmtpTest::testSmtpSend." );
 
