@@ -25,41 +25,43 @@ class Message
 	public $message_id = null;
 	public $priority = null;
 
+	// Priorities for the X-Priority header.
 	const PRIORITY_HIGHEST = 1;
 	const PRIORITY_HIGH = 2;
 	const PRIORITY_NORMAL = 3;
 	const PRIORITY_LOW = 4;
 	const PRIORITY_LOWEST = 5;
+
 	const CRLF = "\r\n";
 
-	public function add_to( $addr )
+	public function add_to( $addr, $name = null )
 	{
-		$this->to[] = trim( $addr );
+		$this->to[] = new Address( $addr, $name );
 	}
 
-	public function add_cc( $addr )
+	public function add_cc( $addr, $name = null )
 	{
-		$this->cc[] = trim( $addr);
+		$this->cc[] = new Address( $addr, $name );
 	}
 
-	public function add_bcc( $addr )
+	public function add_bcc( $addr, $name = null )
 	{
-		$this->bcc[] = trim( $addr );
+		$this->bcc[] = new Address( $addr, $name );
 	}
 
-	public function set_from( $addr )
+	public function set_from( $addr, $name = null )
 	{
-		$this->from = trim( $addr );
+		$this->from = new Address( $addr, $name );
 	}
 
-	public function set_sender( $addr )
+	public function set_sender( $addr, $name = null )
 	{
-		$this->sender = trim( $addr );
+		$this->sender = new Address( $addr, $name );
 	}
 
-	public function set_reply_to( $addr )
+	public function set_reply_to( $addr, $name = null )
 	{
-		$this->reply_to = trim( $addr );
+		$this->reply_to = new Address( $addr, $name );
 	}
 
 	public function set_subject( $subject )
@@ -119,13 +121,13 @@ class Message
 	private function _build_headers()
 	{
 		if ( $this->from !== null ) {
-			$this->add_header( "From", $this->from );
+			$this->add_header( "From", (string) $this->from );
 		}
 		if ( $this->sender !== null ) {
-			$this->add_header( "Sender", $this->sender );
+			$this->add_header( "Sender", (string) $this->sender );
 		}
 		if ( $this->reply_to !== null ) {
-			$this->add_header( "Reply-To", $this->reply_to );
+			$this->add_header( "Reply-To", (string) $this->reply_to );
 		}
 		if ( count( $this->to ) ) {
 			$this->add_header( "To", implode( ", ", $this->to ) );
@@ -180,4 +182,35 @@ class Message
  * @license http://www.opensource.org/licenses/bsd-license.php BSD Licnese
  */
 class Message_Exception extends \Exception {}
+
+/**
+ * Email address class.
+ *
+ * @package MailKit
+ * @author Ryan Cavicchioni <ryan@confabulator.net>
+ * @copyright Copyright (c) 2009-2010, Ryan Cavicchioni
+ * @license http://www.opensource.org/licenses/bsd-license.php BSD Licnese
+ */
+class Address
+{
+	public $name = null;
+	public $email = null;
+
+	public function __construct( $email, $name = null )
+	{
+		$this->name = $name;
+		$this->email = $email;
+	}
+
+	public function __toString()
+	{
+		if ( $this->name !== null && $this->email !== null ) {
+			return sprintf( "\"%s\" <%s>", $this->name, $this->email );
+		}
+
+		else {
+			return sprintf( "<%s>", $this->email );
+		}
+	}
+}
 ?>

@@ -178,9 +178,9 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$smtp->ehlo();
 		$smtp->authenticate( 'poptest', 'foobar12' );
 		$mail = new Message();
-		$mail->set_from( 'poptest' );
-		$mail->add_to( 'ryan' );
-		$mail->add_cc( 'poptest' );
+		$mail->set_from( 'poptest', 'Sgt. Charles Zim' );
+		$mail->add_to( 'ryan', 'Johnnie Rico' );
+		$mail->add_cc( 'poptest', 'Lt. Rasczak' );
 		$mail->set_priority( Message::PRIORITY_HIGHEST );
 		$mail->set_subject( "Test message from PHPUnit." );
 		$mail->set_body( "Sent by SmtpTest::testSmtpSend." );

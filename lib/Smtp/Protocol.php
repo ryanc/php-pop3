@@ -478,18 +478,18 @@ class Smtp extends Connection
 			throw new Smtp_Exception( "The message must have a recipient." );
 		}
 
-		$this->mail( $mail->from );
+		$this->mail( $mail->from->email );
 
-		foreach( $mail->to as $addr ) {
-			$this->rcpt( $addr );
+		foreach( $mail->to as $recipient ) {
+			$this->rcpt( $recipient->email );
 		}
 
-		foreach( $mail->cc as $addr ) {
-			$this->rcpt( $addr );
+		foreach( $mail->cc as $recipient ) {
+			$this->rcpt( $recipient->email );
 		}
 
-		foreach( $mail->bcc as $addr ) {
-			$this->rcpt( $addr );
+		foreach( $mail->bcc as $recipient ) {
+			$this->rcpt( $recipient->email );
 		}
 
 		$data = $mail->generate();
