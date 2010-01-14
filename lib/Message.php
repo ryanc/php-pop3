@@ -156,7 +156,7 @@ class Message
 		$this->_build_headers();
 
 		foreach( $this->headers as $name => $value ) {
-			$text .= "{$name}: {$value}" . self::CRLF;
+			$text .=  sprintf( "%s: %s%s",  $name, $value, self::CRLF );
 		}
 
 		return $text;
