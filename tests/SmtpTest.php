@@ -119,10 +119,10 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	public function testSmtpDataCommand()
 	{
 		$mail = new Message();
-		$mail->set_from("poptest");
-		$mail->add_to("ryan");
-		$mail->set_subject( "Test message from PHPUnit." );
-		$mail->set_body( "Sent by SmtpTest::testSmtpDataCommand." );
+		$mail->set_from("poptest")
+		     ->add_to("ryan")
+		     ->set_subject( "Test message from PHPUnit." )
+		     ->set_body( "Sent by SmtpTest::testSmtpDataCommand." );
 
 		$smtp = new Smtp( 'localhost', 587, 'tls' );
 		$smtp->connect();
@@ -178,12 +178,12 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$smtp->ehlo();
 		$smtp->authenticate( 'poptest', 'foobar12' );
 		$mail = new Message();
-		$mail->set_from( 'poptest', 'Sgt. Charles Zim' );
-		$mail->add_to( 'ryan', 'Johnnie Rico' );
-		$mail->add_cc( 'poptest', 'Lt. Rasczak' );
-		$mail->set_priority( Message::PRIORITY_HIGHEST );
-		$mail->set_subject( "Test message from PHPUnit." );
-		$mail->set_body( "Sent by SmtpTest::testSmtpSend." );
+		$mail->set_from( 'poptest', 'Sgt. Charles Zim' )
+		     ->add_to( 'ryan', 'Johnnie Rico' )
+		     ->add_cc( 'poptest', 'Lt. Rasczak' )
+		     ->set_priority( Message::PRIORITY_HIGHEST )
+		     ->set_subject( "Test message from PHPUnit." )
+		     ->set_body( "Sent by SmtpTest::testSmtpSend." );
 
 		$smtp->send( $mail );
 	}

@@ -37,41 +37,49 @@ class Message
 	public function add_to( $addr, $name = null )
 	{
 		$this->to[] = new Address( $addr, $name );
+		return $this;
 	}
 
 	public function add_cc( $addr, $name = null )
 	{
 		$this->cc[] = new Address( $addr, $name );
+		return $this;
 	}
 
 	public function add_bcc( $addr, $name = null )
 	{
 		$this->bcc[] = new Address( $addr, $name );
+		return $this;
 	}
 
 	public function set_from( $addr, $name = null )
 	{
 		$this->from = new Address( $addr, $name );
+		return $this;
 	}
 
 	public function set_sender( $addr, $name = null )
 	{
 		$this->sender = new Address( $addr, $name );
+		return $this;
 	}
 
 	public function set_reply_to( $addr, $name = null )
 	{
 		$this->reply_to = new Address( $addr, $name );
+		return $this;
 	}
 
 	public function set_subject( $subject )
 	{
 		$this->subject = trim( $subject );
+		return $this;
 	}
 
 	public function set_body( $body )
 	{
 		$this->body = trim( $body );
+		return $this;
 	}
 
 	public function set_priority( $priority = 3 )
@@ -95,6 +103,8 @@ class Message
 		}
 
 		$this->priority = sprintf( "%d (%s)", $priority, $priority_map[$priority] );
+
+		return $this;
 	}
 
 	public function add_header( $name, $value )
