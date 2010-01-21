@@ -13,174 +13,174 @@ namespace Mail;
 
 class Message
 {
-	public $to = array();
-	public $cc = array();
-	public $bcc = array();
-	public $from = null;
-	public $sender = null;
-	public $reply_to = null;
-	public $subject = null;
-	public $body = null;
-	public $headers = array();
-	public $message_id = null;
-	public $priority = null;
+    public $to = array();
+    public $cc = array();
+    public $bcc = array();
+    public $from = null;
+    public $sender = null;
+    public $reply_to = null;
+    public $subject = null;
+    public $body = null;
+    public $headers = array();
+    public $message_id = null;
+    public $priority = null;
 
-	// Priorities for the X-Priority header.
-	const PRIORITY_HIGHEST = 1;
-	const PRIORITY_HIGH = 2;
-	const PRIORITY_NORMAL = 3;
-	const PRIORITY_LOW = 4;
-	const PRIORITY_LOWEST = 5;
+    // Priorities for the X-Priority header.
+    const PRIORITY_HIGHEST = 1;
+    const PRIORITY_HIGH = 2;
+    const PRIORITY_NORMAL = 3;
+    const PRIORITY_LOW = 4;
+    const PRIORITY_LOWEST = 5;
 
-	const CRLF = "\r\n";
+    const CRLF = "\r\n";
 
-	public function add_to( $addr, $name = null )
-	{
-		$this->to[] = new Address( $addr, $name );
-		return $this;
-	}
+    public function add_to( $addr, $name = null )
+    {
+        $this->to[] = new Address( $addr, $name );
+        return $this;
+    }
 
-	public function add_cc( $addr, $name = null )
-	{
-		$this->cc[] = new Address( $addr, $name );
-		return $this;
-	}
+    public function add_cc( $addr, $name = null )
+    {
+        $this->cc[] = new Address( $addr, $name );
+        return $this;
+    }
 
-	public function add_bcc( $addr, $name = null )
-	{
-		$this->bcc[] = new Address( $addr, $name );
-		return $this;
-	}
+    public function add_bcc( $addr, $name = null )
+    {
+        $this->bcc[] = new Address( $addr, $name );
+        return $this;
+    }
 
-	public function set_from( $addr, $name = null )
-	{
-		$this->from = new Address( $addr, $name );
-		return $this;
-	}
+    public function set_from( $addr, $name = null )
+    {
+        $this->from = new Address( $addr, $name );
+        return $this;
+    }
 
-	public function set_sender( $addr, $name = null )
-	{
-		$this->sender = new Address( $addr, $name );
-		return $this;
-	}
+    public function set_sender( $addr, $name = null )
+    {
+        $this->sender = new Address( $addr, $name );
+        return $this;
+    }
 
-	public function set_reply_to( $addr, $name = null )
-	{
-		$this->reply_to = new Address( $addr, $name );
-		return $this;
-	}
+    public function set_reply_to( $addr, $name = null )
+    {
+        $this->reply_to = new Address( $addr, $name );
+        return $this;
+    }
 
-	public function set_subject( $subject )
-	{
-		$this->subject = trim( $subject );
-		return $this;
-	}
+    public function set_subject( $subject )
+    {
+        $this->subject = trim( $subject );
+        return $this;
+    }
 
-	public function set_body( $body )
-	{
-		$this->body = trim( $body );
-		return $this;
-	}
+    public function set_body( $body )
+    {
+        $this->body = trim( $body );
+        return $this;
+    }
 
-	public function set_priority( $priority = 3 )
-	{
-		$priority_map = array(
-			1 => 'Highest',
-			2 => 'High',
-			3 => 'Normal',
-			4 => 'Low',
-			5 => 'Lowest'
-		);
+    public function set_priority( $priority = 3 )
+    {
+        $priority_map = array(
+            1 => 'Highest',
+            2 => 'High',
+            3 => 'Normal',
+            4 => 'Low',
+            5 => 'Lowest'
+        );
 
-		$pmap_keys = array_keys( $priority_map );
+        $pmap_keys = array_keys( $priority_map );
 
-		if ( $priority > 5 ) {
-			$priority = max( $pmap_keys );
-		}
+        if ( $priority > 5 ) {
+            $priority = max( $pmap_keys );
+        }
 
-		elseif ( $priority < 1 ) {
-			$priority = min( $pmap_keys );
-		}
+        elseif ( $priority < 1 ) {
+            $priority = min( $pmap_keys );
+        }
 
-		$this->priority = sprintf( "%d (%s)", $priority, $priority_map[$priority] );
+        $this->priority = sprintf( "%d (%s)", $priority, $priority_map[$priority] );
 
-		return $this;
-	}
+        return $this;
+    }
 
-	public function add_header( $name, $value )
-	{
-		$this->headers[$name] = $value;
-	}
+    public function add_header( $name, $value )
+    {
+        $this->headers[$name] = $value;
+    }
 
-	private function _generate_message_id()
-	{
-		if ( extension_loaded( 'openssl' ) === true ) {
-			$rand = openssl_random_pseudo_bytes(8);
-		}
+    private function _generate_message_id()
+    {
+        if ( extension_loaded( 'openssl' ) === true ) {
+            $rand = openssl_random_pseudo_bytes(8);
+        }
 
-		else {
-			$fp = fopen( '/dev/urandom', 'rb' );
-			$rand = fread( $fp, 8 );
-			fclose( $fp );
-		}
+        else {
+            $fp = fopen( '/dev/urandom', 'rb' );
+            $rand = fread( $fp, 8 );
+            fclose( $fp );
+        }
 
-		$hostname = gethostname();
-		$this->message_id = '<' . sha1( $rand ) . '@' . $hostname . '>';
-	}
+        $hostname = gethostname();
+        $this->message_id = '<' . sha1( $rand ) . '@' . $hostname . '>';
+    }
 
-	private function _build_headers()
-	{
-		if ( $this->from !== null ) {
-			$this->add_header( "From", (string) $this->from );
-		}
-		if ( $this->sender !== null ) {
-			$this->add_header( "Sender", (string) $this->sender );
-		}
-		if ( $this->reply_to !== null ) {
-			$this->add_header( "Reply-To", (string) $this->reply_to );
-		}
-		if ( count( $this->to ) ) {
-			$this->add_header( "To", implode( ", ", $this->to ) );
-		}
-		if ( count( $this->cc ) ) {
-			$this->add_header( "Cc", implode( ", ", $this->cc ) );
-		}
-		if ( count( $this->bcc ) ) {
-			$this->add_header( "Bcc" , implode( ", ", $this->cc ) );
-		}
-		if ( $this->priority !== null ) {
-			$this->add_header( "X-Priority", $this->priority );
-		}
+    private function _build_headers()
+    {
+        if ( $this->from !== null ) {
+            $this->add_header( "From", (string) $this->from );
+        }
+        if ( $this->sender !== null ) {
+            $this->add_header( "Sender", (string) $this->sender );
+        }
+        if ( $this->reply_to !== null ) {
+            $this->add_header( "Reply-To", (string) $this->reply_to );
+        }
+        if ( count( $this->to ) ) {
+            $this->add_header( "To", implode( ", ", $this->to ) );
+        }
+        if ( count( $this->cc ) ) {
+            $this->add_header( "Cc", implode( ", ", $this->cc ) );
+        }
+        if ( count( $this->bcc ) ) {
+            $this->add_header( "Bcc" , implode( ", ", $this->cc ) );
+        }
+        if ( $this->priority !== null ) {
+            $this->add_header( "X-Priority", $this->priority );
+        }
 
-		$this->add_header( "Subject", $this->subject );
-		$this->add_header( "Date", date("r") );
-		
-		$this->_generate_message_id();
+        $this->add_header( "Subject", $this->subject );
+        $this->add_header( "Date", date("r") );
 
-		$this->add_header( "Message-ID", $this->message_id );
-	}
+        $this->_generate_message_id();
 
-	private function _generate_header()
-	{
-		$text = "";
-		$this->_build_headers();
+        $this->add_header( "Message-ID", $this->message_id );
+    }
 
-		foreach( $this->headers as $name => $value ) {
-			$text .=  sprintf( "%s: %s%s",  $name, $value, self::CRLF );
-		}
+    private function _generate_header()
+    {
+        $text = "";
+        $this->_build_headers();
 
-		return $text;
-	}
+        foreach( $this->headers as $name => $value ) {
+            $text .=  sprintf( "%s: %s%s",  $name, $value, self::CRLF );
+        }
 
-	private function _generate_body()
-	{
-		return $this->body;
-	}
+        return $text;
+    }
 
-	public function generate()
-	{
-		return $this->_generate_header() . self::CRLF . $this->_generate_body();
-	}
+    private function _generate_body()
+    {
+        return $this->body;
+    }
+
+    public function generate()
+    {
+        return $this->_generate_header() . self::CRLF . $this->_generate_body();
+    }
 }
 
 /**
@@ -203,24 +203,24 @@ class Message_Exception extends \Exception {}
  */
 class Address
 {
-	public $name = null;
-	public $email = null;
+    public $name = null;
+    public $email = null;
 
-	public function __construct( $email, $name = null )
-	{
-		$this->name = $name;
-		$this->email = $email;
-	}
+    public function __construct( $email, $name = null )
+    {
+        $this->name = $name;
+        $this->email = $email;
+    }
 
-	public function __toString()
-	{
-		if ( $this->name !== null && $this->email !== null ) {
-			return sprintf( "\"%s\" <%s>", $this->name, $this->email );
-		}
+    public function __toString()
+    {
+        if ( $this->name !== null && $this->email !== null ) {
+            return sprintf( "\"%s\" <%s>", $this->name, $this->email );
+        }
 
-		else {
-			return sprintf( "<%s>", $this->email );
-		}
-	}
+        else {
+            return sprintf( "<%s>", $this->email );
+        }
+    }
 }
 ?>
