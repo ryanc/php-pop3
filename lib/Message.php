@@ -24,6 +24,7 @@ class Message
     public $headers = array();
     public $message_id = null;
     public $priority = null;
+    public $user_agent = null;
 
     // Priorities for the X-Priority header.
     const PRIORITY_HIGHEST = 1;
@@ -107,6 +108,12 @@ class Message
         return $this;
     }
 
+    public function set_user_agent( $user_agent )
+    {
+        $this->user_agent = $user_agent;
+        return $this;
+    }
+
     public function add_header( $name, $value )
     {
         $this->headers[$name] = $value;
@@ -150,6 +157,9 @@ class Message
         }
         if ( $this->priority !== null ) {
             $this->add_header( "X-Priority", $this->priority );
+        }
+        if ( $this->user_agent !== null ) {
+            $this->add_header( "User-Agent", $this->user_agent );
         }
 
         $this->add_header( "Subject", $this->subject );
