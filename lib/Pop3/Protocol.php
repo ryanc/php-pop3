@@ -625,20 +625,16 @@ class Pop3 extends Connection
      *
      * @return string
      */
-    private function _get_current_state_name()
+    private function _state_to_string( $state )
     {
-        if ( $this->_state === self::STATE_NOT_CONNECTED ) {
-            return "STATE_NOT_CONNECTED";
-        }
-        if ( $this->_state === self::STATE_AUTHORIZATION ) {
-            return "STATE_AUTHORIZATION";
-        }
-        if ( $this->_state === self::STATE_TRANSACTION ) {
-            return "STATE_TRANSACTION";
-        }
-        if ( $this->_state === self::STATE_UPDATE ) {
-            return "STATE_UPDATE";
-        }
+        $state_map = array(
+            self::STATE_NOT_CONNECTED => 'STATE_NOT_CONNECTED',
+            self::STATE_AUTHORIZATION => 'STATE_AUTHORIZATION',
+            self::STATE_TRANSACTION   => 'STATE_TRANSACTION',
+            self::STATE_UPDATE        => 'STATE_UPDATE'
+        );
+
+        return $state_map[$state];
     }
 
     /**
@@ -672,7 +668,7 @@ class Pop3 extends Connection
     protected function _validate_state( $valid_state, $cmd )
     {
         if ( ( $valid_state & $this->_state ) == 0 ) {
-            throw new Pop3_Exception( "This {$cmd} command is invalid for the current state: {$this->_get_current_state_name()}." );
+            throw new Pop3_Exception( "This {$cmd} command is invalid for the current state: {$this->_state_to_string( $this->_state )}." );
         }
     }
 }
