@@ -153,7 +153,7 @@ class Message
             $this->add_header( "Cc", implode( ", ", $this->cc ) );
         }
         if ( count( $this->bcc ) ) {
-            $this->add_header( "Bcc" , implode( ", ", $this->cc ) );
+            $this->add_header( "Bcc", implode( ", ", $this->cc ) );
         }
         if ( $this->priority !== null ) {
             $this->add_header( "X-Priority", $this->priority );
