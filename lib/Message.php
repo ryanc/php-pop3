@@ -132,7 +132,7 @@ class Message
         }
 
         $hostname = gethostname();
-        $this->message_id = '<' . sha1( $rand ) . '@' . $hostname . '>';
+        $this->message_id = sprintf("<%s@%s>", sha1( $rand ), $hostname );
     }
 
     private function _build_headers()
