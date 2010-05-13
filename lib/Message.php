@@ -130,7 +130,7 @@ class Message
             $this->message_id = sprintf( "<%s@%s>", $uuid, $hostname );
         }
 
-        elseif ( extension_loaded( 'openssl' ) === true ) {
+        elseif ( function_exists( 'openssl_random_pseudo_bytes' ) === true ) {
             $rand = openssl_random_pseudo_bytes(8);
             $this->message_id = sprintf("<%s@%s>", sha1( $rand ), $hostname );
         }
