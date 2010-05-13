@@ -121,22 +121,31 @@ class Message
 
     private function _generate_message_id()
     {
-        if ( extension_loaded( 'openssl' ) === true ) {
+        $hostname = gethostname();
+
+        if ( file_exists( '/proc/sys/kernel/random/uuid' ) === true ) {
+            $fp = fopen( '/proc/sys/kernel/random/uuid', 'r' );
+            $uuid = fread( $fp, 36 );
+            fclose( $fp );
+            $this->message_id = sprintf( "<%s@%s>", $uuid, $hostname );
+        }
+
+        elseif ( extension_loaded( 'openssl' ) === true ) {
             $rand = openssl_random_pseudo_bytes(8);
+            $this->message_id = sprintf("<%s@%s>", sha1( $rand ), $hostname );
         }
 
         elseif ( file_exists( '/dev/urandom' ) === true ) {
             $fp = fopen( '/dev/urandom', 'rb' );
             $rand = fread( $fp, 8 );
             fclose( $fp );
+            $this->message_id = sprintf("<%s@%s>", sha1( $rand ), $hostname );
         }
 
         else {
-            $rand = sprintf( "%s.%s.%s", date( 'YmdGms'), getmypid(), mt_rand() );
+            $id = sprintf( "%s.%s.%s", date( 'YmdGms'), getmypid(), mt_rand() );
+            $this->message_id = sprintf( "<%s@%s>", $id, $hostname );
         }
-
-        $hostname = gethostname();
-        $this->message_id = sprintf("<%s@%s>", sha1( $rand ), $hostname );
     }
 
     private function _build_headers()
