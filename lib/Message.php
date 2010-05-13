@@ -125,10 +125,14 @@ class Message
             $rand = openssl_random_pseudo_bytes(8);
         }
 
-        else {
+        elseif ( file_exists( '/dev/urandom' ) === true ) {
             $fp = fopen( '/dev/urandom', 'rb' );
             $rand = fread( $fp, 8 );
             fclose( $fp );
+        }
+
+        else {
+            $rand = sprintf( "%s.%s.%s", date( 'YmdGms'), getmypid(), mt_rand() );
         }
 
         $hostname = gethostname();
