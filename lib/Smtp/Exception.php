@@ -19,4 +19,3 @@ namespace Mail\Protocol;
  * @license http://www.opensource.org/licenses/bsd-license.php BSD Licnese
  */
 class Smtp_Exception extends \Exception {}
-?>
