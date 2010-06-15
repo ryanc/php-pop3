@@ -128,6 +128,7 @@ class Pop3 extends Connection
      */
     public function get_server_capabilities( $format = 'array' )
     {
+        $this->_log->debug( 'POP3: Retrieving server capabilities' );
         $this->_validate_state( self::STATE_AUTHORIZATION | self::STATE_TRANSACTION, 'CAPA' );
 
         $this->_send( "CAPA" );
@@ -166,6 +167,7 @@ class Pop3 extends Connection
      */
     protected function _starttls()
     {
+        $this->_log->debug( 'POP3: Sending the STLS command. ' );
         $this->_is_server_capable( "STLS" );
 
         $this->_validate_state( self::STATE_AUTHORIZATION, 'STLS' );
@@ -224,6 +226,7 @@ class Pop3 extends Connection
      */
     private function _auth_plain()
     {
+        $this->_log->debug( 'POP3: Authenticating to the server via the PLAIN mechanism.' );
         $this->_send( "USER {$this->_username}" );
         $resp = $this->_get_response( true );
 
@@ -251,6 +254,7 @@ class Pop3 extends Connection
      */
     private function _auth_login()
     {
+        $this->_log->debug( 'POP3: Authenticating to the server via the LOGIN mechanism.' );
         $this->_send( "AUTH LOGIN" );
         $resp = $this->_get_response( true );
 
@@ -285,6 +289,7 @@ class Pop3 extends Connection
      */
     public function status()
     {
+        $this->_log->debug( 'POP3: Sending the STAT command.' );
         $this->_validate_state( self::STATE_TRANSACTION, 'STAT' );
 
         $this->_send( "STAT" );
@@ -311,6 +316,7 @@ class Pop3 extends Connection
      */
     public function list_messages( $msgid = null )
     {
+        $this->_log->debug( 'POP3: Sending the LIST command.' );
         $this->_validate_state( self::STATE_TRANSACTION, 'LIST' );
 
         if ( $msgid !== null ) {
@@ -357,6 +363,7 @@ class Pop3 extends Connection
      */
     public function retrieve( $msgid )
     {
+        $this->_log->debug( 'POP3: Sending the RETR command.' );
         $this->_validate_state( self::STATE_TRANSACTION, 'RETR' );
 
         if ( $msgid === null ) {
@@ -394,6 +401,7 @@ class Pop3 extends Connection
      */
     public function delete( $msgid )
     {
+        $this->_log->debug( 'POP3: Sending the DELE command.' );
         $this->_validate_state( self::STATE_TRANSACTION, 'DELE' );
 
         if ( $msgid === null ) {
@@ -421,6 +429,7 @@ class Pop3 extends Connection
      */
     public function noop()
     {
+        $this->_log->debug( 'POP3: Sending the NOOP command.' );
         $this->_validate_state( self::STATE_TRANSACTION, 'NOOP' );
 
         $this->_send( "NOOP" );
@@ -443,6 +452,7 @@ class Pop3 extends Connection
      */
     public function reset()
     {
+        $this->_log->debug( 'POP3: Sending the RSET command.' );
         $this->_validate_state( self::STATE_TRANSACTION, 'RSET' );
 
         $this->_send( "RSET" );
@@ -471,6 +481,7 @@ class Pop3 extends Connection
      */
     public function top( $msgid, $lines = 0 )
     {
+        $this->_log->debug( 'POP3: Sending the TOP command. ');
         $this->_is_server_capable( "TOP" );
 
         $this->_validate_state( self::STATE_TRANSACTION, 'TOP' );
@@ -514,6 +525,7 @@ class Pop3 extends Connection
      */
     public function uidl( $msgid = null )
     {
+        $this->_log->debug( 'POP3: Sending the UIDL command.' );
         $this->_is_server_capable( "UIDL" );
 
         $this->_validate_state( self::STATE_TRANSACTION, 'UIDL' );
@@ -560,6 +572,7 @@ class Pop3 extends Connection
      */
     public function quit()
     {
+        $this->_log->debug( 'POP3: Sending the QUIT command.' );
         $this->_validate_state( self::STATE_AUTHORIZATION | self::STATE_TRANSACTION, 'QUIT' );
 
         $this->_state = self::STATE_UPDATE;

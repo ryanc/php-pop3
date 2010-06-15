@@ -49,7 +49,6 @@ class Pop3Test extends PHPUnit_Framework_TestCase
         }
         $pop3->close();
         $this->fail();
-
     }
 
     public function testPop3AuthLogin()
