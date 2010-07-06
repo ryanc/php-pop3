@@ -22,9 +22,9 @@ class Message
 	public $subject = null;
 	public $body = null;
 	public $headers = array();
-	public $message_id = null;
+	public $messageId = null;
 	public $priority = null;
-	public $user_agent = null;
+	public $userAgent = null;
 
 	// Priorities for the X-Priority header.
 	const PRIORITY_HIGHEST = 1;
@@ -35,57 +35,57 @@ class Message
 
 	const CRLF = "\r\n";
 
-	public function add_to($addr, $name = null)
+	public function addTo($addr, $name = null)
 	{
 		$this->to[] = new Address($addr, $name);
 		return $this;
 	}
 
-	public function add_cc($addr, $name = null)
+	public function addCc($addr, $name = null)
 	{
 		$this->cc[] = new Address($addr, $name);
 		return $this;
 	}
 
-	public function add_bcc($addr, $name = null)
+	public function addBcc($addr, $name = null)
 	{
 		$this->bcc[] = new Address($addr, $name);
 		return $this;
 	}
 
-	public function set_from($addr, $name = null)
+	public function setFrom($addr, $name = null)
 	{
 		$this->from = new Address($addr, $name);
 		return $this;
 	}
 
-	public function set_sender($addr, $name = null)
+	public function setSender($addr, $name = null)
 	{
 		$this->sender = new Address($addr, $name);
 		return $this;
 	}
 
-	public function set_reply_to($addr, $name = null)
+	public function setReplyTo($addr, $name = null)
 	{
 		$this->reply_to = new Address($addr, $name);
 		return $this;
 	}
 
-	public function set_subject($subject)
+	public function setSubject($subject)
 	{
 		$this->subject = trim($subject);
 		return $this;
 	}
 
-	public function set_body($body)
+	public function setBody($body)
 	{
 		$this->body = trim($body);
 		return $this;
 	}
 
-	public function set_priority($priority = 3)
+	public function setPriority($priority = 3)
 	{
-		$priority_map = array(
+		$priorityMap = array(
 			1 => 'Highest',
 			2 => 'High',
 			3 => 'Normal',
@@ -93,33 +93,33 @@ class Message
 			5 => 'Lowest'
 		);
 
-		$pmap_keys = array_keys($priority_map);
+		$pmapKeys = array_keys($priorityMap);
 
 		if ($priority > 5) {
-			$priority = max($pmap_keys);
+			$priority = max($pmapKeys);
 		}
 
 		elseif ($priority < 1) {
-			$priority = min($pmap_keys);
+			$priority = min($pmapKeys);
 		}
 
-		$this->priority = sprintf("%d (%s)", $priority, $priority_map[$priority]);
+		$this->priority = sprintf("%d (%s)", $priority, $priorityMap[$priority]);
 
 		return $this;
 	}
 
-	public function set_user_agent($user_agent)
+	public function setUserAgent($userAgent)
 	{
-		$this->user_agent = $user_agent;
+		$this->userAgent = $userAgent;
 		return $this;
 	}
 
-	public function add_header($name, $value)
+	public function addHeader($name, $value)
 	{
 		$this->headers[$name] = $value;
 	}
 
-	private function _generate_message_id()
+	private function generateMessageId()
 	{
 		$hostname = gethostname();
 
@@ -127,66 +127,66 @@ class Message
 			$fp = fopen('/proc/sys/kernel/random/uuid', 'r');
 			$uuid = fread($fp, 36);
 			fclose($fp);
-			$this->message_id = sprintf("<%s@%s>", $uuid, $hostname);
+			$this->messageId = sprintf("<%s@%s>", $uuid, $hostname);
 		}
 
 		elseif (function_exists('openssl_random_pseudo_bytes') === true) {
 			$rand = openssl_random_pseudo_bytes(8);
-			$this->message_id = sprintf("<%s@%s>", sha1($rand), $hostname);
+			$this->messageId = sprintf("<%s@%s>", sha1($rand), $hostname);
 		}
 
 		elseif (file_exists('/dev/urandom') === true) {
 			$fp = fopen('/dev/urandom', 'rb');
 			$rand = fread($fp, 8);
 			fclose($fp);
-			$this->message_id = sprintf("<%s@%s>", sha1($rand), $hostname);
+			$this->messageId = sprintf("<%s@%s>", sha1($rand), $hostname);
 		}
 
 		else {
 			$id = sprintf("%s.%s.%s", date('YmdGms'), getmypid(), mt_rand());
-			$this->message_id = sprintf("<%s@%s>", $id, $hostname);
+			$this->messageId = sprintf("<%s@%s>", $id, $hostname);
 		}
 	}
 
-	private function _build_headers()
+	private function _buildHeaders()
 	{
 		if ($this->from !== null) {
-			$this->add_header("From", (string) $this->from);
+			$this->addHeader("From", (string) $this->from);
 		}
 		if ($this->sender !== null) {
-			$this->add_header("Sender", (string) $this->sender);
+			$this->addHeader("Sender", (string) $this->sender);
 		}
 		if ($this->reply_to !== null) {
-			$this->add_header("Reply-To", (string) $this->reply_to);
+			$this->addHeader("Reply-To", (string) $this->reply_to);
 		}
 		if (count($this->to)) {
-			$this->add_header("To", implode(", ", $this->to));
+			$this->addHeader("To", implode(", ", $this->to));
 		}
 		if (count($this->cc)) {
-			$this->add_header("Cc", implode(", ", $this->cc));
+			$this->addHeader("Cc", implode(", ", $this->cc));
 		}
 		if (count($this->bcc)) {
-			$this->add_header("Bcc", implode(", ", $this->cc));
+			$this->addHeader("Bcc", implode(", ", $this->cc));
 		}
 		if ($this->priority !== null) {
-			$this->add_header("X-Priority", $this->priority);
+			$this->addHeader("X-Priority", $this->priority);
 		}
-		if ($this->user_agent !== null) {
-			$this->add_header("User-Agent", $this->user_agent);
+		if ($this->userAgent !== null) {
+			$this->addHeader("User-Agent", $this->userAgent);
 		}
 
-		$this->add_header("Subject", $this->subject);
-		$this->add_header("Date", date("r"));
+		$this->addHeader("Subject", $this->subject);
+		$this->addHeader("Date", date("r"));
 
-		$this->_generate_message_id();
+		$this->generateMessageId();
 
-		$this->add_header("Message-ID", $this->message_id);
+		$this->addHeader("Message-ID", $this->messageId);
 	}
 
-	private function _generate_header()
+	private function _generateHeader()
 	{
 		$text = "";
-		$this->_build_headers();
+		$this->_buildHeaders();
 
 		foreach($this->headers as $name => $value) {
 			$text .=  sprintf("%s: %s%s",	$name, $value, self::CRLF);
@@ -195,14 +195,14 @@ class Message
 		return $text;
 	}
 
-	private function _generate_body()
+	private function _generateBody()
 	{
 		return $this->body;
 	}
 
 	public function generate()
 	{
-		return $this->_generate_header() . self::CRLF . $this->_generate_body();
+		return $this->_generateHeader() . self::CRLF . $this->_generateBody();
 	}
 }
 

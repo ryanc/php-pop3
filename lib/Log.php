@@ -4,10 +4,10 @@ class Log
 {
 	private static $_instance = null;
 
-	private static $_logfile;
+	private static $_logFile;
 	private $_fh;
-	private $_date_fmt = "M j, Y H:i:s";
-	private $_log_fmt = "%s [%s] %s";
+	private $_dateFormat = "M j, Y H:i:s";
+	private $_logFormat = "%s [%s] %s";
 
 	const LF = "\n";
 
@@ -34,7 +34,7 @@ class Log
 			throw new Log_Exception("The log file path cannot be null.");
 		}
 
-		self::$_logfile = $logfile;
+		self::$_logFile = $logfile;
 
 		if (self::$_instance === null) {
 			$class = __CLASS__;
@@ -52,9 +52,9 @@ class Log
 
 	public function open()
 	{
-	   $this->_fh = @fopen(self::$_logfile, 'a');
+	   $this->_fh = @fopen(self::$_logFile, 'a');
 
-	   if ($this->is_file_open() === false) {
+	   if ($this->isFileOpen() === false) {
 		   throw new Log_Exception("Cannot open the log file: {$logfile}");
 	   }
 	}
@@ -73,7 +73,7 @@ class Log
 		fclose($this->_fh);
 	}
 
-	public function is_file_open()
+	public function isFileOpen()
 	{
 		if (is_resource($this->_fh) === true) {
 			return true;
@@ -84,9 +84,9 @@ class Log
 		}
 	}
 
-	public function priority_to_string($priority)
+	public function priorityToString($priority)
 	{
-		$priority_map = array(
+		$priorityMap = array(
 			self::LOG_EMERGENCY => 'emergency',
 			self::LOG_ALERT		=> 'alert',
 			self::LOG_CRITICAL	=> 'critical',
@@ -97,12 +97,12 @@ class Log
 			self::LOG_DEBUG		=> 'debug'
 	   );
 
-		return $priority_map[$priority];
+		return $priorityMap[$priority];
 	}
 
-	public function string_to_priority($name)
+	public function stringToPriority($name)
 	{
-		$priority_map = array(
+		$priorityMap = array(
 			'emergency' => self::LOG_EMERGENCY,
 			'alert'		=> self::LOG_ALERT,
 			'critical'	=> self::LOG_CRITICAL,
@@ -113,15 +113,15 @@ class Log
 			'debug'		=> self::LOG_DEBUG
 	   );
 
-		return $priority_map[strtolower($name)];
+		return $priorityMap[strtolower($name)];
 	}
 
 	public function log($priority, $line)
 	{
 		$date = new DateTime();
-		$this->write(sprintf($this->_log_fmt,
-			$date->format($this->_date_fmt),
-			$this->priority_to_string($priority),
+		$this->write(sprintf($this->_logFormat,
+			$date->format($this->_dateFormat),
+			$this->priorityToString($priority),
 			$line
 	   ));
 	}
@@ -160,7 +160,7 @@ class Log
 
 	public function __destruct()
 	{
-		if ($this->is_file_open() === true) {
+		if ($this->isFileOpen() === true) {
 			$this->close();
 		}
 	}

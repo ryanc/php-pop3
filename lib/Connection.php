@@ -119,7 +119,7 @@ abstract class Connection
 	 */
 	public function connect()
 	{
-		if ($this->is_connected() === true) {
+		if ($this->isConnected() === true) {
 			throw new Connection_Exception("The connection is already established.");
 		}
 		if (($this->_transport === 'ssl' || $this->_transport === 'tls') && extension_loaded('openssl') === false) {
@@ -139,13 +139,13 @@ abstract class Connection
 		}
 
 		// Check if connection was established.
-		if ($this->is_connected() === false) {
+		if ($this->isConnected() === false) {
 			throw new Connection_Exception("Failed to connect to server: {$this->_host}:{$this->_port}.");
 		}
 
-		$this->_greeting = $this->_get_response();
+		$this->_greeting = $this->_getResponse();
 
-		if ($this->_is_greeting_ok($this->_greeting) === false) {
+		if ($this->_isGreetingOk($this->_greeting) === false) {
 			throw new Connection_Exception("Negative response from the server was received: '{$this->_greeting}'");
 		}
 	}
@@ -154,7 +154,7 @@ abstract class Connection
 	 * Returns true if connected to the POP3 server.
 	 * @returns bool
 	 */
-	public function is_connected()
+	public function isConnected()
 	{
 		return is_resource($this->_socket);
 	}
@@ -166,9 +166,9 @@ abstract class Connection
 	 *		   if PHP failed to read resp from the socket.
 	 * @returns string
 	 */
-	protected function _get_response($trim = false)
+	protected function _getResponse($trim = false)
 	{
-		if ($this->is_connected() === true) {
+		if ($this->isConnected() === true) {
 			$buf = '';
 			$resp = '';
 
@@ -201,7 +201,7 @@ abstract class Connection
 	 */
 	protected function _send($data)
 	{
-		if ($this->is_connected() === true) {
+		if ($this->isConnected() === true) {
 			if (fwrite($this->_socket, $data . self::CRLF, strlen($data . self::CRLF)) === false) {
 				throw new Connection_Exception("Failed to write to the socket.");
 			}
@@ -214,7 +214,7 @@ abstract class Connection
 	public function close()
 	{
 		$this->_log->debug('Closing connection.');
-		if ($this->is_connected()) {
+		if ($this->isConnected()) {
 			fclose($this->_socket);
 			$this->_socket = null;
 		}
