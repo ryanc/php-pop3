@@ -18,7 +18,7 @@ class Message
 	public $bcc = array();
 	public $from = null;
 	public $sender = null;
-	public $reply_to = null;
+	public $replyTo = null;
 	public $subject = null;
 	public $body = null;
 	public $headers = array();
@@ -67,7 +67,7 @@ class Message
 
 	public function setReplyTo($addr, $name = null)
 	{
-		$this->reply_to = new Address($addr, $name);
+		$this->replyTo = new Address($addr, $name);
 		return $this;
 	}
 
@@ -161,7 +161,7 @@ class Message
 		if ($this->sender !== null) {
 			$this->addHeader("Sender", (string) $this->sender);
 		}
-		if ($this->reply_to !== null) {
+		if ($this->replyTo !== null) {
 			$this->addHeader("Reply-To", (string) $this->reply_to);
 		}
 		if (count($this->to)) {
