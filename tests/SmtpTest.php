@@ -130,7 +130,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$smtp->authenticate('poptest', 'foobar12');
 		$smtp->mail('poptest');
 		$smtp->rcpt('ryan');
-		$this->assertTrue($smtp->data($mail->generate()));
+		$this->assertTrue($smtp->data($mail->toString()));
 		$smtp->close();
 	}
 

@@ -188,26 +188,18 @@ class Message
 		$this->addHeader("Message-ID", $this->messageId);
 	}
 
-	private function _generateHeader()
+	public function toString()
 	{
-		$text = "";
+		$buf = "";
 		$this->_buildHeaders();
 
 		foreach($this->headers as $name => $value) {
-			$text .=  sprintf("%s: %s%s", $name, $value, self::CRLF);
+			$buf .=  sprintf("%s: %s%s", $name, $value, self::CRLF);
 		}
 
-		return $text;
-	}
-
-	private function _generateBody()
-	{
-		return $this->body;
-	}
-
-	public function generate()
-	{
-		return $this->_generateHeader() . self::CRLF . $this->_generateBody();
+		$buf .= self::CRLF;
+		$buf .= $this->body;
+		return $buf;
 	}
 }
 

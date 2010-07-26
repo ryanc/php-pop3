@@ -492,7 +492,7 @@ class Smtp extends Connection
 			$this->rcpt($recipient->email);
 		}
 
-		$data = $mail->generate();
+		$data = $mail->toString();
 
 		$this->data($data);
 
