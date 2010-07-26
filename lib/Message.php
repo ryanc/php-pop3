@@ -194,7 +194,7 @@ class Message
 		$this->_buildHeaders();
 
 		foreach($this->headers as $name => $value) {
-			$text .=  sprintf("%s: %s%s",	$name, $value, self::CRLF);
+			$text .=  sprintf("%s: %s%s", $name, $value, self::CRLF);
 		}
 
 		return $text;
