@@ -119,33 +119,38 @@ class Message
 		$this->headers[$name] = $value;
 	}
 
-	private function generateMessageId()
+	private function getRandomId()
 	{
-		$hostname = gethostname();
-
 		if (file_exists('/proc/sys/kernel/random/uuid') === true) {
 			$fp = fopen('/proc/sys/kernel/random/uuid', 'r');
 			$uuid = fread($fp, 36);
 			fclose($fp);
-			$this->messageId = sprintf("<%s@%s>", $uuid, $hostname);
+			return $uuid;
 		}
 
 		elseif (function_exists('openssl_random_pseudo_bytes') === true) {
 			$rand = openssl_random_pseudo_bytes(8);
-			$this->messageId = sprintf("<%s@%s>", sha1($rand), $hostname);
+			return sha1($rand);
 		}
 
 		elseif (file_exists('/dev/urandom') === true) {
 			$fp = fopen('/dev/urandom', 'rb');
 			$rand = fread($fp, 8);
 			fclose($fp);
-			$this->messageId = sprintf("<%s@%s>", sha1($rand), $hostname);
+			return sha1($rand);
 		}
 
 		else {
 			$id = sprintf("%s.%s.%s", date('YmdGms'), getmypid(), mt_rand());
-			$this->messageId = sprintf("<%s@%s>", $id, $hostname);
+			return $id;
 		}
+	}
+
+	private function setMessageId()
+	{
+		$hostname = gethostname();
+
+		$this->messageId = sprintf("<%s@%s>", $this->getRandomId(), $hostname);
 	}
 
 	private function _buildHeaders()
@@ -178,7 +183,7 @@ class Message
 		$this->addHeader("Subject", $this->subject);
 		$this->addHeader("Date", date("r"));
 
-		$this->generateMessageId();
+		$this->setMessageId();
 
 		$this->addHeader("Message-ID", $this->messageId);
 	}
