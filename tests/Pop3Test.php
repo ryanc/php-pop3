@@ -7,162 +7,147 @@ use Mail\Protocol\Pop3_Exception;
 
 class Pop3Test extends PHPUnit_Framework_TestCase
 {
+	protected $_connection;
+
+	public function setUp()
+	{
+		$this->_connection = new Pop3('localhost', 110, 'tls');
+		if ($this->_connection->isConnected() === false) {
+			$this->_connection->connect();
+		}
+	}
+
+	public function tearDown()
+	{
+		if ($this->_connection->isConnected() === true) {
+			$this->_connection->close();
+		}
+	}
+
 	public function testPop3TCPConnection()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tcp');
-		$this->assertFalse($pop3->isConnected());
-		$pop3->connect();
-		$this->assertTrue($pop3->isConnected());
-		$pop3->close();
+		$this->_connection = new Pop3('localhost', 110, 'tcp');
+		$this->assertFalse($this->_connection->isConnected());
+		$this->_connection->connect();
+		$this->assertTrue($this->_connection->isConnected());
+		$this->_connection->close();
 	}
 
 	public function testPop3SSLConnection()
 	{
-		$pop3 = new Pop3('localhost', 995, 'ssl');
-		$this->assertFalse($pop3->isConnected());
-		$pop3->connect();
-		$this->assertTrue($pop3->isConnected());
-		$pop3->close();
+		$this->_connection = new Pop3('localhost', 995, 'ssl');
+		$this->assertFalse($this->_connection->isConnected());
+		$this->_connection->connect();
+		$this->assertTrue($this->_connection->isConnected());
+		$this->_connection->close();
 	}
 
 	public function testPop3TLSConnection()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tls');
-		$this->assertFalse($pop3->isConnected());
-		$pop3->connect();
-		$this->assertTrue($pop3->isConnected());
-		$pop3->close();
+		$this->_connection = new Pop3('localhost', 110, 'tls');
+		$this->assertFalse($this->_connection->isConnected());
+		$this->_connection->connect();
+		$this->assertTrue($this->_connection->isConnected());
+		$this->_connection->close();
 	}
 
 	public function testPop3AuthPlain()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tls');
-		$pop3->connect();
-		$this->assertTrue($pop3->authenticate('poptest', 'foobar12', 'plain'));
-		$pop3->close();
-		$pop3->connect();
+		$this->assertTrue($this->_connection->authenticate('poptest', 'foobar12', 'plain'));
+		/*
+		$this->_connection->connect();
 		try {
-			$pop3->authenticate('wrong', 'wrong');
+			$this->_connection->authenticate('wrong', 'wrong');
 		}
 		catch (Pop3_Exception $e) {
 			return;
 		}
-		$pop3->close();
+		$this->_connection->close();
 		$this->fail();
+		*/
 	}
 
 	public function testPop3AuthLogin()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tls');
-		$pop3->connect();
-		$this->assertTrue($pop3->authenticate('poptest', 'foobar12', 'login'));
-		$pop3->close();
-		$pop3->connect();
+		$this->assertTrue($this->_connection->authenticate('poptest', 'foobar12', 'login'));
+		/*
+		$this->_connection->connect();
 		try {
-			$pop3->authenticate('wrong', 'wrong');
+			$this->_connection->authenticate('wrong', 'wrong');
 		}
 		catch (Pop3_Exception $e) {
 			return;
 		}
-		$pop3->close();
+		$this->_connection->close();
 		$this->fail();
+		*/
 	}
 
 	public function testPop3CapaCommand()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tls');
-		$pop3->connect();
-		$this->assertType('string', $pop3->getServerCapabilities('raw'));
-		$this->assertType('array', $pop3->getServerCapabilities('array'));
-		$pop3->authenticate('poptest', 'foobar12');
-		$this->assertType('string', $pop3->getServerCapabilities('raw'));
-		$this->assertType('array', $pop3->getServerCapabilities('array'));
-		$pop3->close();
+		$this->assertType('string', $this->_connection->getServerCapabilities('raw'));
+		$this->assertType('array', $this->_connection->getServerCapabilities('array'));
+		$this->_connection->authenticate('poptest', 'foobar12');
+		$this->assertType('string', $this->_connection->getServerCapabilities('raw'));
+		$this->assertType('array', $this->_connection->getServerCapabilities('array'));
 	}
 
 	public function testPop3StatCommand()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tls');
-		$pop3->connect();
-		$pop3->authenticate('poptest', 'foobar12');
-		$this->assertType('array', $pop3->status());
-		$pop3->close();
+		$this->_connection->authenticate('poptest', 'foobar12');
+		$this->assertType('array', $this->_connection->status());
 	}
 
 	public function testPop3ListCommand()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tls');
-		$pop3->connect();
-		$pop3->authenticate('poptest', 'foobar12');
-		$this->assertType('array', $pop3->listMessages());
-		$this->assertType('array', $pop3->listMessages(1));
-		$pop3->close();
+		$this->_connection->authenticate('poptest', 'foobar12');
+		$this->assertType('array', $this->_connection->listMessages());
+		$this->assertType('array', $this->_connection->listMessages(1));
 	}
 
 	public function testPop3RetrCommand()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tls');
-		$pop3->connect();
-		$pop3->authenticate('poptest', 'foobar12');
-		$this->assertType('string', $pop3->retrieve(1));
-		$pop3->close();
+		$this->_connection->authenticate('poptest', 'foobar12');
+		$this->assertType('string', $this->_connection->retrieve(1));
 	}
 
 	public function testPop3DeleCommand()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tls');
-		$pop3->connect();
-		$pop3->authenticate('poptest', 'foobar12');
-		$this->assertTrue($pop3->delete(1));
-		$pop3->reset();
-		$pop3->close();
+		$this->_connection->authenticate('poptest', 'foobar12');
+		$this->assertTrue($this->_connection->delete(1));
+		$this->_connection->reset();
 	}
 
 	public function testPop3RsetCommand()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tls');
-		$pop3->connect();
-		$pop3->authenticate('poptest', 'foobar12');
-		$pop3->delete(1);
-		$this->assertTrue($pop3->reset());
-		$pop3->close();
+		$this->_connection->authenticate('poptest', 'foobar12');
+		$this->_connection->delete(1);
+		$this->assertTrue($this->_connection->reset());
 	}
 
 	public function testPop3NoopCommand()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tls');
-		$pop3->connect();
-		$pop3->authenticate('poptest', 'foobar12');
-		$this->assertTrue($pop3->noop());
-		$pop3->close();
+		$this->_connection->authenticate('poptest', 'foobar12');
+		$this->assertTrue($this->_connection->noop());
 	}
 
 	public function testPop3TopCommand()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tls');
-		$pop3->connect();
-		$pop3->authenticate('poptest', 'foobar12');
-		$this->assertType('string', $pop3->top(1));
-		$pop3->close();
+		$this->_connection->authenticate('poptest', 'foobar12');
+		$this->assertType('string', $this->_connection->top(1));
 	}
 
 	public function testPop3UidlCommand()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tls');
-		$pop3->connect();
-		$pop3->authenticate('poptest', 'foobar12');
-		$this->assertType('array', $pop3->uidl());
-		$this->assertType('array', $pop3->uidl(1));
-		$pop3->close();
+		$this->_connection->authenticate('poptest', 'foobar12');
+		$this->assertType('array', $this->_connection->uidl());
+		$this->assertType('array', $this->_connection->uidl(1));
 	}
 
 	public function testPop3QuitCommand()
 	{
-		$pop3 = new Pop3('localhost', 110, 'tls');
-		$pop3->connect();
-		$pop3->authenticate('poptest', 'foobar12');
-		$this->assertTrue($pop3->quit());
-		$pop3->close();
+		$this->_connection->authenticate('poptest', 'foobar12');
+		$this->assertTrue($this->_connection->quit());
 	}
 }
 ?>
