@@ -72,8 +72,6 @@ abstract class Connection
 	 */
 	protected $_timeout = 30;
 
-	protected $_log = null;
-
 	/**
 	 * Public constructor.
 	 *
@@ -104,7 +102,6 @@ abstract class Connection
 		$this->_port = $port;
 		$this->_transport = $transport;
 		$this->_timeout = $timeout;
-		$this->_log = \Log::instance();
 	}
 
 	/**
@@ -129,7 +126,6 @@ abstract class Connection
 		$errno = null;
 		$errstr = null;
 
-		$this->_log->debug('Connecting to ' . $this->_host . ':' . $this->_port . '.');
 		// Check if SSL is enabled.
 		if ($this->_transport === 'ssl') {
 			$this->_socket = @fsockopen("ssl://{$this->_host}:{$this->_port}", $errno, $errstr, $timeout);
@@ -213,7 +209,6 @@ abstract class Connection
 	 */
 	public function close()
 	{
-		$this->_log->debug('Closing connection.');
 		if ($this->isConnected()) {
 			fclose($this->_socket);
 			$this->_socket = null;
@@ -244,7 +239,6 @@ abstract class Connection
 	 */
 	protected function _starttls()
 	{
-		$this->_log->debug('Starting TLS negotiation. ');
 		if (stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT) == false) {
 			throw new Connection_Exception("The TLS negotiation has failed.");
 		}
