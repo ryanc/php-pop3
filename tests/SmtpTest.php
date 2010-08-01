@@ -71,36 +71,35 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	{
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
 		$this->assertTrue($this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD, 'plain'));
-		/*
-		$smtp->connect();
-		$smtp->helo(TESTS_MAIL_SMTP_HOST);
-		try {
-			$smtp->authenticate('wrong', 'wrong');
-		}
-		catch (Smtp_Exception $e) {
-			return;
-		}
-		$smtp->close();
-		$this->fail();
-		*/
 	}
 
 	public function testSmtpAuthLogin()
 	{
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
 		$this->assertTrue($this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD, 'login'));
-		/*
-		$smtp->connect();
-		$smtp->helo(TESTS_MAIL_SMTP_HOST);
-		try {
-			$smtp->authenticate('wrong', 'wrong');
+	}
+
+	public function testSmtpAutoPlainFail()
+	{
+		$this->_connection->helo(TESTS_MAIL_SMTP_HOST); try {
+			$this->_connection->authenticate('wrong', 'wrong', 'plain');
 		}
 		catch (Smtp_Exception $e) {
 			return;
 		}
-		$smtp->close();
 		$this->fail();
-		*/
+	}
+
+	public function testSmtpAuthLoginFail()
+	{
+		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
+		try {
+			$this->_connection->authenticate('wrong', 'wrong', 'login');
+		}
+		catch (Smtp_Exception $e) {
+			return;
+		}
+		$this->fail();
 	}
 
 	public function testSmtpMailCommand()

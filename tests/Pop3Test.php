@@ -55,33 +55,33 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 	public function testPop3AuthPlain()
 	{
 		$this->assertTrue($this->_connection->authenticate(TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD, 'plain'));
-		/*
-		$this->_connection->connect();
-		try {
-			$this->_connection->authenticate('wrong', 'wrong');
-		}
-		catch (Pop3_Exception $e) {
-			return;
-		}
-		$this->_connection->close();
-		$this->fail();
-		*/
 	}
 
 	public function testPop3AuthLogin()
 	{
 		$this->assertTrue($this->_connection->authenticate(TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD, 'login'));
-		/*
-		$this->_connection->connect();
+	}
+	
+	public function testPop3AuthPlainFail()
+	{
 		try {
-			$this->_connection->authenticate('wrong', 'wrong');
+			$this->_connection->authenticate('wrong', 'wrong', 'plain');
 		}
 		catch (Pop3_Exception $e) {
 			return;
 		}
-		$this->_connection->close();
 		$this->fail();
-		*/
+	}
+
+	public function testPop3AuthLoginFail()
+	{
+		try {
+			$this->_connection->authenticate('wrong', 'wrong', 'login');
+		}
+		catch (Pop3_Exception $e) {
+			return;
+		}
+		$this->fail();
 	}
 
 	public function testPop3CapaCommand()
