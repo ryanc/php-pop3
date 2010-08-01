@@ -173,4 +173,16 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$this->_connection->send($mail);
 	}
 }
+
+class SmtpTest_Skip extends PHPUnit_Framework_TestCase
+{
+	public function setUp()
+	{
+		$this->markTestSkipped('SMTP tests are not enabled.');
+	}
+
+	public function testDoNothing()
+	{
+	}
+}
 ?>
