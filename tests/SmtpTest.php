@@ -2,6 +2,7 @@
 require_once 'PHPUnit/Framework.php';
 require_once 'lib/Smtp.php';
 require_once 'lib/Message.php';
+require_once 'tests/TestConfiguration.php';
 
 use Mail\Message;
 use Mail\Protocol\Smtp;
@@ -13,7 +14,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->_connection = new Smtp('localhost', 587, 'tls');
+		$this->_connection = new Smtp(TESTS_MAIL_SMTP_HOST, TESTS_MAIL_SMTP_SUBMISSION_PORT, 'tls');
 		if ($this->_connection->isConnected() === false) {
 			$this->_connection->connect();
 		}
@@ -28,7 +29,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 
 	public function testSmtpTCPConnection()
 	{
-		$smtp = new Smtp('localhost', 25, 'tcp');
+		$smtp = new Smtp(TESTS_MAIL_SMTP_HOST, TESTS_MAIL_SMTP_PORT, 'tcp');
 		$this->assertFalse($smtp->isConnected());
 		$smtp->connect();
 		$this->assertTrue($smtp->isConnected());
@@ -38,7 +39,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 
 	public function testSmtpTLSConnection()
 	{
-		$smtp = new Smtp('localhost', 587, 'tls');
+		$smtp = new Smtp(TESTS_MAIL_SMTP_HOST, TESTS_MAIL_SMTP_SUBMISSION_PORT, 'tls');
 		$this->assertFalse($smtp->isConnected());
 		$smtp->connect();
 		$this->assertTrue($smtp->isConnected());
@@ -48,7 +49,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 
 	public function testSmtpSSLConnection()
 	{
-		$smtp = new Smtp('localhost', 465, 'ssl');
+		$smtp = new Smtp(TESTS_MAIL_SMTP_HOST, TESTS_MAIL_SMTP_SSL_PORT, 'ssl');
 		$this->assertFalse($smtp->isConnected());
 		$smtp->connect();
 		$this->assertTrue($smtp->isConnected());
@@ -58,21 +59,21 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 
 	public function testSmtpHeloCommand()
 	{
-		$this->assertTrue($this->_connection->helo('localhost'));
+		$this->assertTrue($this->_connection->helo(TESTS_MAIL_SMTP_HOST));
 	}
 
 	public function testSmtpEhloCommand()
 	{
-		$this->assertType('array', $this->_connection->ehlo('localhost'));
+		$this->assertType('array', $this->_connection->ehlo(TESTS_MAIL_SMTP_HOST));
 	}
 
 	public function testSmtpAuthPlain()
 	{
-		$this->_connection->helo('localhost');
-		$this->assertTrue($this->_connection->authenticate('poptest', 'foobar12', 'plain'));
+		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
+		$this->assertTrue($this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD, 'plain'));
 		/*
 		$smtp->connect();
-		$smtp->helo('localhost');
+		$smtp->helo(TESTS_MAIL_SMTP_HOST);
 		try {
 			$smtp->authenticate('wrong', 'wrong');
 		}
@@ -86,11 +87,11 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 
 	public function testSmtpAuthLogin()
 	{
-		$this->_connection->helo('localhost');
-		$this->assertTrue($this->_connection->authenticate('poptest', 'foobar12', 'login'));
+		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
+		$this->assertTrue($this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD, 'login'));
 		/*
 		$smtp->connect();
-		$smtp->helo('localhost');
+		$smtp->helo(TESTS_MAIL_SMTP_HOST);
 		try {
 			$smtp->authenticate('wrong', 'wrong');
 		}
@@ -104,17 +105,17 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 
 	public function testSmtpMailCommand()
 	{
-		$this->_connection->helo('localhost');
-		$this->_connection->authenticate('poptest', 'foobar12');
-		$this->assertTrue($this->_connection->mail('poptest'));
+		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
+		$this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD);
+		$this->assertTrue($this->_connection->mail(TESTS_MAIL_SMTP_USER));
 	}
 
 	public function testSmtpRcptCommand()
 	{
-		$this->_connection->helo('localhost');
-		$this->_connection->authenticate('poptest', 'foobar12');
-		$this->assertTrue($this->_connection->mail('poptest'));
-		$this->assertTrue($this->_connection->rcpt('poptest'));
+		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
+		$this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD);
+		$this->assertTrue($this->_connection->mail(TESTS_MAIL_SMTP_USER));
+		$this->assertTrue($this->_connection->rcpt(TESTS_MAIL_SMTP_USER));
 	}
 
 	public function testSmtpDataCommand()
@@ -125,25 +126,25 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 			 ->setSubject("Test message from PHPUnit.")
 			 ->setBody("Sent by SmtpTest::testSmtpDataCommand.");
 
-		$this->_connection->helo('localhost');
-		$this->_connection->authenticate('poptest', 'foobar12');
-		$this->_connection->mail('poptest');
+		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
+		$this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD);
+		$this->_connection->mail(TESTS_MAIL_SMTP_USER);
 		$this->_connection->rcpt('ryan');
 		$this->assertTrue($this->_connection->data($mail->toString()));
 	}
 
 	public function testSmtpRsetCommand()
 	{
-		$this->_connection->helo('localhost');
-		$this->_connection->authenticate('poptest', 'foobar12');
-		$this->_connection->mail('poptest');
-		$this->_connection->rcpt('poptest');
+		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
+		$this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD);
+		$this->_connection->mail(TESTS_MAIL_SMTP_USER);
+		$this->_connection->rcpt(TESTS_MAIL_SMTP_USER);
 		$this->assertTrue($this->_connection->reset());
 	}
 
 	public function testSmtpVrfyCommand()
 	{
-		$this->assertTrue($this->_connection->vrfy('poptest'));
+		$this->assertTrue($this->_connection->vrfy(TESTS_MAIL_SMTP_USER));
 		$this->assertFalse($this->_connection->vrfy('wrong'));
 	}
 
@@ -160,11 +161,11 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	public function testSmtpSend()
 	{
 		$this->_connection->ehlo();
-		$this->_connection->authenticate('poptest', 'foobar12');
+		$this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD);
 		$mail = new Message();
-		$mail->setFrom('poptest', 'Sgt. Charles Zim')
+		$mail->setFrom(TESTS_MAIL_SMTP_USER, 'Sgt. Charles Zim')
 			 ->addTo('ryan', 'Johnnie Rico')
-			 ->addCc('poptest', 'Lt. Rasczak')
+			 ->addCc(TESTS_MAIL_SMTP_USER, 'Lt. Rasczak')
 			 ->setPriority(Message::PRIORITY_HIGHEST)
 			 ->setUserAgent('MailKit')
 			 ->setSubject("Test message from PHPUnit.")
