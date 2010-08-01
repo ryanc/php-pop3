@@ -1,0 +1,15 @@
+<?php
+define('TESTS_MAIL_SMTP_ENABLED', true);
+define('TESTS_MAIL_SMTP_HOST', 'localhost');
+define('TESTS_MAIL_SMTP_PORT', 25);
+define('TESTS_MAIL_SMTP_SSL_PORT', 465);
+define('TESTS_MAIL_SMTP_SUBMISSION_PORT', 587);
+define('TESTS_MAIL_SMTP_USER', 'user');
+define('TESTS_MAIL_SMTP_PASSWORD', 'password');
+
+define('TESTS_MAIL_POP3_ENABLED', true);
+define('TESTS_MAIL_POP3_HOST', 'localhost');
+define('TESTS_MAIL_POP3_PORT', 110);
+define('TESTS_MAIL_POP3_SSL_PORT', 995);
+define('TESTS_MAIL_POP3_USER', 'user');
+define('TESTS_MAIL_POP3_PASSWORD', 'password');
