@@ -248,7 +248,9 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 			 ->setSubject("Test message from PHPUnit.")
 			 ->setBody("Sent by SmtpTest::testSmtpSend.");
 
-		$this->_connection->send($mail);
+		$this->assertTrue(
+		  $this->_connection->send($mail)
+		);
 	}
 }
 
