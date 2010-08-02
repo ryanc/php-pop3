@@ -2,7 +2,6 @@
 require_once 'PHPUnit/Framework.php';
 require_once 'lib/Smtp.php';
 require_once 'lib/Message.php';
-require_once 'tests/TestConfiguration.php';
 
 use Mail\Message;
 use Mail\Protocol\Smtp;

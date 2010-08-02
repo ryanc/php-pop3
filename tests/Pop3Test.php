@@ -1,7 +1,6 @@
 <?php
 require_once 'PHPUnit/Framework.php';
 require_once 'lib/Pop3.php';
-require_once 'tests/TestConfiguration.php';
 
 use Mail\Protocol\Pop3;
 use Mail\Protocol\Pop3_Exception;
