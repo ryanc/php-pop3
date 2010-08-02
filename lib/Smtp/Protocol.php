@@ -139,22 +139,28 @@ class Smtp extends Connection
 	/**
 	 * Authenticate the user to the SMTP server.
 	 *
-	 * @param string $username
-	 * @param string $password
-	 * @param string $method 'login' or 'plain'
+	 * @param array $authConfig
 	 * @throws Smtp_Exception
 	 *		   if an invalid authentication method is used.
 	 * @return bool
 	 */
-	public function authenticate($username, $password, $method = 'plain')
+	public function authenticate(array $authConfig = array())
 	{
-		$this->username = $username;
-		$this->password = $password;
+		$defaultAuthConfig = array(
+		  'user'      => 'anonymous',
+		  'password'  => 'anonymous',
+		  'mechanism' => 'plain'
+		);
 
-		if (strtolower($method) === 'plain') {
+		array_merge($defaultAuthConfig, $authConfig);
+
+		$this->_username = $authConfig['user'];
+		$this->_password = $authConfig['password'];
+
+		if (strtolower($authConfig['mechanism']) === 'plain') {
 			$status = $this->_authPlain();
 		}
-		elseif (strtolower($method) === 'login') {
+		elseif (strtolower($authConfig['mechanism']) === 'login') {
 			$status = $this->_authLogin();
 		}
 		else {
@@ -176,7 +182,7 @@ class Smtp extends Connection
 	private function _authPlain()
 	{
 		// Validate session state.
-		$auth_string = base64_encode("\0{$this->username}\0{$this->password}");
+		$auth_string = base64_encode("\0{$this->_username}\0{$this->_password}");
 
 		$this->_send("AUTH PLAIN {$auth_string}");
 		$resp = $this->_getResponse(true);
@@ -205,14 +211,14 @@ class Smtp extends Connection
 			throw new Smtp_Exception("The server returned a negative response to the AUTH LOGIN command: {$resp}");
 		}
 
-		$this->_send(base64_encode($this->username));
+		$this->_send(base64_encode($this->_username));
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 334) === false) {
 			throw new Smtp_Exception("The server did not accept the username: {$resp}");
 		}
 
-		$this->_send(base64_encode($this->password));
+		$this->_send(base64_encode($this->_password));
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 235) === false) {

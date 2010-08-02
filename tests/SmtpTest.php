@@ -11,6 +11,12 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 {
 	protected $_connection;
 
+	protected $_authConfig = array(
+	  'user'      => TESTS_MAIL_SMTP_USER,
+	  'password'  => TESTS_MAIL_SMTP_PASSWORD,
+	  'mechanism' => 'plain'
+	);
+
 	public function setUp()
 	{
 		$config = array(
@@ -115,24 +121,34 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	{
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
 		$this->assertTrue(
-		  $this->_connection->authenticate(
-		    TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD, 'plain'
-		));
+		  $this->_connection->authenticate($this->_authConfig)
+		);
 	}
 
 	public function testSmtpAuthLogin()
 	{
+		$authConfig = array(
+		  'user'      => TESTS_MAIL_SMTP_USER,
+		  'password'  => TESTS_MAIL_SMTP_PASSWORD,
+		  'mechanism' => 'login'
+		);
+
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
 		$this->assertTrue(
-		  $this->_connection->authenticate(
-		    TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD, 'login'
-		));
+		  $this->_connection->authenticate($authConfig)
+		);
 	}
 
 	public function testSmtpAuthPlainFail()
 	{
+		$authConfig = array(
+		  'user'      => 'wrong',
+		  'password'  => 'wrong',
+		  'mechanism' => 'plain'
+		);
+
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST); try {
-			$this->_connection->authenticate('wrong', 'wrong', 'plain');
+			$this->_connection->authenticate($authConfig);
 		}
 		catch (Smtp_Exception $e) {
 			return;
@@ -142,9 +158,15 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 
 	public function testSmtpAuthLoginFail()
 	{
+		$authConfig = array(
+		  'user'      => 'wrong',
+		  'password'  => 'wrong',
+		  'mechanism' => 'login'
+		);
+
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
 		try {
-			$this->_connection->authenticate('wrong', 'wrong', 'login');
+			$this->_connection->authenticate($authConfig);
 		}
 		catch (Smtp_Exception $e) {
 			return;
@@ -155,9 +177,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	public function testSmtpMailCommand()
 	{
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
-		$this->_connection->authenticate(
-		  TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->assertTrue(
 		  $this->_connection->mail(TESTS_MAIL_SMTP_USER)
 		);
@@ -166,9 +186,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	public function testSmtpRcptCommand()
 	{
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
-		$this->_connection->authenticate(
-		  TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->assertTrue(
 		  $this->_connection->mail(TESTS_MAIL_SMTP_USER)
 		);
@@ -186,9 +204,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 			 ->setBody("Sent by SmtpTest::testSmtpDataCommand.");
 
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
-		$this->_connection->authenticate(
-		  TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->_connection->mail(TESTS_MAIL_SMTP_USER);
 		$this->_connection->rcpt('ryan');
 		$this->assertTrue(
@@ -199,9 +215,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	public function testSmtpRsetCommand()
 	{
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
-		$this->_connection->authenticate(
-		  TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->_connection->mail(TESTS_MAIL_SMTP_USER);
 		$this->_connection->rcpt(TESTS_MAIL_SMTP_USER);
 		$this->assertTrue(
@@ -236,9 +250,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	public function testSmtpSend()
 	{
 		$this->_connection->ehlo();
-		$this->_connection->authenticate(
-		  TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$mail = new Message();
 		$mail->setFrom(TESTS_MAIL_SMTP_USER, 'Sgt. Charles Zim')
 			 ->addTo('ryan', 'Johnnie Rico')

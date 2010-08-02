@@ -9,6 +9,12 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 {
 	protected $_connection;
 
+	protected $_authConfig = array(
+	  'user'      => TESTS_MAIL_POP3_USER,
+	  'password'  => TESTS_MAIL_POP3_PASSWORD,
+	  'mechanism' => 'plain'
+	);
+
 	public function setUp()
 	{
 		$config = array(
@@ -89,25 +95,33 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 	public function testPop3AuthPlain()
 	{
 		$this->assertTrue(
-		  $this->_connection->authenticate(
-			TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD, 'plain'
-		));
+		  $this->_connection->authenticate($this->_authConfig)
+		);
 	}
 
 	public function testPop3AuthLogin()
 	{
+		$authConfig = array(
+		  'user'      => TESTS_MAIL_POP3_USER,
+		  'password'  => TESTS_MAIL_POP3_PASSWORD,
+		  'mechanism' => 'login'
+		);
+
 		$this->assertTrue(
-		  $this->_connection->authenticate(
-			TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD, 'login'
-		));
+		  $this->_connection->authenticate($authConfig)
+		);
 	}
 
 	public function testPop3AuthPlainFail()
 	{
+		$authConfig = array(
+		  'user'      => 'wrong',
+		  'password'  => 'wrong',
+		  'mechanism' => 'plain'
+		);
+
 		try {
-			$this->_connection->authenticate(
-			  'wrong', 'wrong', 'plain'
-			);
+			$this->_connection->authenticate($authConfig);
 		}
 		catch (Pop3_Exception $e) {
 			return;
@@ -117,10 +131,14 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 
 	public function testPop3AuthLoginFail()
 	{
+		$authConfig = array(
+		  'user'      => 'wrong',
+		  'password'  => 'wrong',
+		  'mechanism' => 'login'
+		);
+
 		try {
-			$this->_connection->authenticate(
-			  'wrong', 'wrong', 'login'
-			);
+			$this->_connection->authenticate($authConfig);
 		}
 		catch (Pop3_Exception $e) {
 			return;
@@ -138,9 +156,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 		  'array',
 		  $this->_connection->getServerCapabilities('array')
 		);
-		$this->_connection->authenticate(
-		  TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->assertType(
 		  'string',
 		  $this->_connection->getServerCapabilities('raw')
@@ -153,9 +169,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 
 	public function testPop3StatCommand()
 	{
-		$this->_connection->authenticate(
-		  TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->assertType(
 		  'array',
 		  $this->_connection->status()
@@ -164,9 +178,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 
 	public function testPop3ListCommand()
 	{
-		$this->_connection->authenticate(
-		  TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->assertType(
 		  'array',
 		  $this->_connection->listMessages()
@@ -179,9 +191,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 
 	public function testPop3RetrCommand()
 	{
-		$this->_connection->authenticate(
-		  TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->assertType(
 		  'string',
 		  $this->_connection->retrieve(1)
@@ -190,9 +200,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 
 	public function testPop3DeleCommand()
 	{
-		$this->_connection->authenticate(
-		  TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->assertTrue(
 		  $this->_connection->delete(1)
 		);
@@ -201,9 +209,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 
 	public function testPop3RsetCommand()
 	{
-		$this->_connection->authenticate(
-		  TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->_connection->delete(1);
 		$this->assertTrue(
 		  $this->_connection->reset()
@@ -212,9 +218,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 
 	public function testPop3NoopCommand()
 	{
-		$this->_connection->authenticate(
-		  TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->assertTrue(
 		  $this->_connection->noop()
 		);
@@ -222,9 +226,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 
 	public function testPop3TopCommand()
 	{
-		$this->_connection->authenticate(
-		  TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->assertType(
 		  'string',
 		  $this->_connection->top(1)
@@ -233,9 +235,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 
 	public function testPop3UidlCommand()
 	{
-		$this->_connection->authenticate(
-		  TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->assertType(
 		  'array',
 		  $this->_connection->uidl()
@@ -248,9 +248,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 
 	public function testPop3QuitCommand()
 	{
-		$this->_connection->authenticate(
-		  TESTS_MAIL_POP3_USER, TESTS_MAIL_POP3_PASSWORD
-		);
+		$this->_connection->authenticate($this->_authConfig);
 		$this->assertTrue(
 		  $this->_connection->quit()
 		);

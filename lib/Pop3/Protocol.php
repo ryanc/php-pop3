@@ -204,25 +204,31 @@ class Pop3 extends Connection
 	/**
 	 * Authenticate the user to the server.
 	 *
-	 * @param string $username
-	 * @param string $password
-	 * @param string $method 'login' or 'plain'
+	 * @param array $authConfig
 	 * @throws Pop3_Exception
 	 *		   if an invalid authentication method is used.
 	 * @return bool
 	 * @todo Disable insecure authentication.
 	 */
-	public function authenticate($username, $password, $method = 'plain')
+	public function authenticate(array $authConfig = array())
 	{
 		$this->_validateState(self::STATE_AUTHORIZATION, 'USER');
 
-		$this->_username = $username;
-		$this->_password = $password;
+		$defaultAuthConfig = array(
+		  'user'      => 'anonymous',
+		  'password'  => 'anonymous',
+		  'mechanism' => 'plain'
+		);
 
-		if (strtolower($method) === 'plain') {
+		array_merge($defaultAuthConfig, $authConfig);
+
+		$this->_username = $authConfig['user'];
+		$this->_password = $authConfig['password'];
+
+		if (strtolower($authConfig['mechanism']) === 'plain') {
 			$status = $this->_authPlain();
 		}
-		elseif (strtolower($method) === 'login') {
+		elseif (strtolower($authConfig['mechanism']) === 'login') {
 			$status = $this->_authLogin();
 		}
 		else {
