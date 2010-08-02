@@ -77,7 +77,7 @@ abstract class Connection
 	 *
 	 * @param array $config
 	 */
-	public function __construct($config = array())
+	public function __construct(array $config = array())
 	{
 		$this->_host = $config['host'];
 		$this->_port = $config['port'];

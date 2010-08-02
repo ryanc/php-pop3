@@ -75,7 +75,7 @@ class Smtp extends Connection
 	 *
 	 * @param array $config
 	 */
-	public function __construct($config = array())
+	public function __construct(array $config = array())
 	{
 		$defaultConfig = array(
 			'host'	   => 'localhost',
