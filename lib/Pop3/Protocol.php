@@ -100,6 +100,25 @@ class Pop3 extends Connection
 	protected $_state = self::STATE_NOT_CONNECTED;
 
 	/**
+	 * Public constructor.
+	 *
+	 * @param array $config
+	 */
+	public function __construct($config = array())
+	{
+		$defaultConfig = array(
+			'host'	   => 'localhost',
+			'port'	   => 110,
+			'ssl_mode' => 'tcp',
+			'timeout'  => 30
+		);
+
+		$config = array_merge($defaultConfig, $config);
+
+		parent::__construct($config);
+	}
+
+	/**
 	 * Connect to the POP3 server.
 	 *
 	 * @throws Pop3_Exception

@@ -71,6 +71,25 @@ class Smtp extends Connection
 	private $_state = self::STATE_NOT_CONNECTED;
 
 	/**
+	 * Public constructor.
+	 *
+	 * @param array $config
+	 */
+	public function __construct($config = array())
+	{
+		$defaultConfig = array(
+			'host'	   => 'localhost',
+			'port'	   => 25,
+			'ssl_mode' => 'tcp',
+			'timeout'  => 30
+		);
+
+		$config = array_merge($defaultConfig, $config);
+
+		parent::__construct($config);
+	}
+
+	/**
 	 * Connect to the SMTP server.
 	 *
 	 * @throws Connection_Exception

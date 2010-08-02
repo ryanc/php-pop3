@@ -13,7 +13,13 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->_connection = new Smtp(TESTS_MAIL_SMTP_HOST, TESTS_MAIL_SMTP_SUBMISSION_PORT, 'tls');
+		$config = array(
+		  'host'	 => TESTS_MAIL_SMTP_HOST,
+		  'port'	 => TESTS_MAIL_SMTP_SUBMISSION_PORT,
+		  'ssl_mode' => 'tls'
+		);
+
+		$this->_connection = new Smtp($config);
 		if ($this->_connection->isConnected() === false) {
 			$this->_connection->connect();
 		}
@@ -28,54 +34,99 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 
 	public function testSmtpTCPConnection()
 	{
-		$smtp = new Smtp(TESTS_MAIL_SMTP_HOST, TESTS_MAIL_SMTP_PORT, 'tcp');
-		$this->assertFalse($smtp->isConnected());
-		$smtp->connect();
-		$this->assertTrue($smtp->isConnected());
-		$this->assertTrue($smtp->noop());
-		$smtp->close();
+		$config = array(
+		  'host' => TESTS_MAIL_SMTP_HOST,
+		  'port' => TESTS_MAIL_SMTP_PORT,
+		);
+
+		$this->_connection = new Smtp($config);
+		$this->assertFalse(
+		  $this->_connection->isConnected()
+		);
+		$this->_connection->connect();
+		$this->assertTrue(
+		  $this->_connection->isConnected()
+		);
+		$this->assertTrue(
+		  $this->_connection->noop()
+		);
+		$this->_connection->close();
 	}
 
 	public function testSmtpTLSConnection()
 	{
-		$smtp = new Smtp(TESTS_MAIL_SMTP_HOST, TESTS_MAIL_SMTP_SUBMISSION_PORT, 'tls');
-		$this->assertFalse($smtp->isConnected());
-		$smtp->connect();
-		$this->assertTrue($smtp->isConnected());
-		$this->assertTrue($smtp->noop());
-		$smtp->close();
+		$config = array(
+		  'host'	 => TESTS_MAIL_SMTP_HOST,
+		  'port'	 => TESTS_MAIL_SMTP_SUBMISSION_PORT,
+		  'ssl_mode' => 'tls'
+		);
+
+		$this->_connection = new Smtp($config);
+		$this->assertFalse(
+		  $this->_connection->isConnected()
+		);
+		$this->_connection->connect();
+		$this->assertTrue(
+		  $this->_connection->isConnected()
+		);
+		$this->assertTrue(
+		  $this->_connection->noop()
+		);
+		$this->_connection->close();
 	}
 
 	public function testSmtpSSLConnection()
 	{
-		$smtp = new Smtp(TESTS_MAIL_SMTP_HOST, TESTS_MAIL_SMTP_SSL_PORT, 'ssl');
-		$this->assertFalse($smtp->isConnected());
-		$smtp->connect();
-		$this->assertTrue($smtp->isConnected());
-		$this->assertTrue($smtp->noop());
-		$smtp->close();
+		$config = array(
+		  'host'	 => TESTS_MAIL_SMTP_HOST,
+		  'port'	 => TESTS_MAIL_SMTP_SSL_PORT,
+		  'ssl_mode' => 'ssl'
+		);
+
+		$this->_connection = new Smtp($config);
+		$this->assertFalse(
+		  $this->_connection->isConnected()
+		);
+		$this->_connection->connect();
+		$this->assertTrue(
+		  $this->_connection->isConnected()
+		);
+		$this->assertTrue(
+		  $this->_connection->noop()
+		);
+		$this->_connection->close();
 	}
 
 	public function testSmtpHeloCommand()
 	{
-		$this->assertTrue($this->_connection->helo(TESTS_MAIL_SMTP_HOST));
+		$this->assertTrue(
+		  $this->_connection->helo(TESTS_MAIL_SMTP_HOST)
+		);
 	}
 
 	public function testSmtpEhloCommand()
 	{
-		$this->assertType('array', $this->_connection->ehlo(TESTS_MAIL_SMTP_HOST));
+		$this->assertType(
+		  'array', $this->_connection->ehlo(TESTS_MAIL_SMTP_HOST)
+		);
 	}
 
 	public function testSmtpAuthPlain()
 	{
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
-		$this->assertTrue($this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD, 'plain'));
+		$this->assertTrue(
+		  $this->_connection->authenticate(
+		    TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD, 'plain'
+		));
 	}
 
 	public function testSmtpAuthLogin()
 	{
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
-		$this->assertTrue($this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD, 'login'));
+		$this->assertTrue(
+		  $this->_connection->authenticate(
+		    TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD, 'login'
+		));
 	}
 
 	public function testSmtpAutoPlainFail()
@@ -104,16 +155,26 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	public function testSmtpMailCommand()
 	{
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
-		$this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD);
-		$this->assertTrue($this->_connection->mail(TESTS_MAIL_SMTP_USER));
+		$this->_connection->authenticate(
+		  TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD
+		);
+		$this->assertTrue(
+		  $this->_connection->mail(TESTS_MAIL_SMTP_USER)
+		);
 	}
 
 	public function testSmtpRcptCommand()
 	{
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
-		$this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD);
-		$this->assertTrue($this->_connection->mail(TESTS_MAIL_SMTP_USER));
-		$this->assertTrue($this->_connection->rcpt(TESTS_MAIL_SMTP_USER));
+		$this->_connection->authenticate(
+		  TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD
+		);
+		$this->assertTrue(
+		  $this->_connection->mail(TESTS_MAIL_SMTP_USER)
+		);
+		$this->assertTrue(
+		  $this->_connection->rcpt(TESTS_MAIL_SMTP_USER)
+		);
 	}
 
 	public function testSmtpDataCommand()
@@ -125,41 +186,59 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 			 ->setBody("Sent by SmtpTest::testSmtpDataCommand.");
 
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
-		$this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD);
+		$this->_connection->authenticate(
+		  TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD
+		);
 		$this->_connection->mail(TESTS_MAIL_SMTP_USER);
 		$this->_connection->rcpt('ryan');
-		$this->assertTrue($this->_connection->data($mail->toString()));
+		$this->assertTrue(
+		  $this->_connection->data($mail->toString())
+		);
 	}
 
 	public function testSmtpRsetCommand()
 	{
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
-		$this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD);
+		$this->_connection->authenticate(
+		  TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD
+		);
 		$this->_connection->mail(TESTS_MAIL_SMTP_USER);
 		$this->_connection->rcpt(TESTS_MAIL_SMTP_USER);
-		$this->assertTrue($this->_connection->reset());
+		$this->assertTrue(
+		  $this->_connection->reset()
+		);
 	}
 
 	public function testSmtpVrfyCommand()
 	{
-		$this->assertTrue($this->_connection->vrfy(TESTS_MAIL_SMTP_USER));
-		$this->assertFalse($this->_connection->vrfy('wrong'));
+		$this->assertTrue(
+		  $this->_connection->vrfy(TESTS_MAIL_SMTP_USER)
+		);
+		$this->assertFalse(
+		  $this->_connection->vrfy('wrong')
+		);
 	}
 
 	public function testSmtpQuitCommand()
 	{
-		$this->assertTrue($this->_connection->quit());
+		$this->assertTrue(
+		  $this->_connection->quit()
+		);
 	}
 
 	public function testSmtpNoopCommand()
 	{
-		$this->assertTrue($this->_connection->noop());
+		$this->assertTrue(
+		  $this->_connection->noop()
+		);
 	}
 
 	public function testSmtpSend()
 	{
 		$this->_connection->ehlo();
-		$this->_connection->authenticate(TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD);
+		$this->_connection->authenticate(
+		  TESTS_MAIL_SMTP_USER, TESTS_MAIL_SMTP_PASSWORD
+		);
 		$mail = new Message();
 		$mail->setFrom(TESTS_MAIL_SMTP_USER, 'Sgt. Charles Zim')
 			 ->addTo('ryan', 'Johnnie Rico')

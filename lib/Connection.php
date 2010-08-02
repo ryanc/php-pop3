@@ -75,33 +75,14 @@ abstract class Connection
 	/**
 	 * Public constructor.
 	 *
-	 * @param string $host
-	 * @param string $port
-	 * @param string transport
-	 * @param int $timeout
-	 * @throws Connection_Exception
-	 *		   if the hostname, port, transport or timeout is not
-	 *		   defined.
+	 * @param array $config
 	 */
-	public function __construct($host, $port, $transport = 'tcp', $timeout = 30)
+	public function __construct($config = array())
 	{
-		if ($host === null) {
-			throw new Connection_Exception("The hostname is not defined.");
-		}
-		if ($port === null) {
-			throw new Connection_Exception("The port is not defined.");
-		}
-		if ($transport === null) {
-			throw new Connection_Exception("The transport is not defined.");
-		}
-		if ($timeout === null) {
-			throw new Connection_Exception("The timeout is not defined.");
-		}
-
-		$this->_host = $host;
-		$this->_port = $port;
-		$this->_transport = $transport;
-		$this->_timeout = $timeout;
+		$this->_host = $config['host'];
+		$this->_port = $config['port'];
+		$this->_transport = $config['ssl_mode'];
+		$this->_timeout = $config['timeout'];
 	}
 
 	/**
