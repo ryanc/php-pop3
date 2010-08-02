@@ -129,7 +129,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		));
 	}
 
-	public function testSmtpAutoPlainFail()
+	public function testSmtpAuthPlainFail()
 	{
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST); try {
 			$this->_connection->authenticate('wrong', 'wrong', 'plain');
