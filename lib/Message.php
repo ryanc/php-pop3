@@ -37,19 +37,19 @@ class Message
 
 	public function addTo($addr, $name = null)
 	{
-		$this->to[] = new Address($addr, $name);
+		array_push($this->to, new Address($addr, $name));
 		return $this;
 	}
 
 	public function addCc($addr, $name = null)
 	{
-		$this->cc[] = new Address($addr, $name);
+		array_push($this->cc, new Address($addr, $name));
 		return $this;
 	}
 
 	public function addBcc($addr, $name = null)
 	{
-		$this->bcc[] = new Address($addr, $name);
+		array_push($this->bcc, new Address($addr, $name));
 		return $this;
 	}
 
