@@ -6,6 +6,10 @@ define('TESTS_MAIL_SMTP_SSL_PORT', 465);
 define('TESTS_MAIL_SMTP_SUBMISSION_PORT', 587);
 define('TESTS_MAIL_SMTP_USER', 'user');
 define('TESTS_MAIL_SMTP_PASSWORD', 'password');
+define('TESTS_MAIL_SMTP_SENDER', '');
+define('TESTS_MAIL_SMTP_RECIPIENT', '');
+define('TESTS_MAIL_SMTP_CC_RECIPIENT', '');
+define('TESTS_MAIL_SMTP_BCC_RECIPIENT', '');
 
 define('TESTS_MAIL_POP3_ENABLED', true);
 define('TESTS_MAIL_POP3_HOST', 'localhost');

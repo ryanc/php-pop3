@@ -179,7 +179,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
 		$this->_connection->authenticate($this->_authConfig);
 		$this->assertTrue(
-		  $this->_connection->mail(TESTS_MAIL_SMTP_USER)
+		  $this->_connection->mail(TESTS_MAIL_SMTP_SENDER)
 		);
 	}
 
@@ -188,25 +188,25 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
 		$this->_connection->authenticate($this->_authConfig);
 		$this->assertTrue(
-		  $this->_connection->mail(TESTS_MAIL_SMTP_USER)
+		  $this->_connection->mail(TESTS_MAIL_SMTP_SENDER)
 		);
 		$this->assertTrue(
-		  $this->_connection->rcpt(TESTS_MAIL_SMTP_USER)
+		  $this->_connection->rcpt(TESTS_MAIL_SMTP_RECIPIENT)
 		);
 	}
 
 	public function testSmtpDataCommand()
 	{
 		$mail = new Message();
-		$mail->setFrom("poptest")
-			 ->addTo("ryan")
+		$mail->setFrom(TESTS_MAIL_SMTP_SENDER)
+			 ->addTo(TESTS_MAIL_SMTP_RECIPIENT)
 			 ->setSubject("Test message from PHPUnit.")
 			 ->setBody("Sent by SmtpTest::testSmtpDataCommand.");
 
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
 		$this->_connection->authenticate($this->_authConfig);
-		$this->_connection->mail(TESTS_MAIL_SMTP_USER);
-		$this->_connection->rcpt('ryan');
+		$this->_connection->mail(TESTS_MAIL_SMTP_SENDER);
+		$this->_connection->rcpt(TESTS_MAIL_SMTP_RECIPIENT);
 		$this->assertTrue(
 		  $this->_connection->data($mail->toString())
 		);
@@ -216,8 +216,8 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	{
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST);
 		$this->_connection->authenticate($this->_authConfig);
-		$this->_connection->mail(TESTS_MAIL_SMTP_USER);
-		$this->_connection->rcpt(TESTS_MAIL_SMTP_USER);
+		$this->_connection->mail(TESTS_MAIL_SMTP_SENDER);
+		$this->_connection->rcpt(TESTS_MAIL_SMTP_RECIPIENT);
 		$this->assertTrue(
 		  $this->_connection->reset()
 		);
@@ -226,7 +226,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	public function testSmtpVrfyCommand()
 	{
 		$this->assertTrue(
-		  $this->_connection->vrfy(TESTS_MAIL_SMTP_USER)
+		  $this->_connection->vrfy(TESTS_MAIL_SMTP_RECIPIENT)
 		);
 		$this->assertFalse(
 		  $this->_connection->vrfy('wrong')
@@ -252,9 +252,10 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$this->_connection->ehlo();
 		$this->_connection->authenticate($this->_authConfig);
 		$mail = new Message();
-		$mail->setFrom(TESTS_MAIL_SMTP_USER, 'Sgt. Charles Zim')
-			 ->addTo('ryan', 'Johnnie Rico')
-			 ->addCc(TESTS_MAIL_SMTP_USER, 'Lt. Rasczak')
+		$mail->setFrom(TESTS_MAIL_SMTP_SENDER, 'Sgt. Charles Zim')
+			 ->addTo(TESTS_MAIL_SMTP_RECIPIENT, 'Johnnie Rico')
+			 ->addCc(TESTS_MAIL_SMTP_CC_RECIPIENT, 'Lt. Rasczak')
+			 ->addBcc(TESTS_MAIL_SMTP_BCC_RECIPIENT, 'Lt. Rasczak')
 			 ->setPriority(Message::PRIORITY_HIGHEST)
 			 ->setUserAgent('MailKit')
 			 ->setSubject("Test message from PHPUnit.")
