@@ -254,8 +254,8 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	public function testSmtpDataCommand()
 	{
 		$mail = new Message();
-		$mail->setFrom(TESTS_MAIL_SMTP_SENDER)
-			 ->addTo(TESTS_MAIL_SMTP_RECIPIENT)
+		$mail->setFrom(TESTS_MAIL_SMTP_SENDER, 'Test Sender')
+			 ->addTo(TESTS_MAIL_SMTP_RECIPIENT, 'Test Recipient')
 			 ->setSubject("Test message from PHPUnit.")
 			 ->setBody("Sent by SmtpTest::testSmtpDataCommand.");
 
@@ -308,10 +308,10 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$this->_connection->ehlo();
 		$this->_connection->authenticate($this->_authConfig);
 		$mail = new Message();
-		$mail->setFrom(TESTS_MAIL_SMTP_SENDER, 'Sgt. Charles Zim')
-			 ->addTo(TESTS_MAIL_SMTP_RECIPIENT, 'Johnnie Rico')
-			 ->addCc(TESTS_MAIL_SMTP_CC_RECIPIENT, 'Lt. Rasczak')
-			 ->addBcc(TESTS_MAIL_SMTP_BCC_RECIPIENT, 'Lt. Rasczak')
+		$mail->setFrom(TESTS_MAIL_SMTP_SENDER, 'Test Sender')
+			 ->addTo(TESTS_MAIL_SMTP_RECIPIENT, 'Test Recipient')
+			 ->addCc(TESTS_MAIL_SMTP_CC_RECIPIENT, 'Test CC')
+			 ->addBcc(TESTS_MAIL_SMTP_BCC_RECIPIENT, 'Test BCC')
 			 ->setPriority(Message::PRIORITY_HIGHEST)
 			 ->setUserAgent('MailKit')
 			 ->setSubject("Test message from PHPUnit.")
