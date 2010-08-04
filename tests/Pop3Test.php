@@ -2,8 +2,8 @@
 require_once 'PHPUnit/Framework.php';
 require_once 'lib/Pop3.php';
 
-use Mail\Protocol\Pop3;
-use Mail\Protocol\Pop3_Exception;
+use Mail\Protocol\Pop3,
+    Mail\Protocol\Exception;
 
 class Pop3Test extends PHPUnit_Framework_TestCase
 {
@@ -123,7 +123,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 		try {
 			$this->_connection->authenticate($authConfig);
 		}
-		catch (Pop3_Exception $e) {
+		catch (Mail\Protocol\Exception $e) {
 			return;
 		}
 		$this->fail();
@@ -140,7 +140,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 		try {
 			$this->_connection->authenticate($authConfig);
 		}
-		catch (Pop3_Exception $e) {
+		catch (Mail\Protocol\Exception $e) {
 			return;
 		}
 		$this->fail();

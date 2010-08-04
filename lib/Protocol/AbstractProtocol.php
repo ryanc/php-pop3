@@ -8,7 +8,7 @@
  * @license http://www.opensource.org/licenses/bsd-license.php BSD Licnese
  */
 
-namespace Mail;
+namespace Mail\Protocol;
 
 /**
  * Base class that manages connections to the server.
@@ -18,7 +18,7 @@ namespace Mail;
  * @copyright Copyright (c) 2009-2010, Ryan Cavicchioni
  * @license http://www.opensource.org/licenses/bsd-license.php BSD Licnese
  */
-abstract class Connection
+abstract class AbstractProtocol
 {
 	/**
 	 * The CRLF sequence to send to the server after a command.
@@ -88,7 +88,7 @@ abstract class Connection
 	/**
 	 * Connect to the POP3 server.
 	 *
-	 * @throws Connection_Exception
+	 * @throws Protocol\Exception
 	 *		   if the connection is already established
 	 *		   or if PHP does not have the openssl extension loaded
 	 *		   or if PHP failed to connect to the POP3 server
@@ -98,10 +98,10 @@ abstract class Connection
 	public function connect()
 	{
 		if ($this->isConnected() === true) {
-			throw new Connection_Exception("The connection is already established.");
+			throw new Protocol\Exception("The connection is already established.");
 		}
 		if (($this->_transport === 'ssl' || $this->_transport === 'tls') && extension_loaded('openssl') === false) {
-			throw new Connection_Exception("PHP does not have the openssl extension loaded.");
+			throw new Protocol\Exception("PHP does not have the openssl extension loaded.");
 		}
 
 		$errno = null;
@@ -117,13 +117,13 @@ abstract class Connection
 
 		// Check if connection was established.
 		if ($this->isConnected() === false) {
-			throw new Connection_Exception("Failed to connect to server: {$this->_host}:{$this->_port}.");
+			throw new Protocol\Exception("Failed to connect to server: {$this->_host}:{$this->_port}.");
 		}
 
 		$this->_greeting = $this->_getResponse();
 
 		if ($this->_isGreetingOk($this->_greeting) === false) {
-			throw new Connection_Exception("Negative response from the server was received: '{$this->_greeting}'");
+			throw new Protocol\Exception("Negative response from the server was received: '{$this->_greeting}'");
 		}
 	}
 
@@ -139,7 +139,7 @@ abstract class Connection
 	/**
 	 * Get the response from the POP3 server.
 	 *
-	 * @throws Connection_Exception
+	 * @throws Protocol\Exception
 	 *		   if PHP failed to read resp from the socket.
 	 * @returns string
 	 */
@@ -154,7 +154,7 @@ abstract class Connection
 
 				if ($buf === false) {
 					$this->close();
-					throw new Connection_Exception("Failed to read resp from the socket.");
+					throw new Protocol\Exception("Failed to read resp from the socket.");
 				}
 
 				$resp .= $buf;
@@ -173,14 +173,14 @@ abstract class Connection
 	 * Sends a request the POP3 server.
 	 *
 	 * @param string $data
-	 * @throws Connection_Exception
+	 * @throws Protocol\Exception
 	 *		   if PHP failed to write to the socket.
 	 */
 	protected function _send($data)
 	{
 		if ($this->isConnected() === true) {
 			if (fwrite($this->_socket, $data . self::CRLF, strlen($data . self::CRLF)) === false) {
-				throw new Connection_Exception("Failed to write to the socket.");
+				throw new Protocol\Exception("Failed to write to the socket.");
 			}
 		}
 	}
@@ -212,7 +212,7 @@ abstract class Connection
 	 * Returns true if the TLS connection was successfully
 	 * established.
 	 *
-	 * @throws Connection_Exception
+	 * @throws Protocol\Exception
 	 *		   if the server returned a negative response to the STLS
 	 *		   (STARTTLS) command
 	 *		   or if the TLS negotiation has failed.
@@ -221,19 +221,9 @@ abstract class Connection
 	protected function _starttls()
 	{
 		if (stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT) == false) {
-			throw new Connection_Exception("The TLS negotiation has failed.");
+			throw new Protocol\Exception("The TLS negotiation has failed.");
 		}
 
 		return true;
 	}
 }
-
-/**
- * Connection Exception class.
- *
- * @package MailKit
- * @author Ryan Cavicchioni <ryan@confabulator.net>
- * @copyright Copyright (c) 2009-2010, Ryan Cavicchioni
- * @license http://www.opensource.org/licenses/bsd-license.php BSD Licnese
- */
-class Connection_Exception extends \Exception {}

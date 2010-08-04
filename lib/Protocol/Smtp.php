@@ -9,8 +9,9 @@
  */
 
 namespace Mail\Protocol;
-use Mail\Connection;
-use Mail\Message;
+
+use Mail\Protocol,
+    Mail\Message;
 
 /**
  * The class Smtp can be used to access SMTP servers.
@@ -20,7 +21,7 @@ use Mail\Message;
  * @copyright Copyright (c) 2009-2010, Ryan Cavicchioni
  * @license http://www.opensource.org/licenses/bsd-license.php BSD Licnese
  */
-class Smtp extends Connection
+class Smtp extends AbstractProtocol
 {
 	/**
 	 * SMTP session state when the client is not connected to the
@@ -116,7 +117,7 @@ class Smtp extends Connection
 	 * Returns true if the TLS connection was successfully
 	 * established.
 	 *
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if the server returned a negative response.
 	 * @throws Connection_Exception
 	 *		   if the TLS negotiation has failed.
@@ -128,7 +129,7 @@ class Smtp extends Connection
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 220) === false) {
-			throw new Smtp_Exception("The server returned a negative response to the STARTTLS command: {$resp}");
+			throw new Protocol\Exception("The server returned a negative response to the STARTTLS command: {$resp}");
 		}
 
 		parent::_starttls();
@@ -140,7 +141,7 @@ class Smtp extends Connection
 	 * Authenticate the user to the SMTP server.
 	 *
 	 * @param array $authConfig
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if an invalid authentication method is used.
 	 * @return bool
 	 */
@@ -164,7 +165,7 @@ class Smtp extends Connection
 			$status = $this->_authLogin();
 		}
 		else {
-			throw new Smtp_Exception("Invalid authentication method.");
+			throw new Protocol\Exception("Invalid authentication method.");
 		}
 
 		$this->_state = self::STATE_AUTHENTICATED;
@@ -175,7 +176,7 @@ class Smtp extends Connection
 	/**
 	 * Authenticate using the PLAIN mechanism.
 	 *
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if authentication fails.
 	 * @return bool
 	 */
@@ -188,7 +189,7 @@ class Smtp extends Connection
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 235) === false) {
-			throw new Smtp_Exception("Authentication failed: ${resp}");
+			throw new Protocol\Exception("Authentication failed: ${resp}");
 		}
 
 		return true;
@@ -197,7 +198,7 @@ class Smtp extends Connection
 	/**
 	 * Authenticate using the LOGIN mechanism.
 	 *
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if the server returns a negative response
 	 *		   or if authentication fails.
 	 * @return bool
@@ -208,21 +209,21 @@ class Smtp extends Connection
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 334) === false) {
-			throw new Smtp_Exception("The server returned a negative response to the AUTH LOGIN command: {$resp}");
+			throw new Protocol\Exception("The server returned a negative response to the AUTH LOGIN command: {$resp}");
 		}
 
 		$this->_send(base64_encode($this->_username));
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 334) === false) {
-			throw new Smtp_Exception("The server did not accept the username: {$resp}");
+			throw new Protocol\Exception("The server did not accept the username: {$resp}");
 		}
 
 		$this->_send(base64_encode($this->_password));
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 235) === false) {
-			throw new Smtp_Exception("The server did not accept the password: {$resp}");
+			throw new Protocol\Exception("The server did not accept the password: {$resp}");
 		}
 
 		return true;
@@ -271,7 +272,7 @@ class Smtp extends Connection
 	 * Issue the HELO command to the server.
 	 *
 	 * @param string $hostname
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if the server returns a negative response.
 	 * @return bool
 	 */
@@ -281,7 +282,7 @@ class Smtp extends Connection
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 250) === false) {
-			throw new Smtp_Exception("The server returned a negative response to the HELO command: {$resp}");
+			throw new Protocol\Exception("The server returned a negative response to the HELO command: {$resp}");
 		}
 
 		return true;
@@ -292,7 +293,7 @@ class Smtp extends Connection
 	 * capabilities.
 	 *
 	 * @param string $hostname
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if the server returns a negative response.
 	 * @return array
 	 */
@@ -304,7 +305,7 @@ class Smtp extends Connection
 			$resp = $this->_getResponse(true);
 
 			if ($this->_isResponseOk($resp, 250) === false) {
-				throw new Smtp_Exception("The server returned a negative response to the EHLO command: {$resp}");
+				throw new Protocol\Exception("The server returned a negative response to the EHLO command: {$resp}");
 			}
 
 			$this->_capabilities[] = ltrim($resp, "250- ");
@@ -318,7 +319,7 @@ class Smtp extends Connection
 	 * Issue the MAIL FROM command to the server.
 	 *
 	 * @param string $from
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if the server returns a negative response.
 	 * @return bool
 	 */
@@ -328,7 +329,7 @@ class Smtp extends Connection
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 250) === false) {
-			throw new Smtp_Exception("The server returned a negative response to the MAIL command: {$resp}");
+			throw new Protocol\Exception("The server returned a negative response to the MAIL command: {$resp}");
 		}
 
 		return true;
@@ -338,7 +339,7 @@ class Smtp extends Connection
 	 * Issue the RCPT TO command to the server.
 	 *
 	 * @param string $to
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if the server returns a negative response.
 	 * @return bool
 	 */
@@ -348,7 +349,7 @@ class Smtp extends Connection
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, array(250, 251)) === false) {
-			throw new Smtp_Exception("The server returned a negative response to the RCPT command: {$resp}");
+			throw new Protocol\Exception("The server returned a negative response to the RCPT command: {$resp}");
 		}
 
 		return true;
@@ -357,7 +358,7 @@ class Smtp extends Connection
 	/**
 	 * Issue the DATA command to the server.
 	 * @param string $data
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if the server returns a negative response.
 	 * @return bool
 	 */
@@ -367,7 +368,7 @@ class Smtp extends Connection
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 354) === false) {
-			throw new Smtp_Exception("The server returned a negative response to the DATA command: {$resp}");
+			throw new Protocol\Exception("The server returned a negative response to the DATA command: {$resp}");
 		}
 
 		$this->_send($data);
@@ -376,7 +377,7 @@ class Smtp extends Connection
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 250) === false) {
-			throw new Smtp_Exception("The server returned a negative respose to the DATA command: {$resp}");
+			throw new Protocol\Exception("The server returned a negative respose to the DATA command: {$resp}");
 		}
 
 		return true;
@@ -385,7 +386,7 @@ class Smtp extends Connection
 	/**
 	 * Abort the current mail transaction.
 	 *
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if the server returns a negative response.
 	 * @return bool
 	 */
@@ -395,7 +396,7 @@ class Smtp extends Connection
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 250) === false) {
-			throw new Smtp_Exception("The server returned a negative response to the RSET command: {$resp}");
+			throw new Protocol\Exception("The server returned a negative response to the RSET command: {$resp}");
 		}
 
 		return true;
@@ -405,7 +406,7 @@ class Smtp extends Connection
 	 * The SMTP server does nothing, it mearly replies with a positive
 	 * response.
 	 *
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if the server returns a negative response.
 	 * @return bool
 	 */
@@ -415,7 +416,7 @@ class Smtp extends Connection
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 250) === false) {
-			throw new Smtp_Exception("The server returned a negative response to the NOOP command: {$resp}");
+			throw new Protocol\Exception("The server returned a negative response to the NOOP command: {$resp}");
 		}
 
 		return true;
@@ -444,7 +445,7 @@ class Smtp extends Connection
 	/**
 	 * Quits the SMTP transaction.
 	 *
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if the server returns a negative response.
 	 * @return bool
 	 */
@@ -454,7 +455,7 @@ class Smtp extends Connection
 		$resp = $this->_getResponse(true);
 
 		if ($this->_isResponseOk($resp, 221) === false) {
-			throw new Smtp_Exception("The server returned a negative response to the QUIT command: {$resp}");
+			throw new Protocol\Exception("The server returned a negative response to the QUIT command: {$resp}");
 		}
 
 		return true;
@@ -468,7 +469,7 @@ class Smtp extends Connection
 	 * Verify that the server is capable of the given command.
 	 *
 	 * @param string $cmd
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if the server does not support the given command.
 	 * @return bool
 	 */
@@ -479,7 +480,7 @@ class Smtp extends Connection
 		}
 
 		if (in_array($cmd, $this->_capabilities) === false) {
-			throw new Smtp_Exception("The server does not support the {$cmd} command.");
+			throw new Protocol\Exception("The server does not support the {$cmd} command.");
 		}
 
 		return true;
@@ -489,18 +490,18 @@ class Smtp extends Connection
 	 * Send an email.
 	 *
 	 * @param Message $msg
-	 * @throws Smtp_Exception
+	 * @throws Protocol\Exception
 	 *		   if the the sender address or recpients are undefined.
 	 * @return bool
 	 */
 	 public function send(Message $mail)
 	 {
 		if ($mail->from === null) {
-			throw new Smtp_Exception("The message does not have a from address.");
+			throw new Protocol\Exception("The message does not have a from address.");
 		}
 
 		if (count($mail->to) + count($mail->cc) + count($mail->bcc) < 1) {
-			throw new Smtp_Exception("The message must have a recipient.");
+			throw new Protocol\Exception("The message must have a recipient.");
 		}
 
 		$this->mail($mail->from->email);

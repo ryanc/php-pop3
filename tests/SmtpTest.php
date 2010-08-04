@@ -3,9 +3,9 @@ require_once 'PHPUnit/Framework.php';
 require_once 'lib/Smtp.php';
 require_once 'lib/Message.php';
 
-use Mail\Message;
-use Mail\Protocol\Smtp;
-use Mail\Protocol\Smtp_Exception;
+use Mail\Message,
+    Mail\Protocol\Smtp,
+    Mail\Protocol\Exception;
 
 class SmtpTest extends PHPUnit_Framework_TestCase
 {
@@ -150,7 +150,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$this->_connection->helo(TESTS_MAIL_SMTP_HOST); try {
 			$this->_connection->authenticate($authConfig);
 		}
-		catch (Smtp_Exception $e) {
+		catch (Mail\Protocol\Exception $e) {
 			return;
 		}
 		$this->fail();
@@ -168,7 +168,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		try {
 			$this->_connection->authenticate($authConfig);
 		}
-		catch (Smtp_Exception $e) {
+		catch (Mail\Protocol\Exception $e) {
 			return;
 		}
 		$this->fail();
