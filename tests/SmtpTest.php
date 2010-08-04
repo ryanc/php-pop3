@@ -107,7 +107,6 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 	{
 		$config = array(
 		  'host'    => 'host.example.invalid',
-		  'timeout' => 5
 		);
 
 		$this->_connection = new Smtp($config);
@@ -120,6 +119,44 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		}
 
 		$this->fail('No exception was raised while connecting to an invalid host.');
+	}
+
+	public function testConnectionToInvalidPort()
+	{
+		$config = array(
+		  'host'    => TESTS_MAIL_SMTP_HOST,
+		  'port'    => TESTS_MAIL_SMTP_INVALID_PORT,
+		);
+
+		$this->_connection = new Smtp($config);
+		try {
+			$this->_connection->connect();
+		}
+
+		catch (Mail\Protocol\Exception $e) {
+			return;
+		}
+
+		$this->fail('No exception was raised while connecting to an invalid port.');
+	}
+
+	public function testConnectionToWrongPort()
+	{
+		$config = array(
+		  'host'    => TESTS_MAIL_SMTP_HOST,
+		  'port'    => TESTS_MAIL_SMTP_WRONG_PORT,
+		);
+
+		$this->_connection = new Smtp($config);
+		try {
+			$this->_connection->connect();
+		}
+
+		catch (Mail\Protocol\Exception $e) {
+			return;
+		}
+
+		$this->fail('No exception was raised while connecting to the wrong port.');
 	}
 
 	public function testSmtpHeloCommand()

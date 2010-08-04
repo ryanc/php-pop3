@@ -96,7 +96,6 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 	{
 		$config = array(
 		  'host'    => 'host.example.invalid',
-		  'timeout' => 5
 		);
 
 		$this->_connection = new Pop3($config);
@@ -109,6 +108,44 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 		}
 
 		$this->fail('No exception was raised while connecting to an invalid host.');
+	}
+
+	public function testConnectionToInvalidPort()
+	{
+		$config = array(
+		  'host'    => TESTS_MAIL_POP3_HOST,
+		  'port'    => TESTS_MAIL_POP3_INVALID_PORT,
+		);
+
+		$this->_connection = new Pop3($config);
+		try {
+			$this->_connection->connect();
+		}
+
+		catch (Mail\Protocol\Exception $e) {
+			return;
+		}
+
+		$this->fail('No exception was raised while connecting to an invalid port.');
+	}
+
+	public function testConnectionToWrongPort()
+	{
+		$config = array(
+		  'host'    => TESTS_MAIL_POP3_HOST,
+		  'port'    => TESTS_MAIL_POP3_WRONG_PORT,
+		);
+
+		$this->_connection = new Pop3($config);
+		try {
+			$this->_connection->connect();
+		}
+
+		catch (Mail\Protocol\Exception $e) {
+			return;
+		}
+
+		$this->fail('No exception was raised while connecting to the wrong port.');
 	}
 
 	public function testPop3AuthPlain()

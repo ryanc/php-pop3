@@ -111,10 +111,10 @@ abstract class AbstractProtocol
 
 		// Check if SSL is enabled.
 		if ($this->_transport === 'ssl') {
-			$this->_socket = @fsockopen("ssl://{$this->_host}:{$this->_port}", $errno, $errstr, $timeout);
+			$this->_socket = @fsockopen("ssl://{$this->_host}:{$this->_port}", $errno, $errstr, $this->_timeout);
 		}
 		else {
-			$this->_socket = @fsockopen("tcp://{$this->_host}:{$this->_port}", $errno, $errstr, $timeout);
+			$this->_socket = @fsockopen("tcp://{$this->_host}:{$this->_port}", $errno, $errstr, $this->_timeout);
 		}
 
 		// Check if connection was established.
