@@ -92,6 +92,25 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 		$this->_connection->close();
 	}
 
+	public function testConnectionFailure()
+	{
+		$config = array(
+		  'host'    => 'host.example.invalid',
+		  'timeout' => 5
+		);
+
+		$this->_connection = new Pop3($config);
+		try {
+			$this->_connection->connect();
+		}
+
+		catch (Mail\Protocol\Exception $e) {
+			return;
+		}
+
+		$this->fail('No exception was raised while connecting to an invalid host.');
+	}
+
 	public function testPop3AuthPlain()
 	{
 		$this->assertTrue(

@@ -103,6 +103,25 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 		$this->_connection->close();
 	}
 
+	public function testConnectionFailure()
+	{
+		$config = array(
+		  'host'    => 'host.example.invalid',
+		  'timeout' => 5
+		);
+
+		$this->_connection = new Smtp($config);
+		try {
+			$this->_connection->connect();
+		}
+
+		catch (Mail\Protocol\Exception $e) {
+			return;
+		}
+
+		$this->fail('No exception was raised while connecting to an invalid host.');
+	}
+
 	public function testSmtpHeloCommand()
 	{
 		$this->assertTrue(
