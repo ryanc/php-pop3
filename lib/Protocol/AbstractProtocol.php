@@ -10,6 +10,8 @@
 
 namespace Mail\Protocol;
 
+use Mail\Protocol;
+
 /**
  * Base class that manages connections to the server.
  *
