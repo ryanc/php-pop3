@@ -64,6 +64,26 @@ class Message
         return $this;
     }
 
+	public function getTo()
+	{
+		return $this->to;
+	}
+
+	public function getCc()
+	{
+		return $this->cc;
+	}
+
+	public function getBcc()
+	{
+		return $this->bcc;
+	}
+
+	public function getFrom()
+	{
+		return $this->from;
+	}
+
     public function setSender($addr, $name = null)
     {
         $this->sender = new Address($addr, $name);

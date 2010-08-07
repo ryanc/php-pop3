@@ -496,25 +496,25 @@ class Smtp extends AbstractProtocol
      */
      public function send(Message $mail)
      {
-        if ($mail->from === null) {
+        if ($mail->getFrom() === null) {
             throw new Protocol\Exception("The message does not have a from address.");
         }
 
-        if (count($mail->to) + count($mail->cc) + count($mail->bcc) < 1) {
+        if (count($mail->getTo()) + count($mail->getCc()) + count($mail->getBcc()) < 1) {
             throw new Protocol\Exception("The message must have a recipient.");
         }
 
-        $this->mail($mail->from->email);
+        $this->mail($mail->getFrom()->email);
 
-        foreach($mail->to as $recipient) {
+        foreach($mail->getTo() as $recipient) {
             $this->rcpt($recipient->email);
         }
 
-        foreach($mail->cc as $recipient) {
+        foreach($mail->getCc() as $recipient) {
             $this->rcpt($recipient->email);
         }
 
-        foreach($mail->bcc as $recipient) {
+        foreach($mail->getBcc() as $recipient) {
             $this->rcpt($recipient->email);
         }
 
