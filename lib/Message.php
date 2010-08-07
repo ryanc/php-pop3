@@ -13,10 +13,10 @@ namespace Mail;
 
 class Message
 {
-    public $to = array();
-    public $cc = array();
-    public $bcc = array();
-    public $from = null;
+    protected $to = array();
+    protected $cc = array();
+    protected $bcc = array();
+    protected $from = null;
     public $sender = null;
     public $replyTo = null;
     public $subject = null;
