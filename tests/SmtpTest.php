@@ -253,11 +253,11 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 
     public function testSmtpDataCommand()
     {
-        $mail = new Message();
-        $mail->setFrom(TESTS_MAIL_SMTP_SENDER, 'Test Sender')
-             ->addTo(TESTS_MAIL_SMTP_RECIPIENT, 'Test Recipient')
-             ->setSubject("Test message from PHPUnit.")
-             ->setBody("Sent by SmtpTest::testSmtpDataCommand.");
+		$mail = Message::newInstance()
+			->setFrom(TESTS_MAIL_SMTP_SENDER, 'Test Sender')
+            ->addTo(TESTS_MAIL_SMTP_RECIPIENT, 'Test Recipient')
+            ->setSubject("Test message from PHPUnit.")
+            ->setBody("Sent by SmtpTest::testSmtpDataCommand.");
 
         $this->_connection->helo(TESTS_MAIL_SMTP_HOST);
         $this->_connection->authenticate($this->_authConfig);
@@ -307,15 +307,15 @@ class SmtpTest extends PHPUnit_Framework_TestCase
     {
         $this->_connection->ehlo();
         $this->_connection->authenticate($this->_authConfig);
-        $mail = new Message();
-        $mail->setFrom(TESTS_MAIL_SMTP_SENDER, 'Test Sender')
-             ->addTo(TESTS_MAIL_SMTP_RECIPIENT, 'Test Recipient')
-             ->addCc(TESTS_MAIL_SMTP_CC_RECIPIENT, 'Test CC')
-             ->addBcc(TESTS_MAIL_SMTP_BCC_RECIPIENT, 'Test BCC')
-             ->setPriority(Message::PRIORITY_HIGHEST)
-             ->setUserAgent('MailKit')
-             ->setSubject("Test message from PHPUnit.")
-             ->setBody("Sent by SmtpTest::testSmtpSend.");
+        $mail = Message::newInstance()
+			->setFrom(TESTS_MAIL_SMTP_SENDER, 'Test Sender')
+			->addTo(TESTS_MAIL_SMTP_RECIPIENT, 'Test Recipient')
+			->addCc(TESTS_MAIL_SMTP_CC_RECIPIENT, 'Test CC')
+			->addBcc(TESTS_MAIL_SMTP_BCC_RECIPIENT, 'Test BCC')
+			->setPriority(Message::PRIORITY_HIGHEST)
+			->setUserAgent('MailKit')
+			->setSubject("Test message from PHPUnit.")
+			->setBody("Sent by SmtpTest::testSmtpSend.");
 
         $this->assertTrue(
           $this->_connection->send($mail)

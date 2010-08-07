@@ -35,6 +35,11 @@ class Message
 
     const CRLF = "\r\n";
 
+	public static function newInstance()
+	{
+		return new self;
+	}
+
     public function addTo($addr, $name = null)
     {
         array_push($this->to, new Address($addr, $name));
