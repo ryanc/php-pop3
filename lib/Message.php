@@ -13,10 +13,10 @@ namespace Mail;
 
 class Message
 {
-    protected $to = array();
-    protected $cc = array();
-    protected $bcc = array();
-    protected $from = null;
+    protected $_to = array();
+    protected $_cc = array();
+    protected $_bcc = array();
+    protected $_from = null;
     public $sender = null;
     public $replyTo = null;
     public $subject = null;
@@ -42,46 +42,46 @@ class Message
 
     public function addTo($addr, $name = null)
     {
-        array_push($this->to, new Address($addr, $name));
+        array_push($this->_to, new Address($addr, $name));
         return $this;
     }
 
     public function addCc($addr, $name = null)
     {
-        array_push($this->cc, new Address($addr, $name));
+        array_push($this->_cc, new Address($addr, $name));
         return $this;
     }
 
     public function addBcc($addr, $name = null)
     {
-        array_push($this->bcc, new Address($addr, $name));
+        array_push($this->_bcc, new Address($addr, $name));
         return $this;
     }
 
     public function setFrom($addr, $name = null)
     {
-        $this->from = new Address($addr, $name);
+        $this->_from = new Address($addr, $name);
         return $this;
     }
 
 	public function getTo()
 	{
-		return $this->to;
+		return $this->_to;
 	}
 
 	public function getCc()
 	{
-		return $this->cc;
+		return $this->_cc;
 	}
 
 	public function getBcc()
 	{
-		return $this->bcc;
+		return $this->_bcc;
 	}
 
 	public function getFrom()
 	{
-		return $this->from;
+		return $this->_from;
 	}
 
     public function setSender($addr, $name = null)
@@ -180,8 +180,8 @@ class Message
 
     private function _buildHeaders()
     {
-        if ($this->from !== null) {
-            $this->addHeader("From", (string) $this->from);
+        if ($this->_from !== null) {
+            $this->addHeader("From", (string) $this->_from);
         }
         if ($this->sender !== null) {
             $this->addHeader("Sender", (string) $this->sender);
@@ -189,14 +189,14 @@ class Message
         if ($this->replyTo !== null) {
             $this->addHeader("Reply-To", (string) $this->reply_to);
         }
-        if (count($this->to)) {
-            $this->addHeader("To", implode(", ", $this->to));
+        if (count($this->_to)) {
+            $this->addHeader("To", implode(", ", $this->_to));
         }
-        if (count($this->cc)) {
-            $this->addHeader("Cc", implode(", ", $this->cc));
+        if (count($this->_cc)) {
+            $this->addHeader("Cc", implode(", ", $this->_cc));
         }
-        if (count($this->bcc)) {
-            $this->addHeader("Bcc", implode(", ", $this->cc));
+        if (count($this->_bcc)) {
+            $this->addHeader("Bcc", implode(", ", $this->_cc));
         }
         if ($this->priority !== null) {
             $this->addHeader("X-Priority", $this->priority);
