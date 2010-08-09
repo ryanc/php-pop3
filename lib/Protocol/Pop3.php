@@ -250,8 +250,7 @@ class Pop3 extends AbstractProtocol
      */
     private function _authPlain()
     {
-        $this->_send(
-          sprintf("USER %s", $this->_username));
+        $this->_send(sprintf("USER %s", $this->_username));
         $resp = $this->_getResponse(true);
 
         if ($this->_isResponseOk($resp) === false) {
