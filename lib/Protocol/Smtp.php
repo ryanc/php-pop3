@@ -183,9 +183,9 @@ class Smtp extends AbstractProtocol
     private function _authPlain()
     {
         // Validate session state.
-        $auth_string = base64_encode("\0{$this->_username}\0{$this->_password}");
+        $authString = base64_encode("\0{$this->_username}\0{$this->_password}");
 
-        $this->_send("AUTH PLAIN {$auth_string}");
+        $this->_send(sprintf("AUTH PLAIN %s", $authString));
         $resp = $this->_getResponse(true);
 
         if ($this->_isResponseOk($resp, 235) === false) {
@@ -278,7 +278,7 @@ class Smtp extends AbstractProtocol
      */
     public function helo($hostname = 'localhost')
     {
-        $this->_send("HELO {$hostname}");
+        $this->_send(sprintf("HELO %s", $hostname));
         $resp = $this->_getResponse(true);
 
         if ($this->_isResponseOk($resp, 250) === false) {
@@ -299,7 +299,7 @@ class Smtp extends AbstractProtocol
      */
     public function ehlo($hostname = 'localhost')
     {
-        $this->_send("EHLO {$hostname}");
+        $this->_send(sprintf("EHLO %s", $hostname));
 
         do {
             $resp = $this->_getResponse(true);
@@ -325,7 +325,7 @@ class Smtp extends AbstractProtocol
      */
     public function mail($from)
     {
-        $this->_send("MAIL FROM: <{$from}>");
+        $this->_send(sprintf("MAIL FROM: <%s>", $from));
         $resp = $this->_getResponse(true);
 
         if ($this->_isResponseOk($resp, 250) === false) {
@@ -345,7 +345,7 @@ class Smtp extends AbstractProtocol
      */
     public function rcpt($to)
     {
-        $this->_send("RCPT TO: <{$to}>");
+        $this->_send(sprintf("RCPT TO: <%s>", $to));
         $resp = $this->_getResponse(true);
 
         if ($this->_isResponseOk($resp, array(250, 251)) === false) {
@@ -432,7 +432,7 @@ class Smtp extends AbstractProtocol
     {
         $this->_isServerCapable("VRFY");
 
-        $this->_send("VRFY {$username}");
+        $this->_send(sprintf("VRFY %s", $username));
         $resp = $this->_getResponse(true);
 
         if ($this->_isResponseOk($resp, array(250, 251, 252)) === false) {

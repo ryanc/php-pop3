@@ -250,14 +250,15 @@ class Pop3 extends AbstractProtocol
      */
     private function _authPlain()
     {
-        $this->_send("USER {$this->_username}");
+        $this->_send(
+          sprintf("USER %s", $this->_username));
         $resp = $this->_getResponse(true);
 
         if ($this->_isResponseOk($resp) === false) {
             throw new Protocol\Exception("The username is not valid: {$resp}");
         }
 
-        $this->_send("PASS {$this->_password}");
+        $this->_send(sprintf("PASS %s", $this->_password));
         $resp = $this->_getResponse(true);
 
         if ($this->_isResponseOk($resp) === false) {
@@ -330,17 +331,17 @@ class Pop3 extends AbstractProtocol
      * Issues the LIST command to the server and returns a scan
      * listing.
      *
-     * @param int $msgid
+     * @param int $messageId
      * @throws Protocol\Exception
      *         if the server did not respond with a scan listing.
      * @return array
      */
-    public function listMessages($msgid = null)
+    public function listMessages($messageId = null)
     {
         $this->_validateState(self::STATE_TRANSACTION, 'LIST');
 
-        if ($msgid !== null) {
-            $this->_send("LIST {$msgid}");
+        if ($messageId !== null) {
+            $this->_send(sprintf("LIST %s", $messageId));
         }
         else {
             $this->_send("LIST");
@@ -352,7 +353,7 @@ class Pop3 extends AbstractProtocol
             throw new Protocol\Exception("The server did not respond with a scan listing: {$resp}");
         }
 
-        if ($msgid !== null) {
+        if ($messageId !== null) {
             sscanf($resp, "+OK %d %s", $id, $size);
             return array('id' => $id, 'size' => $size);
         }
@@ -363,8 +364,8 @@ class Pop3 extends AbstractProtocol
                 break;
             }
 
-            list($msgid, $size) = explode(' ', rtrim($resp));
-            $messages[(int)$msgid] = (int)$size;
+            list($messageId, $size) = explode(' ', rtrim($resp));
+            $messages[(int)$messageId] = (int)$size;
         }
 
         return $messages;
@@ -374,22 +375,22 @@ class Pop3 extends AbstractProtocol
      * Issues the RETR command to the server and returns the contents
      * of a message.
      *
-     * @param int $msgid
+     * @param int $messageId
      * @throws Protocol\Exception
      *         if the message id is not defined
      *         or if the server returns a negative response to the
      *         RETR command.
      * @return string
      */
-    public function retrieve($msgid)
+    public function retrieve($messageId)
     {
         $this->_validateState(self::STATE_TRANSACTION, 'RETR');
 
-        if ($msgid === null) {
+        if ($messageId === null) {
             throw new Protocol\Exception("A message number is required by the RETR command.");
         }
 
-        $this->_send("RETR {$msgid}");
+        $this->_send(sprintf("RETR %s", $messageId));
         $resp = $this->_getResponse();
 
         if ($this->_isResponseOk($resp) === false) {
@@ -411,22 +412,22 @@ class Pop3 extends AbstractProtocol
     /**
      * Deletes a message from the POP3 server.
      *
-     * @param int $msgid
+     * @param int $messageId
      * @throws Protocol\Exception
      *         if the message id is not defined
      *         or if the returns a negative response to the DELE
      *         command.
      * @return bool
      */
-    public function delete($msgid)
+    public function delete($messageId)
     {
         $this->_validateState(self::STATE_TRANSACTION, 'DELE');
 
-        if ($msgid === null) {
+        if ($messageId === null) {
             throw new Protocol\Exception("A message number is required by the DELE command.");
         }
 
-        $this->_send("DELE {$msgid}");
+        $this->_send(sprintf("DELE %s", $messageId));
         $resp = $this->_getResponse();
 
         if ($this->_isResponseOk($resp) === false) {
@@ -482,11 +483,11 @@ class Pop3 extends AbstractProtocol
     }
 
     /**
-     * Returns the headers of $msgid if $lines is not given. If $lines
+     * Returns the headers of $messageId if $lines is not given. If $lines
      * if given, the POP3 server will respond with the headers and
      * then the specified number of lines from the message's body.
      *
-     * @param int $msgid
+     * @param int $messageId
      * @param int $lines
      * @throws Protocol\Exception
      *         if the message id is not defined
@@ -495,13 +496,13 @@ class Pop3 extends AbstractProtocol
      *         command.
      * @return string
      */
-    public function top($msgid, $lines = 0)
+    public function top($messageId, $lines = 0)
     {
         $this->_isServerCapable("TOP");
 
         $this->_validateState(self::STATE_TRANSACTION, 'TOP');
 
-        if ($msgid === null) {
+        if ($messageId === null) {
             throw new Protocol\Exception("A message number is required by the TOP command.");
         }
 
@@ -509,7 +510,7 @@ class Pop3 extends AbstractProtocol
             throw new Protocol\Exception("A number of lines is required by the TOP command.");
         }
 
-        $this->_send("TOP {$msgid} {$lines}");
+        $this->_send(sprintf("TOP %s %s", $messageId, $lines));
         $resp = $this->_getResponse();
 
         if ($this->_isResponseOk($resp) === false) {
@@ -532,20 +533,20 @@ class Pop3 extends AbstractProtocol
      * Issues the UIDL command to the server and returns a unique-id
      * listing.
      *
-     * @param int $msgid
+     * @param int $messageId
      * @throws Protocol\Exception
      *         if the server returns a negative response to the UIDL
      *         command.
      * @return array
      */
-    public function uidl($msgid = null)
+    public function uidl($messageId = null)
     {
         $this->_isServerCapable("UIDL");
 
         $this->_validateState(self::STATE_TRANSACTION, 'UIDL');
 
-        if ($msgid !== null) {
-            $this->_send("UIDL {$msgid}");
+        if ($messageId !== null) {
+            $this->_send(sprintf("UIDL %s", $messageId));
         }
         else {
             $this->_send("UIDL");
@@ -557,7 +558,7 @@ class Pop3 extends AbstractProtocol
             throw new Protocol\Exception("The server did not respond with a scan listing: {$resp}");
         }
 
-        if ($msgid !== null) {
+        if ($messageId !== null) {
             sscanf($resp, "+OK %d %s", $id, $uid);
             return array('id' => (int) $id, 'uid' => $uid);
         }
@@ -568,8 +569,8 @@ class Pop3 extends AbstractProtocol
                 break;
             }
 
-            list($msgid, $uid) = explode(' ', rtrim($resp));
-            $unique_id[(int)$msgid] = $uid;
+            list($messageId, $uid) = explode(' ', rtrim($resp));
+            $unique_id[(int)$messageId] = $uid;
         }
 
         return $unique_id;
