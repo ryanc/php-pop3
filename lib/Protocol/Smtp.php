@@ -503,8 +503,18 @@ class Smtp extends AbstractProtocol
         if (count($mail->getTo()) + count($mail->getCc()) + count($mail->getBcc()) < 1) {
             throw new Protocol\Exception("The message must have a recipient.");
         }
+        
+        if ($mail->getReturnPath() !== null) {
+            $reversePath = $mail->getReturnPath();
+        }
+        elseif ($mail->getSender() !== null) {
+            $reversePath = $mail->getSender();
+        }
+        else {
+            $reversePath = $mail->getFrom()->email;
+        }
 
-        $this->mail($mail->getFrom()->email);
+        $this->mail($reversePath);
 
         foreach($mail->getTo() as $recipient) {
             $this->rcpt($recipient->email);

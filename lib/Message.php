@@ -17,7 +17,8 @@ class Message
     protected $_cc = array();
     protected $_bcc = array();
     protected $_from = null;
-    public $sender = null;
+    protected $_returnPath = null;
+    protected $_sender = null;
     public $replyTo = null;
     public $subject = null;
     public $body = null;
@@ -35,10 +36,10 @@ class Message
 
     const CRLF = "\r\n";
 
-	public static function newInstance()
-	{
-		return new self;
-	}
+    public static function newInstance()
+    {
+        return new self;
+    }
 
     public function addTo($addr, $name = null)
     {
@@ -64,29 +65,45 @@ class Message
         return $this;
     }
 
-	public function getTo()
-	{
-		return $this->_to;
-	}
+    public function setReturnPath($addr)
+    {
+        $this->_returnPath = new Address($addr);
+        return $this;
+    }
 
-	public function getCc()
-	{
-		return $this->_cc;
-	}
+    public function getTo()
+    {
+        return $this->_to;
+    }
 
-	public function getBcc()
-	{
-		return $this->_bcc;
-	}
+    public function getCc()
+    {
+        return $this->_cc;
+    }
 
-	public function getFrom()
-	{
-		return $this->_from;
-	}
+    public function getBcc()
+    {
+        return $this->_bcc;
+    }
+
+    public function getFrom()
+    {
+        return $this->_from;
+    }
+
+    public function getSender()
+    {
+        return $this->_sender;
+    }
+    
+    public function getReturnPath()
+    {
+        return $this->_returnPath;
+    }
 
     public function setSender($addr, $name = null)
     {
-        $this->sender = new Address($addr, $name);
+        $this->_sender = new Address($addr, $name);
         return $this;
     }
 
@@ -183,8 +200,8 @@ class Message
         if ($this->_from !== null) {
             $this->addHeader("From", (string) $this->_from);
         }
-        if ($this->sender !== null) {
-            $this->addHeader("Sender", (string) $this->sender);
+        if ($this->_sender !== null) {
+            $this->addHeader("Sender", (string) $this->_sender);
         }
         if ($this->replyTo !== null) {
             $this->addHeader("Reply-To", (string) $this->reply_to);
