@@ -323,7 +323,7 @@ class Smtp extends AbstractProtocol
      *         if the server returns a negative response.
      * @return bool
      */
-    public function mail ($from)
+    public function mail($from)
     {
         $this->_send("MAIL FROM: <{$from}>");
         $resp = $this->_getResponse(true);
@@ -343,7 +343,7 @@ class Smtp extends AbstractProtocol
      *         if the server returns a negative response.
      * @return bool
      */
-    public function rcpt ($to)
+    public function rcpt($to)
     {
         $this->_send("RCPT TO: <{$to}>");
         $resp = $this->_getResponse(true);
@@ -362,7 +362,7 @@ class Smtp extends AbstractProtocol
      *         if the server returns a negative response.
      * @return bool
      */
-    public function data ($data)
+    public function data($data)
     {
         $this->_send("DATA");
         $resp = $this->_getResponse(true);
