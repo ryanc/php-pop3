@@ -168,7 +168,7 @@ class SmtpTest extends PHPUnit_Framework_TestCase
 
     public function testSmtpEhloCommand()
     {
-        $this->assertType(
+        $this->assertInternalType(
           'array', $this->_connection->ehlo(TESTS_MAIL_SMTP_HOST)
         );
     }

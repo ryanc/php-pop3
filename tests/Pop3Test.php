@@ -204,20 +204,20 @@ class Pop3Test extends PHPUnit_Framework_TestCase
 
     public function testPop3CapaCommand()
     {
-        $this->assertType(
+        $this->assertInternalType(
           'string',
           $this->_connection->getServerCapabilities('raw')
         );
-        $this->assertType(
+        $this->assertInternalType(
           'array',
           $this->_connection->getServerCapabilities('array')
         );
         $this->_connection->authenticate($this->_authConfig);
-        $this->assertType(
+        $this->assertInternalType(
           'string',
           $this->_connection->getServerCapabilities('raw')
         );
-        $this->assertType(
+        $this->assertInternalType(
           'array',
           $this->_connection->getServerCapabilities('array')
         );
@@ -226,7 +226,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
     public function testPop3StatCommand()
     {
         $this->_connection->authenticate($this->_authConfig);
-        $this->assertType(
+        $this->assertInternalType(
           'array',
           $this->_connection->status()
         );
@@ -235,11 +235,11 @@ class Pop3Test extends PHPUnit_Framework_TestCase
     public function testPop3ListCommand()
     {
         $this->_connection->authenticate($this->_authConfig);
-        $this->assertType(
+        $this->assertInternalType(
           'array',
           $this->_connection->listMessages()
         );
-        $this->assertType(
+        $this->assertInternalType(
           'array',
           $this->_connection->listMessages(1)
         );
@@ -248,7 +248,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
     public function testPop3RetrCommand()
     {
         $this->_connection->authenticate($this->_authConfig);
-        $this->assertType(
+        $this->assertInternalType(
           'string',
           $this->_connection->retrieve(1)
         );
@@ -283,7 +283,7 @@ class Pop3Test extends PHPUnit_Framework_TestCase
     public function testPop3TopCommand()
     {
         $this->_connection->authenticate($this->_authConfig);
-        $this->assertType(
+        $this->assertInternalType(
           'string',
           $this->_connection->top(1)
         );
@@ -292,11 +292,11 @@ class Pop3Test extends PHPUnit_Framework_TestCase
     public function testPop3UidlCommand()
     {
         $this->_connection->authenticate($this->_authConfig);
-        $this->assertType(
+        $this->assertInternalType(
           'array',
           $this->_connection->uidl()
         );
-        $this->assertType(
+        $this->assertInternalType(
           'array',
           $this->_connection->uidl(1)
         );
