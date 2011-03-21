@@ -310,15 +310,4 @@ class Pop3Test extends PHPUnit_Framework_TestCase
         );
     }
 }
-
-class Pop3Test_Skip extends PHPUnit_Framework_TestCase
-{
-    public function setUp()
-    {
-        $this->markTestSkipped('POP3 tests are not enabled.');
-    }
-
-    public function testDoNothing() {}
-}
-
 ?>

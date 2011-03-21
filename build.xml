@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="MailKit" basedir="." default="test">
+  <target name="test">
+    <phpunit haltonfailure="true" printsummary="true" bootstrap="tests/TestConfiguration.php">
+      <batchtest>
+        <fileset dir="tests">
+          <include name="**/*Test.php" />
+        </fileset>
+      </batchtest>
+    </phpunit>
+  </target>
+</project>

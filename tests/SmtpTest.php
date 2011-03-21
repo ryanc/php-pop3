@@ -321,17 +321,25 @@ class SmtpTest extends PHPUnit_Framework_TestCase
           $this->_connection->send($mail)
         );
     }
-}
 
-class SmtpTest_Skip extends PHPUnit_Framework_TestCase
-{
-    public function setUp()
+    public function testSmtpSendHtml()
     {
-        $this->markTestSkipped('SMTP tests are not enabled.');
-    }
+        $this->_connection->ehlo();
+        $this->_connection->authenticate($this->_authConfig);
+        $mail = Message::newInstance()
+            ->setFrom(TESTS_MAIL_SMTP_SENDER, 'Test Sender')
+            ->addTo(TESTS_MAIL_SMTP_RECIPIENT, 'Test Recipient')
+            ->addCc(TESTS_MAIL_SMTP_CC_RECIPIENT, 'Test CC')
+            ->addBcc(TESTS_MAIL_SMTP_BCC_RECIPIENT, 'Test BCC')
+            ->setPriority(Message::PRIORITY_HIGHEST)
+            ->setUserAgent('MailKit')
+            ->setSubject("Test message from PHPUnit.")
+            ->setBody("<strong>Sent by SmtpTest::testSmtpSendHtml.")
+            ->setContentType('text/html');
 
-    public function testDoNothing()
-    {
+        $this->assertTrue(
+          $this->_connection->send($mail)
+        );
     }
 }
 ?>
