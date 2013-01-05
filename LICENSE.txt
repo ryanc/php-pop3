@@ -1,4 +1,4 @@
-Copyright (c) 2009, Ryan Cavicchioni <ryan@confabulator.net>
+Copyright (c) 2009-2013, Ryan Cavicchioni <ryan@confabulator.net>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
