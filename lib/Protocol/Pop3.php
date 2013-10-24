@@ -639,7 +639,7 @@ class Pop3 extends AbstractProtocol
      */
     private function _isTerminationOctet($resp)
     {
-        if (strpos(rtrim($resp, self::CRLF), self::TERMINATION_OCTET) === 0 ) {
+        if (preg_match("/\.\s/",$resp) && strpos(rtrim($resp, self::CRLF), self::TERMINATION_OCTET) === 0 ) {
             return true;
         }
 
